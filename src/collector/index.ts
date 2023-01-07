@@ -17,7 +17,7 @@ const decodeTxs = (block: Block) => {
         let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, "cosmos");
 
         decodedTx.body.messages = decodedTx.body.messages.map(msg => {
-            let decodedMsg = registry.decode(msg);
+            let decodedMsg = registryTypes.cosmos.decode(msg);
 
             return {
                 typeUrl: msg.typeUrl,
@@ -58,13 +58,13 @@ const writeToMongo = async (decodedTx: any) => {
 (async () => {
     const processBlock = async (block: Block) => {
         let blockData = decodeTxs(block);
-        let result = await writeToMongo(blockData);
-        console.log(result)
+        // let result = await writeToMongo(blockData);
+        console.log(blockData.header?.height, blockData.header?.hash)
     }
 
     await Watcher
         .create()
-        .addNetwork("stride")
+        .addNetwork("cosmoshub")
         .recieve(RecieveData.HEADERS_AND_TRANSACTIONS, processBlock)
         .run();
 })();
