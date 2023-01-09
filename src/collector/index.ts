@@ -1,3 +1,5 @@
+import * as dotenv from 'dotenv'; 
+dotenv.config();
 import { Block, RecieveData, Watcher } from "../apiWrapper/index";
 import { MongoClient } from "mongodb";
 import { DecodedTxRaw, decodePubkey, decodeTxRaw } from "@cosmjs/proto-signing";
@@ -7,6 +9,7 @@ import {
     getSigningStrideClientOptions,
     strideAccountParser,
 } from "stridejs";
+import { insertBlockHeader } from "./clickhouse";
 
 const { registry, aminoTypes } = getSigningStrideClientOptions();
 const url = "mongodb://localhost:27017/";
@@ -59,12 +62,13 @@ const writeToMongo = async (decodedTx: any) => {
     const processBlock = async (block: Block) => {
         let blockData = decodeTxs(block);
         // let result = await writeToMongo(blockData);
-        console.log(blockData.header?.height, blockData.header?.hash)
+        if (blockData.header)
+            insertBlockHeader(blockData.header);
     }
 
     await Watcher
         .create()
-        .addNetwork("cosmoshub")
+        .addNetwork("stride")
         .recieve(RecieveData.HEADERS_AND_TRANSACTIONS, processBlock)
         .run();
 })();

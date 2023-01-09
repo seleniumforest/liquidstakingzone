@@ -4,6 +4,7 @@ import { defaultRegistryUrls, isFulfilled } from "./constants";
 import { apiToSmallInt, tryParseJson } from "./helpers";
 import { CantGetBlockHeaderErr, CantGetLatestHeightErr } from "./errors";
 import { fromBase64 } from "@cosmjs/encoding";
+import moment from "moment";
 
 const timeToSync = 200;
 
@@ -61,9 +62,9 @@ export class ApiManager {
 
                 return {
                     height: parseInt(header.height),
-                    time: new Date(header.time),
+                    time: moment(header.time).unix(),
                     hash: data.result.block_id.hash,
-                    chainId: data.result.block.chain_id,
+                    chainId: data.result.block.header.chain_id,
                     operatorAddress: data.result.block.header.proposer_address
                 }
             } catch (err: any) {
@@ -179,7 +180,7 @@ interface TxsResponse {
 
 export interface BlockHeader {
     height: number,
-    time: Date,
+    time: number,
     hash: string,
     chainId: string,
     operatorAddress: string

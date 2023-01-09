@@ -5,6 +5,7 @@
   "typings": "./build/index.d.ts",
   "license": "MIT",
   "dependencies": {
+    "@clickhouse/client": "^0.0.11",
     "@cosmjs/amino": "^0.29.5",
     "@cosmjs/encoding": "^0.29.5",
     "@cosmjs/math": "^0.28.11",
@@ -14,8 +15,10 @@
     "@types/node": "^18.7.18",
     "axios": "^0.27.2",
     "chain-registry": "^1.6.0",
+    "dotenv": "^16.0.3",
     "eventemitter3": "^4.0.7",
     "global": "^4.4.0",
+    "moment": "^2.29.4",
     "mongodb": "^4.12.1",
     "node-cache": "^5.1.2",
     "stridejs": "^0.4.2",
