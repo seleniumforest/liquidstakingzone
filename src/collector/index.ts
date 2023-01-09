@@ -1,26 +1,18 @@
 import * as dotenv from 'dotenv'; 
 dotenv.config();
 import { Block, RecieveData, Watcher } from "../apiWrapper/index";
-import { MongoClient } from "mongodb";
 import { DecodedTxRaw, decodePubkey, decodeTxRaw } from "@cosmjs/proto-signing";
-import registryTypes from "./registryTypes";
+import { Registry, registryTypes } from "./registryTypes";
 import { pubkeyToAddress } from "@cosmjs/amino";
-import {
-    getSigningStrideClientOptions,
-    strideAccountParser,
-} from "stridejs";
 import { insertBlockHeader } from "./clickhouse";
 
-const { registry, aminoTypes } = getSigningStrideClientOptions();
-const url = "mongodb://localhost:27017/";
-
-const decodeTxs = (block: Block) => {
+const decodeTxs = (block: Block, registry: Registry) => {
     let decodedTxs: DecodedTx[] = block.txs.map(tx => {
         let decodedTx = decodeTxRaw(Buffer.from(tx.tx || ""));
         let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, "cosmos");
 
         decodedTx.body.messages = decodedTx.body.messages.map(msg => {
-            let decodedMsg = registryTypes.cosmos.decode(msg);
+            let decodedMsg = registry.decode(msg);
 
             return {
                 typeUrl: msg.typeUrl,
@@ -49,19 +41,9 @@ const decodeTxs = (block: Block) => {
     }
 }
 
-const writeToMongo = async (decodedTx: any) => {
-    let client = await MongoClient.connect(url);
-    let db = client.db("indexerdb");
-    let collection = db.collection("transactions");
-    let result = await collection.insertOne(decodedTx);
-
-    return result.insertedId;
-}
-
 (async () => {
-    const processBlock = async (block: Block) => {
-        let blockData = decodeTxs(block);
-        // let result = await writeToMongo(blockData);
+    const processBlock = async (block: Block, registry: Registry) => {
+        let blockData = decodeTxs(block, registry);
         if (blockData.header)
             insertBlockHeader(blockData.header);
     }
@@ -69,7 +51,7 @@ const writeToMongo = async (decodedTx: any) => {
     await Watcher
         .create()
         .addNetwork("stride")
-        .recieve(RecieveData.HEADERS_AND_TRANSACTIONS, processBlock)
+        .recieve(RecieveData.HEADERS_AND_TRANSACTIONS, (block) => processBlock(block, registryTypes.strideRegistry))
         .run();
 })();
 
