@@ -25,9 +25,19 @@ CREATE TABLE Stride.msgs_MsgSend (
     id UUID,
     /* "foreign key" to Stride.transactions */
     txhash String,
+    fee Tuple (String, UInt256),
     fromAddress String,
     toAddress String,
     /* denom and amount */
-    amount Array(Tuple (String, UInt256)),
-    fee Tuple (String, UInt256)
-) ENGINE = MergeTree() PRIMARY KEY (id)
+    amount Array(Tuple (String, UInt256))
+) ENGINE = MergeTree() PRIMARY KEY (id);
+/* Table with /stride.stakeibc.MsgLiquidStake */
+CREATE TABLE Stride.msgs_MsgLiquidStake (
+    id UUID,
+    /* "foreign key" to Stride.transactions */
+    txhash String,
+    fee Tuple (String, UInt256),
+    creator String,
+    amount String,
+    hostDenom String
+) ENGINE = MergeTree() PRIMARY KEY (id);

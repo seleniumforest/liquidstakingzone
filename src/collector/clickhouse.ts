@@ -18,6 +18,8 @@ const insertStrideBlock = async (block: DecodedBlock) => {
             format: 'JSONEachRow',
         });
 
+        
+        let savedMessages = 0;
         if (block.txs.length > 0) {
             await client.insert({
                 table: 'transactions',
@@ -32,14 +34,17 @@ const insertStrideBlock = async (block: DecodedBlock) => {
 
             for (const tx of block.txs) {
                 for (const msg of tx.data.body.messages) {
+                    //custom handler function for each Msg Type
                     let insertMsgHandler = msgsMap.get(msg.typeUrl);
 
-                    if (insertMsgHandler)
+                    if (insertMsgHandler) {
                         await insertMsgHandler(block.header!, tx, msg.value);
+                        savedMessages++;
+                    }
                 }
             };
         }
-        console.log(`Saved block ${block.height}`)
+        console.log(`Saved block ${block.height} with ${savedMessages} transactions`)
     } catch (e: any) {
         console.log(e)
     }

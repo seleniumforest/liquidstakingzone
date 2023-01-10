@@ -1,18 +1,11 @@
 import { Coin } from "@cosmjs/amino";
 import { v4 as uuidv4 } from 'uuid';
+import { msgData } from ".";
 import { CoinTuple } from "..";
 import { BlockHeader } from "../../apiWrapper";
 import { client } from "../clickhouse";
 import { DecodedTx } from "../decoder";
 import { getFeeFromEvents } from "../helpers";
-
-export interface msgData {
-    id: string,
-    code: number,
-    height: number,
-    txhash: string,
-    fee: CoinTuple
-} 
 
 export interface msgSendData extends msgData {
     fromAddress: string,
@@ -20,7 +13,7 @@ export interface msgSendData extends msgData {
     amount: CoinTuple[]
 } 
 
-const insertMsgSend = async (header: BlockHeader, tx: DecodedTx, msg: any) : Promise<void> => {
+export const insertMsgSend = async (header: BlockHeader, tx: DecodedTx, msg: any) : Promise<void> => {
     let data = transformMsgSendData(header, tx, msg);
 
     await client.insert({
@@ -43,8 +36,4 @@ const transformMsgSendData = (header: BlockHeader, tx: DecodedTx, msg: any) : ms
     }
 
     return result;
-}
-
-export { 
-    insertMsgSend
 }
