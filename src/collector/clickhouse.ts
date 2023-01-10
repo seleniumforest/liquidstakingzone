@@ -1,5 +1,6 @@
 import { createClient } from '@clickhouse/client'
-import { BlockHeader } from '../apiWrapper';
+import { DecodedBlock } from '.';
+import { msgsMap } from './messages';
 
 const client = createClient({
     host: process.env.CLICKHOUSE_HOST || "http://localhost:8123",
@@ -7,21 +8,44 @@ const client = createClient({
     database: process.env.CLICKHOUSE_DB || "Stride"
 })
 
-const insertBlockHeader = async (header: BlockHeader) => {
+const insertStrideBlock = async (block: DecodedBlock) => {
     try {
         await client.insert({
             table: 'block_headers',
             values: [
-                header
+                block.header
             ],
             format: 'JSONEachRow',
         });
-        console.log("Inserted \n", header)
+
+        if (block.txs.length > 0) {
+            await client.insert({
+                table: 'transactions',
+                values: block.txs.map(tx => ({
+                    height: block.height,
+                    txhash: tx.hash,
+                    sender: tx.sender,
+                    code: tx.code
+                })),
+                format: 'JSONEachRow',
+            });
+
+            for (const tx of block.txs) {
+                for (const msg of tx.data.body.messages) {
+                    let insertMsgHandler = msgsMap.get(msg.typeUrl);
+
+                    if (insertMsgHandler)
+                        await insertMsgHandler(block.header!, tx, msg.value);
+                }
+            };
+        }
+        console.log(`Saved block ${block.height}`)
     } catch (e: any) {
         console.log(e)
     }
 }
 
 export {
-    insertBlockHeader
+    insertStrideBlock,
+    client
 };

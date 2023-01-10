@@ -11,14 +11,17 @@ export class NetworkManager {
     private constructor(network: string, rpcEndpoints: string[], restEnpoints: string[]) {
         this.network = network;
 
+        console.log(`Starting network ${network}`);
         [...rpcEndpoints.entries()].forEach(([_, rpc]) => {
             let rpcUrl = rpc.toString();
+            console.log(`Found rpc ${rpcUrl}`);
             this.rpcRank.set(rpcUrl, { ok: 0, fail: 0, endpoint: rpcUrl });
         });
         
         [...restEnpoints.entries()].forEach(([_, rest]) => {
-            let rpcUrl = rest.toString();
-            this.restRank.set(rpcUrl, { ok: 0, fail: 0, endpoint: rpcUrl });
+            let restUrl = rest.toString();
+            console.log(`Found rest ${restUrl}`);
+            this.restRank.set(restUrl, { ok: 0, fail: 0, endpoint: restUrl });
         });
     }
 
