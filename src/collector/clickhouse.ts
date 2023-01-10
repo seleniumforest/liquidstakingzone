@@ -1,5 +1,5 @@
 import { createClient } from '@clickhouse/client'
-import { DecodedBlock } from '.';
+import { DecodedBlock } from './decoder';
 import { msgsMap } from './messages';
 
 const client = createClient({

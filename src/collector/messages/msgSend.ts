@@ -1,9 +1,10 @@
 import { Coin } from "@cosmjs/amino";
 import { v4 as uuidv4 } from 'uuid';
-import { DecodedTx } from "..";
+import { CoinTuple } from "..";
 import { BlockHeader } from "../../apiWrapper";
 import { client } from "../clickhouse";
-import { CoinTuple, getFeeFromEvents } from "../helpers";
+import { DecodedTx } from "../decoder";
+import { getFeeFromEvents } from "../helpers";
 
 export interface msgData {
     id: string,

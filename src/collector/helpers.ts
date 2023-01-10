@@ -1,5 +1,4 @@
-import { Coin } from "@cosmjs/amino";
-import { TxEvent } from ".";
+import { CoinTuple, TxEvent } from ".";
 
 const parseCoin = (coin: string) : CoinTuple => {
     let separatorIndex = Array.from(coin).findIndex(x => !Number.isInteger(parseInt(x)));
@@ -30,8 +29,6 @@ const getFeeFromEvents = (events: TxEvent[]) : CoinTuple => {
 
     return parseCoin(fee || "");
 }
-
-export type CoinTuple = [string, string];
 
 export {
     parseCoin,
