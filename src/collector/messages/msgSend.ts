@@ -1,7 +1,6 @@
 import { Coin } from "@cosmjs/amino";
 import { getMsgData, insertMsg, msgData } from ".";
 import { CoinTuple } from "..";
-import { BlockHeader } from "../../apiWrapper";
 import { DecodedTx } from "../decoder";
 
 export interface msgSendData extends msgData {
@@ -10,7 +9,7 @@ export interface msgSendData extends msgData {
     amount: CoinTuple[]
 } 
 
-export const insertMsgSend = async (header: BlockHeader, tx: DecodedTx, msg: any) : Promise<void> => {
+export const insertMsgSend = async (tx: DecodedTx, msg: any) : Promise<void> => {
     await insertMsg("msgs_MsgSend", getMsgSendData(tx, msg));
 }
 

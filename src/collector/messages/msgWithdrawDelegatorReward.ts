@@ -1,6 +1,5 @@
 import { getMsgData, insertMsg, msgData } from ".";
 import { CoinTuple } from '..';
-import { BlockHeader } from "../../apiWrapper";
 import { DecodedTx } from "../decoder";
 import { getRewardsFromEvents } from "../helpers";
 
@@ -10,7 +9,7 @@ export interface msgWithdrawDelegatorReward extends msgData {
     reward: CoinTuple
 }
 
-export const insertMsgWithdrawReward = async (header: BlockHeader, tx: DecodedTx, msg: any): Promise<void> => {
+export const insertMsgWithdrawReward = async (tx: DecodedTx, msg: any): Promise<void> => {
     await insertMsg("msgs_MsgWithdrawDelegatorReward", getMsgWithdrawRewardData(tx, msg))
 }
 

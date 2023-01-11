@@ -48,6 +48,15 @@ CREATE TABLE Stride.msgs_MsgWithdrawDelegatorReward (
     validatorAddress String,
     reward Tuple (String, UInt256)
 ) ENGINE = MergeTree() PRIMARY KEY (id);
+/* /cosmos.staking.v1beta1.MsgDelegate */
+CREATE TABLE Stride.msgs_MsgDelegate (
+    id UUID,
+    txhash String,
+    fee Tuple (String, UInt256),
+    delegatorAddress String,
+    validatorAddress String,
+    amount Tuple (String, UInt256)
+) ENGINE = MergeTree() PRIMARY KEY (id);
 /*
  
  Tables with Stride specific messages

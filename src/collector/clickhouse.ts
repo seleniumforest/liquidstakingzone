@@ -42,7 +42,7 @@ const insertStrideBlock = async (block: DecodedBlock) => {
                     let insertMsgHandler = msgsMap.get(msg.typeUrl);
 
                     if (insertMsgHandler) {
-                        await insertMsgHandler(block.header!, tx, msg.value);
+                        await insertMsgHandler(tx, msg.value);
                         knownMsgsCount++;
                     }
                     else {

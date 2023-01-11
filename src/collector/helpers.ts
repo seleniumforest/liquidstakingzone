@@ -1,4 +1,9 @@
+import { Coin } from "@cosmjs/proto-signing";
 import { CoinTuple, TxEvent } from ".";
+
+export const toCoinTuple = (coin: Coin): CoinTuple => {
+    return [coin.denom, coin.amount];
+} 
 
 //splits 243693ustrd to amount and denom
 export const parseCoin = (coin: string): CoinTuple => {
