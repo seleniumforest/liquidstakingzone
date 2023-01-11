@@ -4,7 +4,11 @@
  */
 DROP DATABASE IF EXISTS Stride;
 CREATE DATABASE Stride;
-/* Table with block headers */
+/*
+ 
+ Сommon tables
+ 
+ */
 CREATE TABLE Stride.block_headers (
     height UInt64,
     hash String,
@@ -12,7 +16,6 @@ CREATE TABLE Stride.block_headers (
     chainId String,
     operatorAddress String
 ) ENGINE = MergeTree() PRIMARY KEY (height);
-/* Table with /cosmos.bank.v1beta1.MsgSend transactions */
 CREATE TABLE Stride.transactions (
     txhash String,
     /* "foreign key" to Stride.block_headers */
@@ -20,7 +23,12 @@ CREATE TABLE Stride.transactions (
     sender String,
     code UInt8
 ) ENGINE = MergeTree() PRIMARY KEY (txhash);
-/* Table with /cosmos.bank.v1beta1.MsgSend transactions */
+/*
+ 
+ Tables with common Cosmos SDK messages
+ 
+ */
+/* /cosmos.bank.v1beta1.MsgSend transactions */
 CREATE TABLE Stride.msgs_MsgSend (
     id UUID,
     /* "foreign key" to Stride.transactions */
@@ -31,7 +39,21 @@ CREATE TABLE Stride.msgs_MsgSend (
     /* denom and amount */
     amount Array(Tuple (String, UInt256))
 ) ENGINE = MergeTree() PRIMARY KEY (id);
-/* Table with /stride.stakeibc.MsgLiquidStake */
+/* /cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward */
+CREATE TABLE Stride.msgs_MsgWithdrawDelegatorReward (
+    id UUID,
+    txhash String,
+    fee Tuple (String, UInt256),
+    delegatorAddress String,
+    validatorAddress String,
+    reward Tuple (String, UInt256)
+) ENGINE = MergeTree() PRIMARY KEY (id);
+/*
+ 
+ Tables with Stride specific messages
+ 
+ */
+/* /stride.stakeibc.MsgLiquidStake */
 CREATE TABLE Stride.msgs_MsgLiquidStake (
     id UUID,
     /* "foreign key" to Stride.transactions */

@@ -1,8 +1,7 @@
 import Long from 'long';
 import { v4 as uuidv4 } from 'uuid';
-import { msgData } from ".";
+import { insertMsg, msgData } from ".";
 import { BlockHeader } from "../../apiWrapper";
-import { client } from "../clickhouse";
 import { DecodedTx } from "../decoder";
 import { getFeeFromEvents } from "../helpers";
 
@@ -13,13 +12,7 @@ export interface msgLiquidStake extends msgData {
 } 
 
 export const insertMsgLiquidStake = async (header: BlockHeader, tx: DecodedTx, msg: any) : Promise<void> => {
-    let data = transformMsgSendData(header, tx, msg);
-
-    await client.insert({
-        table: 'msgs_MsgLiquidStake',
-        values: [data],
-        format: 'JSONEachRow'
-    });
+    await insertMsg("msgs_MsgLiquidStake", transformMsgSendData(header, tx, msg))
 }
 
 const transformMsgSendData = (header: BlockHeader, tx: DecodedTx, msg: any) : msgLiquidStake => {

@@ -1,9 +1,8 @@
 import { Coin } from "@cosmjs/amino";
 import { v4 as uuidv4 } from 'uuid';
-import { msgData } from ".";
+import { insertMsg, msgData } from ".";
 import { CoinTuple } from "..";
 import { BlockHeader } from "../../apiWrapper";
-import { client } from "../clickhouse";
 import { DecodedTx } from "../decoder";
 import { getFeeFromEvents } from "../helpers";
 
@@ -14,13 +13,7 @@ export interface msgSendData extends msgData {
 } 
 
 export const insertMsgSend = async (header: BlockHeader, tx: DecodedTx, msg: any) : Promise<void> => {
-    let data = transformMsgSendData(header, tx, msg);
-
-    await client.insert({
-        table: 'msgs_MsgSend',
-        values: [data],
-        format: 'JSONEachRow'
-    });
+    await insertMsg("msgs_MsgSend", transformMsgSendData(header, tx, msg));
 }
 
 const transformMsgSendData = (header: BlockHeader, tx: DecodedTx, msg: any) : msgSendData => {

@@ -21,6 +21,7 @@ const processBlock = async (block: Block, registry: Registry) => {
         .run();
 })();
 
+//denom and amount
 export type CoinTuple = [string, string];
 
 export type TxEvent = {
