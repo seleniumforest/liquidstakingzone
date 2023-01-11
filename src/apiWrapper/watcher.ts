@@ -56,8 +56,7 @@ export class Watcher {
         await Promise.allSettled(this.chains.map(async ([chain, fromBlock]) => {
             while (true) {
                 try {
-                    let netManager = await NetworkManager.create(chain, this.registryUrls);
-                    let apiManager = new ApiManager(netManager);
+                    let apiManager = await ApiManager.createApiManager(chain, this.registryUrls);
                     this.networks.set(chain, apiManager);
                     await this.runNetwork(chain, fromBlock);
                 } catch (err) {

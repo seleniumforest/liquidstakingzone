@@ -10,8 +10,10 @@ const timeToSync = 200;
 
 export class ApiManager {
     readonly manager: NetworkManager;
+    //empty and non-empty blocks
+    blockStats: [number, number] = [0, 0];
 
-    constructor(manager: NetworkManager) {
+    private constructor(manager: NetworkManager) {
         this.manager = manager;
     }
 
@@ -81,8 +83,11 @@ export class ApiManager {
 
     async getTxsInBlock(height: number): Promise<Tx[]> {
         let endpoints = this.manager.getEndpoints("rpc");
-        let errors = 0;
-        let emptyResults = 0;
+        //temporary empty block optimization
+        let [ empty, nonEmpty ] = this.blockStats;
+        let emptyBlockRatio = empty / (empty + nonEmpty);
+        if (emptyBlockRatio > 0.5)
+            endpoints = endpoints.slice(0, Math.round(endpoints.length / 2))
 
         for (const rpc of endpoints) {
             try {
@@ -106,21 +111,19 @@ export class ApiManager {
 
                 let result: Tx[] = allTxs.map(this.decodeTx);
 
-                if (result.length !== 0)
+                if (result.length !== 0) {
+                    this.blockStats[1]++;
                     return result;
-
-                await new Promise(res => setTimeout(res, timeToSync));
-                emptyResults++;
+                }
                 this.manager.reportStats({ type: "rpc", url: rpc }, true);
             } catch (err: any) {
                 if (err instanceof AxiosError)
                     this.manager.reportStats({ type: "rpc", url: rpc }, false);
-
-                errors++;
             }
         }
 
         //probably, that's empty block
+        this.blockStats[0]++;
         return [];
 
         //throw new CantGetTxsInBlockErr(this.manager.network, height, endpoints);
