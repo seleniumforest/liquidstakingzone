@@ -1,7 +1,7 @@
 import { CoinTuple, TxEvent } from ".";
 
 //splits 243693ustrd to amount and denom
-export const parseCoin = (coin: string) : CoinTuple => {
+export const parseCoin = (coin: string): CoinTuple => {
     if (!coin || coin === "")
         return ["", ""];
 
@@ -16,29 +16,21 @@ export const parseCoin = (coin: string) : CoinTuple => {
     ]
 }
 
-export const getSenderFromEvents = (events: TxEvent[]) : string => {
-    let sender = events.filter(x => x.type === "message")
-        .flatMap(x => x.attributes)
-        .find(x => x.key === "sender")
-        ?.value;
-
-    return sender || "";
+export const getSenderFromEvents = (events: TxEvent[]): string => {
+    return getValueByTwoKeys(events, "message", "sender");
 }
 
-export const getFeeFromEvents = (events: TxEvent[]) : CoinTuple => {
-    let fee = events.filter(x => x.type === "tx")
-        .flatMap(x => x.attributes)
-        .find(x => x.key === "fee")
-        ?.value;
-
-    return parseCoin(fee || "");
+export const getFeeFromEvents = (events: TxEvent[]): CoinTuple => {
+    return parseCoin(getValueByTwoKeys(events, "tx", "fee"));
 }
 
-export const getRewardsFromEvents = (events: TxEvent[]) : CoinTuple => {
-    let rewards = events.filter(x => x.type === "withdraw_rewards")
-        .flatMap(x => x.attributes)
-        .find(x => x.key === "amount")
-        ?.value;
+export const getRewardsFromEvents = (events: TxEvent[]): CoinTuple => {
+    return parseCoin(getValueByTwoKeys(events, "withdraw_rewards", "amount"));
+}
 
-    return parseCoin(rewards || "");
+const getValueByTwoKeys = (events: TxEvent[], k1: string, k2: string): string => {
+    return events.filter(x => x.type === k1)
+        .flatMap(x => x.attributes)
+        .find(x => x.key === k2)
+        ?.value || "";
 }

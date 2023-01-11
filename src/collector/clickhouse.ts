@@ -10,6 +10,7 @@ const client = createClient({
 
 const insertStrideBlock = async (block: DecodedBlock) => {
     try {
+        //insert block header
         await client.insert({
             table: 'block_headers',
             values: [
@@ -19,8 +20,10 @@ const insertStrideBlock = async (block: DecodedBlock) => {
         });
 
         
-        let savedMessages = 0;
+        let knownMsgsCount = 0;
+        let unknownMsgsCount = 0;
         if (block.txs.length > 0) {
+            //insert transactions
             await client.insert({
                 table: 'transactions',
                 values: block.txs.map(tx => ({
@@ -32,6 +35,7 @@ const insertStrideBlock = async (block: DecodedBlock) => {
                 format: 'JSONEachRow',
             });
 
+            //insert each msg
             for (const tx of block.txs) {
                 for (const msg of tx.data.body.messages) {
                     //custom handler function for each Msg Type
@@ -39,12 +43,15 @@ const insertStrideBlock = async (block: DecodedBlock) => {
 
                     if (insertMsgHandler) {
                         await insertMsgHandler(block.header!, tx, msg.value);
-                        savedMessages++;
+                        knownMsgsCount++;
+                    }
+                    else {
+                        unknownMsgsCount++;
                     }
                 }
             };
         }
-        console.log(`Saved block ${block.height} with ${savedMessages} transactions`)
+        console.log(`Saved block ${block.height} with ${knownMsgsCount} known messages, ${unknownMsgsCount} unknown`)
     } catch (e: any) {
         console.log(e)
     }

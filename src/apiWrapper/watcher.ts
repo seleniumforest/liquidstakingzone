@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { defaultRegistryUrls, RecieveData } from './constants';
+import { defaultRegistryUrls, isFulfilled, RecieveData } from './constants';
 import { Chain } from "@chain-registry/types";
 import { EndpointType, NetworkManager } from './networkManager';
 import { ApiManager, BlockHeader, Tx } from './apiManager';
@@ -32,7 +32,7 @@ export class Watcher {
         return this;
     }
 
-    addCustomRpcs(rpcs: [URL, EndpointType][]) { 
+    addCustomRpcs(rpcs: [URL, EndpointType][]) {
 
     }
 
@@ -70,20 +70,28 @@ export class Watcher {
     }
 
     async composeBlock(chain: string, height: number): Promise<Block> {
-        let header, txs;
         let api = this.networks.get(chain)!;
 
-        switch (this.mode) {
-            case RecieveData.HEIGHT:
-                return { height, chain, txs: [] };
-            case RecieveData.HEADERS:
-                header = await api.getBlockHeader(height);
-                return { header, height, chain, txs: [] };
-            case RecieveData.HEADERS_AND_TRANSACTIONS:
-                header = await api.getBlockHeader(height);
-                txs = await api.getTxsInBlock(height);
-                return { header, txs, height, chain }
+        if (this.mode === RecieveData.HEADERS) {
+            let header = await api.getBlockHeader(height);
+            return { header, height, chain, txs: [] };
         }
+
+        if (this.mode === RecieveData.HEADERS_AND_TRANSACTIONS) {
+            let [header, txs] = await Promise.allSettled([
+                api.getBlockHeader(height),
+                api.getTxsInBlock(height)
+            ]);
+
+            return {
+                header: (header as PromiseFulfilledResult<BlockHeader>)?.value, //kekw
+                txs: (txs as PromiseFulfilledResult<Tx[]>)?.value,
+                height,
+                chain
+            }
+        }
+
+        return { height, chain, txs: [] };
     }
 
     async runNetwork(chain: string, fromBlock: number | undefined): Promise<void> {
