@@ -21,7 +21,8 @@ CREATE TABLE Stride.transactions (
     /* "foreign key" to Stride.block_headers */
     height UInt64,
     sender String,
-    code UInt8
+    code UInt8,
+    rawdata String
 ) ENGINE = MergeTree() PRIMARY KEY (txhash);
 /*
  

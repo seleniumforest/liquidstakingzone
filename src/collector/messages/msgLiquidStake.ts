@@ -9,16 +9,12 @@ export interface msgLiquidStake extends msgData {
 } 
 
 export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any) : Promise<void> => {
-    await insertMsg("msgs_MsgLiquidStake", getMsgSendData(tx, msg))
-}
-
-const getMsgSendData = (tx: DecodedTx, msg: any) : msgLiquidStake => {
-    let result = {
+    let data = {
         ...getMsgData(tx),
         creator: msg.creator,
         amount: (msg.amount as Long).toString(),
         hostDenom: msg.hostDenom
-    }
+    };
 
-    return result;
+    await insertMsg("msgs_MsgLiquidStake", data)
 }

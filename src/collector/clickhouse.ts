@@ -30,14 +30,15 @@ const insertStrideBlock = async (block: DecodedBlock) => {
                     height: block.height,
                     txhash: tx.hash,
                     sender: tx.sender,
-                    code: tx.code
+                    code: tx.tx_result.code,
+                    rawdata: JSON.stringify(tx)
                 })),
                 format: 'JSONEachRow',
             });
 
             //insert each msg
             for (const tx of block.txs) {
-                for (const msg of tx.data.body.messages) {
+                for (const msg of tx.tx_result.data.body.messages) {
                     //custom handler function for each Msg Type
                     let insertMsgHandler = msgsMap.get(msg.typeUrl);
 

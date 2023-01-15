@@ -2,7 +2,7 @@ import { URL } from "url";
 import { defaultRegistryUrls, isFulfilled, RecieveData } from './constants';
 import { Chain } from "@chain-registry/types";
 import { EndpointType, NetworkManager } from './networkManager';
-import { ApiManager, BlockHeader, Tx } from './apiManager';
+import { ApiManager, BlockHeader, RawTx, Tx } from './apiManager';
 
 export class Watcher {
     //chain name and block to start processing from 
@@ -84,7 +84,7 @@ export class Watcher {
 
             return {
                 header: (header as PromiseFulfilledResult<BlockHeader>)?.value, //kekw
-                txs: (txs as PromiseFulfilledResult<Tx[]>)?.value,
+                txs: (txs as PromiseFulfilledResult<RawTx[]>)?.value,
                 height,
                 chain
             }
@@ -119,5 +119,5 @@ export interface Block {
     chain: string;
     height: number;
     header?: BlockHeader;
-    txs: Tx[];
+    txs: RawTx[];
 }

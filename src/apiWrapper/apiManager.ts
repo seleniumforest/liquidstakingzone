@@ -1,12 +1,9 @@
 import axios, { AxiosError } from "axios";
 import { NetworkManager } from "./networkManager";
 import { defaultRegistryUrls, isFulfilled } from "./constants";
-import { apiToSmallInt, tryParseJson } from "./helpers";
 import { CantGetBlockHeaderErr, CantGetLatestHeightErr } from "./errors";
 import { fromBase64 } from "@cosmjs/encoding";
 import moment from "moment";
-
-const timeToSync = 200;
 
 export class ApiManager {
     readonly manager: NetworkManager;
@@ -81,7 +78,7 @@ export class ApiManager {
         throw new CantGetBlockHeaderErr(this.manager.network, height, endpoints);
     }
 
-    async getTxsInBlock(height: number): Promise<Tx[]> {
+    async getTxsInBlock(height: number): Promise<RawTx[]> {
         let endpoints = this.manager.getEndpoints("rpc");
         //temporary empty block optimization
         let [ empty, nonEmpty ] = this.blockStats;
@@ -109,11 +106,11 @@ export class ApiManager {
                 }
                 while (allTxs.length < totalTxs)
 
-                let result: Tx[] = allTxs.map(this.decodeTx);
+                //let result: Tx[] = allTxs.map(this.decodeTx);
 
-                if (result.length !== 0) {
+                if (allTxs.length !== 0) {
                     this.blockStats[1]++;
-                    return result;
+                    return allTxs;
                 }
                 this.manager.reportStats({ type: "rpc", url: rpc }, true);
             } catch (err: any) {
@@ -127,29 +124,6 @@ export class ApiManager {
         return [];
 
         //throw new CantGetTxsInBlockErr(this.manager.network, height, endpoints);
-    }
-
-    //Performs basic decoding, without protobuf
-    decodeTx(data: RawTx): Tx {
-        return {
-            tx: fromBase64(data.tx || ""),
-            code: apiToSmallInt(data.tx_result.code) || 0,
-            events: data.tx_result.events.map(ev => {
-                return {
-                    type: ev.type,
-                    attributes: ev.attributes.map(attr => {
-                        return {
-                            key: new TextDecoder().decode(fromBase64(attr.key || "")),
-                            value: new TextDecoder().decode(fromBase64(attr.value || ""))
-                        }
-                    })
-                }
-            }),
-            log: tryParseJson(data.tx_result.log),
-            hash: data.hash,
-            data: fromBase64(data.tx_result.data || ""),
-            index: data.index
-        }
     }
 }
 
@@ -189,7 +163,7 @@ export interface BlockHeader {
     operatorAddress: string
 }
 
-interface RawTx {
+export interface RawTx {
     tx?: string;
     tx_result: {
         code: number;

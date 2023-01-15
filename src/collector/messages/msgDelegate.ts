@@ -11,16 +11,12 @@ export interface msgDelegate extends msgData {
 }
 
 export const insertMsgDelegate = async (tx: DecodedTx, msg: any): Promise<void> => {
-    await insertMsg("msgs_MsgDelegate", getMsgDelegateData(tx, msg))
-}
-
-const getMsgDelegateData = (tx: DecodedTx, msg: any): msgDelegate => {
-    let result = {
+    let data = {
         ...getMsgData(tx),
         delegatorAddress: msg.delegatorAddress,
         validatorAddress: msg.validatorAddress,
         amount: toCoinTuple(msg.amount as Coin)
-    }
+    };
 
-    return result;
+    await insertMsg("msgs_MsgDelegate", data)
 }

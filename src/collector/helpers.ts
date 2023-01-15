@@ -1,5 +1,19 @@
 import { Coin } from "@cosmjs/proto-signing";
 import { CoinTuple, TxEvent } from ".";
+import { Int53 } from "@cosmjs/math";
+
+export const apiToSmallInt = (input: number) => {
+    const asInt = Int53.fromString(input.toString());
+    return asInt.toNumber();
+}
+
+export const tryParseJson = <T>(data: string): T | null => {
+    try {
+        return JSON.parse(data) as T;
+    } catch (err: any) { 
+        return null;
+    }
+}
 
 export const toCoinTuple = (coin: Coin): CoinTuple => {
     return [coin.denom, coin.amount];
@@ -7,7 +21,7 @@ export const toCoinTuple = (coin: Coin): CoinTuple => {
 
 //splits 243693ustrd to amount and denom
 export const parseCoin = (coin: string): CoinTuple => {
-    if (!coin || coin === "")
+    if (!coin)
         return ["", ""];
 
     let separatorIndex = Array.from(coin).findIndex(x => !Number.isInteger(parseInt(x)));

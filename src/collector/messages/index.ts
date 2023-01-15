@@ -30,7 +30,7 @@ export const getMsgData = (tx: DecodedTx) => {
     let data: msgData = { 
         id: uuidv4(),
         txhash: tx.hash,
-        fee: getFeeFromEvents(tx.events)
+        fee: getFeeFromEvents(tx.tx_result.events)
     }
     
     return data;

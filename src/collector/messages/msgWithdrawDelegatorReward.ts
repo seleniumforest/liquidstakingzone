@@ -18,7 +18,7 @@ const getMsgWithdrawRewardData = (tx: DecodedTx, msg: any): msgWithdrawDelegator
         ...getMsgData(tx),
         delegatorAddress: msg.delegatorAddress,
         validatorAddress: msg.validatorAddress,
-        reward: getRewardsFromEvents(tx.events)
+        reward: getRewardsFromEvents(tx.tx_result.events)
     }
 
     return result;

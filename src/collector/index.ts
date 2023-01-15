@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv'; 
+import * as dotenv from 'dotenv';
 dotenv.config();
 import { Block, RecieveData, Watcher } from "../apiWrapper/index";
 import { Registry, registryTypes } from "./registryTypes";
@@ -10,7 +10,6 @@ const processBlock = async (block: Block, registry: Registry) => {
     if (blockData && blockData.header)
         insertStrideBlock(blockData);
 }
-
 
 //entry point
 (async () => {

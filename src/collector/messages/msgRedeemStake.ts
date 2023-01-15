@@ -10,11 +10,7 @@ export interface msgRedeemStake extends msgData {
 } 
 
 export const insertMsgRedeemStake = async (tx: DecodedTx, msg: any) : Promise<void> => {
-    await insertMsg("msgs_MsgRedeemStake", getMsgRedeemStakeData(tx, msg))
-}
-
-const getMsgRedeemStakeData = (tx: DecodedTx, msg: any) : msgRedeemStake => {
-    let result = {
+    let data = {
         ...getMsgData(tx),
         creator: msg.creator,
         amount: (msg.amount as Long).toString(),
@@ -22,5 +18,5 @@ const getMsgRedeemStakeData = (tx: DecodedTx, msg: any) : msgRedeemStake => {
         receiver: msg.receiver
     }
 
-    return result;
+    await insertMsg("msgs_MsgRedeemStake", data)
 }

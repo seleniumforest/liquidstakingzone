@@ -10,16 +10,12 @@ export interface msgSendData extends msgData {
 } 
 
 export const insertMsgSend = async (tx: DecodedTx, msg: any) : Promise<void> => {
-    await insertMsg("msgs_MsgSend", getMsgSendData(tx, msg));
-}
-
-const getMsgSendData = (tx: DecodedTx, msg: any) : msgSendData => {
-    let result = {
+    let data = {
         ...getMsgData(tx),
         fromAddress: msg.fromAddress,
         toAddress: msg.toAddress,
         amount: msg.amount.map((x: Coin) => ([x.denom, x.amount]))
-    }
+    };
 
-    return result;
+    await insertMsg("msgs_MsgSend", data);
 }
