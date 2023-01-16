@@ -71,7 +71,7 @@ export class ApiManager {
                     this.manager.reportStats({ type: "rpc", url: rpc }, false);
 
                 let msg = `Error fetching height in ${this.manager.network} rpc ${rpc} error : ${err?.message}`;
-                console.log(new Error(msg));
+                //console.log(new Error(msg));
             }
         }
 

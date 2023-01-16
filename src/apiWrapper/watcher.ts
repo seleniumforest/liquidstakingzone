@@ -15,6 +15,7 @@ export class Watcher {
     callback: (block: Block) => Promise<void> = () => Promise.reject("No callback provided");
     //what kind of data to fetch
     mode: RecieveData = RecieveData.HEADERS;
+    maxBlocksInBatch: number = 1;
 
     //Builder section
     private constructor(
@@ -32,8 +33,9 @@ export class Watcher {
         return this;
     }
 
-    addCustomRpcs(rpcs: [URL, EndpointType][]) {
-
+    useBatchFetching(maxBlocks: number) {
+        this.maxBlocksInBatch = maxBlocks;
+        return this;
     }
 
     addNetworks(networks: string[], fromHeight?: number) {
@@ -61,14 +63,14 @@ export class Watcher {
                     await this.runNetwork(chain, fromBlock);
                 } catch (err) {
                     //todo handle every error type with instanceof
-                    console.log(err);
+                    //console.log(err);
                     await new Promise(res => setTimeout(res, 30000));
                 }
             }
         }))
     }
 
-    async composeBlock(chain: string, height: number): Promise<Block> {
+    private async composeBlock(chain: string, height: number): Promise<Block> {
         let api = this.networks.get(chain)!;
 
         if (this.mode === RecieveData.HEADERS) {
@@ -95,7 +97,7 @@ export class Watcher {
 
     async runNetwork(chain: string, fromBlock: number | undefined): Promise<void> {
         let api = this.networks.get(chain)!;
-        let lastHeight = fromBlock || 0;
+        let lastHeight = fromBlock ? fromBlock - 1 : 0;
         while (true) {
             let newHeight = await api.getLatestHeight(lastHeight);
 
@@ -105,12 +107,23 @@ export class Watcher {
                 continue;
             }
 
-            let height = lastHeight === 0 ? newHeight : lastHeight + 1
-            for (; height <= newHeight; height++) {
-                let block = await this.composeBlock(chain, height)
-                this.callback(block);
-                lastHeight = height;
-            }
+            let height = lastHeight === 0 ? newHeight : lastHeight
+            let targetBlocks = [...Array(this.maxBlocksInBatch).keys()]
+                .map(i => i + height)
+                .filter(x => x <= newHeight);
+
+            let blockResults = await Promise.allSettled(targetBlocks.map(async (num) => {
+                return await this.composeBlock(chain, num);
+            }));
+
+            let blocks = blockResults
+                .map(b => (b as PromiseFulfilledResult<Block>)?.value)
+                .sort((a, b) => (Number(a.height) > Number(b.height) ? 1 : -1));
+
+            for (let block of blocks)
+                await this.callback(block);
+
+            lastHeight = height + targetBlocks.length;
         }
     }
 }

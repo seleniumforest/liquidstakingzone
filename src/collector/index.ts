@@ -8,15 +8,20 @@ import { decodeTxs } from './decoder';
 const processBlock = async (block: Block, registry: Registry) => {
     let blockData = decodeTxs(block, registry);
     if (blockData && blockData.header)
-        insertStrideBlock(blockData);
+        await insertStrideBlock(blockData);
 }
 
 //entry point
 (async () => {
     await Watcher
         .create()
-        .addNetwork("stride")
-        .recieve(RecieveData.HEADERS_AND_TRANSACTIONS, (block) => processBlock(block, registryTypes.strideRegistry))
+        .addNetwork("stride", 1934121)
+        .useBatchFetching(20)
+        .recieve(
+            RecieveData.HEADERS_AND_TRANSACTIONS,
+            //async (block) => await processBlock(block, registryTypes.strideRegistry)
+            async (block) => console.log(block.height, block.txs.length)
+        )
         .run();
 })();
 
