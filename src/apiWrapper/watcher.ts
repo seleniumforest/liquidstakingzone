@@ -1,12 +1,17 @@
 import { URL } from "url";
 import { defaultRegistryUrls, isFulfilled, RecieveData } from './constants';
 import { Chain } from "@chain-registry/types";
-import { EndpointType, NetworkManager } from './networkManager';
 import { ApiManager, BlockHeader, RawTx, Tx } from './apiManager';
+
+export interface Network {
+    name: string,
+    fromBlock?: number,
+    rpcUrls?: string[]
+}
 
 export class Watcher {
     //chain name and block to start processing from 
-    chains: [string, number | undefined][] = [];
+    chains: Network[] = [];
     //depolyed chain-registry urls
     registryUrls: string[] = [];
     //data for each chain
@@ -28,21 +33,13 @@ export class Watcher {
         return ind;
     }
 
-    addNetwork(network: string, fromHeight?: number) {
-        this.chains.push([network, fromHeight]);
+    addNetwork(network: Network) {
+        this.chains.push(network);
         return this;
     }
 
     useBatchFetching(maxBlocks: number) {
         this.maxBlocksInBatch = maxBlocks;
-        return this;
-    }
-
-    addNetworks(networks: string[], fromHeight?: number) {
-        networks.forEach(network => {
-            this.chains.push([network, fromHeight]);
-        })
-
         return this;
     }
 
@@ -55,12 +52,12 @@ export class Watcher {
 
     //Execution section
     async run(): Promise<void> {
-        await Promise.allSettled(this.chains.map(async ([chain, fromBlock]) => {
+        await Promise.allSettled(this.chains.map(async (network) => {
             while (true) {
                 try {
-                    let apiManager = await ApiManager.createApiManager(chain, this.registryUrls);
-                    this.networks.set(chain, apiManager);
-                    await this.runNetwork(chain, fromBlock);
+                    let apiManager = await ApiManager.createApiManager(network, this.registryUrls);
+                    this.networks.set(network.name, apiManager);
+                    await this.runNetwork(network);
                 } catch (err) {
                     //todo handle every error type with instanceof
                     //console.log(err);
@@ -95,9 +92,9 @@ export class Watcher {
         return { height, chain, txs: [] };
     }
 
-    async runNetwork(chain: string, fromBlock: number | undefined): Promise<void> {
-        let api = this.networks.get(chain)!;
-        let lastHeight = fromBlock ? fromBlock - 1 : 0;
+    async runNetwork(network: Network): Promise<void> {
+        let api = this.networks.get(network.name)!;
+        let lastHeight = network.fromBlock ? (network.fromBlock - 1 || 1) : 0;
         while (true) {
             let newHeight = await api.getLatestHeight(lastHeight);
 
@@ -112,9 +109,9 @@ export class Watcher {
                 .map(i => i + height)
                 .filter(x => x <= newHeight);
 
-            let blockResults = await Promise.allSettled(targetBlocks.map(async (num) => {
-                return await this.composeBlock(chain, num);
-            }));
+            let blockResults = await Promise.allSettled(
+                targetBlocks.map(async (num) => await this.composeBlock(network.name, num))
+            );
 
             let blocks = blockResults
                 .map(b => (b as PromiseFulfilledResult<Block>)?.value)
@@ -124,6 +121,7 @@ export class Watcher {
                 await this.callback(block);
 
             lastHeight = height + targetBlocks.length;
+            //await new Promise(res => setTimeout(res, 5000))
         }
     }
 }

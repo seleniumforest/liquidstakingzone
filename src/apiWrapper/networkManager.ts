@@ -1,108 +1,75 @@
 import axios from "axios";
 import { Chain } from "@chain-registry/types";
+import { Network } from "./watcher";
+import { isFulfilled } from "./constants";
 
 export class NetworkManager {
     readonly minRequestsToTest: number = 20;
     readonly minSuccessRate: number = 0.85;
     readonly network: string = "";
     rpcRank: Map<string, Stats> = new Map();
-    restRank: Map<string, Stats> = new Map();
 
-    private constructor(network: string, rpcEndpoints: string[], restEnpoints: string[]) {
+    private constructor(network: string, rpcEndpoints: Stats[]) {
         this.network = network;
 
         console.log(`Starting network ${network}`);
-        [...rpcEndpoints.entries()].forEach(([_, rpc]) => {
-            let rpcUrl = rpc.toString();
+        rpcEndpoints.forEach((rpc) => {
+            let rpcUrl = rpc.endpoint;
             console.log(`Found rpc ${rpcUrl}`);
-            this.rpcRank.set(rpcUrl, { ok: 0, fail: 0, endpoint: rpcUrl });
-        });
-        
-        [...restEnpoints.entries()].forEach(([_, rest]) => {
-            let restUrl = rest.toString();
-            console.log(`Found rest ${restUrl}`);
-            this.restRank.set(restUrl, { ok: 0, fail: 0, endpoint: restUrl });
+            this.rpcRank.set(rpcUrl, rpc);
         });
     }
 
-    static async create(network: string, registryUrls: string[], customRpcs: Endpoint[] = []): Promise<NetworkManager> {
-        let chainData = await this.fetchChainsData(registryUrls, network);
-        //let aliveRpc = await this.filterAliveRpcs(chainData?.apis?.rpc?.map(x => new URL(x.address))!)
-        //let aliveRest = await this.filterAliveRest(chainData?.apis?.rest?.map(x => new URL(x.address))!)
+    static async create(network: Network, registryUrls: string[]): Promise<NetworkManager> {
+        let chainData = await this.fetchChainsData(registryUrls, network.name);
 
-        let aliveRpc = chainData?.apis?.rpc?.map(x => x.address)!
-            .concat(customRpcs.filter(x => x.type === "rpc").map(x => x.url))!;
+        let registryRpcUrls = chainData?.apis?.rpc?.map(x => x.address)!;
+        let customRpcUrls = network.rpcUrls || [];
+        if (network.fromBlock) {
+            registryRpcUrls = await this.filterRpcsWithoutHistory(registryRpcUrls, network.fromBlock);
+            customRpcUrls = await this.filterRpcsWithoutHistory(customRpcUrls, network.fromBlock)
+        }
 
-        let aliveRest = chainData?.apis?.rest?.map(x => x.address)!
-            .concat(customRpcs.filter(x => x.type === "rest").map(x => x.url))!;
+        let registryRpcs = this.toStats(registryRpcUrls, false);
+        let customRpcs = this.toStats(network.rpcUrls, true);
 
-        return new NetworkManager(network, aliveRpc, aliveRest);
+        return new NetworkManager(network.name, registryRpcs.concat(customRpcs));
     }
 
-    //checks, is rpc alive and synced or not, not sure do we need this
-    // static async filterAliveRpcs(urls: URL[]): Promise<URL[]> {
-    //     if (urls == null || urls.length === 0)
-    //         return Promise.reject("no rpcs");
+    static async filterRpcsWithoutHistory(urls: string[], fromBlock: number): Promise<string[]> {
+        let result = await Promise.allSettled(urls.map(async (url) => {
+            let response;
+            try {
+                response = await axios({
+                    method: "GET",
+                    url: `${url}/status`,
+                    timeout: 5000
+                });
+            } catch (_) { return Promise.reject(`${url} is dead`); }
 
-    //     let alive = await Promise.allSettled(urls.map(async (url) => {
-    //         let response;
-    //         try {
-    //             response = await axios({
-    //                 method: "GET",
-    //                 url: `${url}/status`,
-    //                 timeout: 5000
-    //             });
-    //         } catch (_) {
-    //             return Promise.reject(`${url} is dead`);
-    //         }
+            if (!response || response.status !== 200)
+                return Promise.reject(`${url} returned ${response.status} code`);
 
-    //         if (!response || response.status !== 200)
-    //             return Promise.reject(`${url} returned ${response.status} code`);
+            let nodeEarliestBlock = Number(response?.data?.result?.sync_info?.earliest_block_height);
 
-    //         let blockTime = Date.parse(response.data.result.sync_info.latest_block_time);
-    //         let now = Date.now();
+            if (fromBlock < nodeEarliestBlock)
+                return Promise.reject(`${url} is alive, but does not have enough block history`);
 
-    //         if (Math.abs(now - blockTime) >= 60000)
-    //             return Promise.reject(`${url} is alive, but not synced`);
+            return Promise.resolve(url);
+        }));
 
-    //         return Promise.resolve(url);
-    //     }));
-    //     alive.forEach(rpc => console.log(isFulfilled(rpc) ? rpc.value.href + "is alive" : rpc.reason));
-    //     return alive.filter(isFulfilled).map(x => x.value!);
-    // }
+        result.forEach(rpc => console.log(isFulfilled(rpc) ? rpc.value + "is alive" : rpc.reason));
+        return result.filter(isFulfilled).map(x => x.value!);
+    }
 
-    // static async filterAliveRest(urls: URL[]): Promise<URL[]> {
-    //     if (urls == null || urls.length === 0)
-    //         return Promise.reject("no rpcs");
-
-    //     let alive = await Promise.allSettled(urls.map(async (url) => {
-    //         let response;
-    //         try {
-    //             response = await axios({
-    //                 method: "GET",
-    //                 url: `${url}/blocks/latest`,
-    //                 timeout: 5000
-    //             });
-    //         } catch (_) {
-    //             return Promise.reject(`${url} is dead`);
-    //         }
-
-    //         if (!response || response.status !== 200)
-    //             return Promise.reject(`${url} returned ${response.status} code`);
-
-    //         let blockTime = Date.parse(response.data.block.header.time);
-    //         let now = Date.now();
-
-    //         if (Math.abs(now - blockTime) < 60000)
-    //             return Promise.reject(`${url} is alive, but not synced`);
-
-    //         return Promise.resolve(url);
-    //     }));
-
-    //     alive.forEach(rpc => console.log(isFulfilled(rpc) ? rpc.value.href + "is alive" : rpc.reason));
-
-    //     return alive.filter(isFulfilled).map(x => x.value!);
-    // }
+    static toStats(rpcs: string[] | undefined, priority: boolean): Stats[] {
+        return rpcs ? rpcs.map(rpc => ({
+            priority,
+            endpoint: rpc,
+            fail: 0,
+            ok: 0
+        })) : []
+    }
 
     static async fetchChainsData(registryUrls: string[], chain: string): Promise<Chain> {
         for (let url of registryUrls) {
@@ -119,15 +86,14 @@ export class NetworkManager {
         throw new Error("Cannot get chain info from registry");
     }
 
-    reportStats(endpoint: Endpoint, result: boolean): void {
-        let el = (endpoint.type === "rest" ? this.restRank : this.rpcRank).get(endpoint.url)!;
-        
-        (endpoint.type === "rest" ? this.restRank : this.rpcRank)
-            .set(endpoint.url, result ? { ...el, ok: ++el.ok} : { ...el, fail: ++el.fail});
+    reportStats(url: string, result: boolean): void {
+        let el = this.rpcRank.get(url)!;
+
+        this.rpcRank.set(url, result ? { ...el, ok: ++el.ok } : { ...el, fail: ++el.fail });
     }
 
-    getEndpoints(type: EndpointType): string[] {
-        let endpointSet = type === "rpc" ? this.rpcRank : this.restRank;
+    getEndpoints(): string[] {
+        let endpointSet = this.rpcRank;
         let result = [...endpointSet.entries()]
             .map(([_, value]) => value)
             .sort((a, b) => a.ok + a.fail > b.ok + b.fail ? 1 : -1);
@@ -137,11 +103,17 @@ export class NetworkManager {
                 prev > cur.ok + cur.fail ? cur.ok + cur.fail : prev, Number.POSITIVE_INFINITY);
 
         if (minRequests < this.minRequestsToTest)
-            return result.map(x => x.endpoint);
+            return result
+                .sort((a, _) => a.priority ? -1 : 1)
+                .map(x => {console.log(JSON.stringify(x)); return x})
+                .map(x => x.endpoint);
 
-        return result
+        let res = result
             .filter(x => x.ok / (x.ok + x.fail) > this.minSuccessRate)
             .sort((a, b) => {
+                if (a.priority)
+                    return -1;
+
                 if (a.ok / a.fail <= 1)
                     return 1;
 
@@ -149,7 +121,10 @@ export class NetworkManager {
                     return -1;
 
                 return (a.ok / (a.fail || 1)) > (b.ok / (b.fail || 1)) ? 1 : 0;
-            })
+            });
+
+        res.forEach(r => console.log(JSON.stringify(r)));
+        return res
             .map(x => x.endpoint);
     }
 }
@@ -157,12 +132,7 @@ export class NetworkManager {
 
 interface Stats {
     endpoint: string,
+    priority: boolean,
     ok: number,
     fail: number
-}
-
-export type EndpointType = "rest" | "rpc";
-export interface Endpoint {
-    url: string,
-    type: EndpointType
 }

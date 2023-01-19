@@ -2,8 +2,8 @@ import axios, { AxiosError } from "axios";
 import { NetworkManager } from "./networkManager";
 import { defaultRegistryUrls, isFulfilled } from "./constants";
 import { CantGetBlockHeaderErr, CantGetLatestHeightErr } from "./errors";
-import { fromBase64 } from "@cosmjs/encoding";
 import moment from "moment";
+import { Network } from "./watcher";
 
 export class ApiManager {
     readonly manager: NetworkManager;
@@ -14,22 +14,23 @@ export class ApiManager {
         this.manager = manager;
     }
 
-    static async createApiManager(network: string, registryUrls: string[] = defaultRegistryUrls) {
+    static async createApiManager(network: Network, registryUrls: string[] = defaultRegistryUrls) {
         return new ApiManager(await NetworkManager.create(network, registryUrls));
     }
 
     async getLatestHeight(lastKnownHeight: number = 0): Promise<number> {
-        let endpoints = this.manager.getEndpoints("rest");
+        let endpoints = this.manager.getEndpoints();
 
-        let results = await Promise.allSettled(endpoints.map(async endp => {
+        let results = await Promise.allSettled(endpoints.map(async rpc => {
             try {
-                let url = `${endp}/cosmos/base/tendermint/v1beta1/blocks/latest`
+                let url = `${rpc}/status`
                 let result = await axios.get(url, { timeout: 2000 });
 
-                return parseInt(result?.data?.block?.header?.height);
+                this.manager.reportStats(rpc, true);
+                return parseInt(result?.data?.result?.sync_info?.latest_block_height);
             } catch (err: any) {
                 if (err instanceof AxiosError)
-                    this.manager.reportStats({ type: "rest", url: endp }, false);
+                    this.manager.reportStats(rpc, false);
 
                 return Promise.reject(err?.message);
             }
@@ -45,7 +46,7 @@ export class ApiManager {
     }
 
     async getBlockHeader(height: number): Promise<BlockHeader> {
-        let endpoints = this.manager.getEndpoints("rpc");
+        let endpoints = this.manager.getEndpoints();
 
         for (const rpc of endpoints) {
             try {
@@ -56,7 +57,7 @@ export class ApiManager {
                     timeout: 2000
                 });
 
-                this.manager.reportStats({ type: "rpc", url: rpc }, true);
+                this.manager.reportStats(rpc, true);
                 let header = data.result.block.header;
 
                 return {
@@ -68,7 +69,7 @@ export class ApiManager {
                 }
             } catch (err: any) {
                 if (err instanceof AxiosError)
-                    this.manager.reportStats({ type: "rpc", url: rpc }, false);
+                    this.manager.reportStats(rpc, false);
 
                 let msg = `Error fetching height in ${this.manager.network} rpc ${rpc} error : ${err?.message}`;
                 //console.log(new Error(msg));
@@ -79,7 +80,7 @@ export class ApiManager {
     }
 
     async getTxsInBlock(height: number): Promise<RawTx[]> {
-        let endpoints = this.manager.getEndpoints("rpc");
+        let endpoints = this.manager.getEndpoints();
         //temporary empty block optimization
         let [ empty, nonEmpty ] = this.blockStats;
         let emptyBlockRatio = empty / (empty + nonEmpty);
@@ -112,10 +113,10 @@ export class ApiManager {
                     this.blockStats[1]++;
                     return allTxs;
                 }
-                this.manager.reportStats({ type: "rpc", url: rpc }, true);
+                this.manager.reportStats(rpc, true);
             } catch (err: any) {
                 if (err instanceof AxiosError)
-                    this.manager.reportStats({ type: "rpc", url: rpc }, false);
+                    this.manager.reportStats(rpc, false);
             }
         }
 
@@ -125,13 +126,6 @@ export class ApiManager {
 
         //throw new CantGetTxsInBlockErr(this.manager.network, height, endpoints);
     }
-}
-
-export interface TallyResult {
-    yes: number,
-    abstain: number,
-    no: number,
-    no_with_veto: number
 }
 
 export interface Tx {

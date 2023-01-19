@@ -11,7 +11,3 @@ export const defaultRegistryUrls = [
     "https://registry.ping.pub/",
     "https://proxy.atomscan.com/directory/"
 ]
-
-export enum WatcherEvents {
-    BLOCK_RECIEVED = "block-recieved"
-}
