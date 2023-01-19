@@ -1,5 +1,4 @@
-import { URL } from "url";
-import { defaultRegistryUrls, isFulfilled, RecieveData } from './constants';
+import { defaultRegistryUrls, RecieveData } from './constants';
 import { Chain } from "@chain-registry/types";
 import { ApiManager, BlockHeader, RawTx, Tx } from './apiManager';
 
@@ -95,8 +94,11 @@ export class Watcher {
     async runNetwork(network: Network): Promise<void> {
         let api = this.networks.get(network.name)!;
         let lastHeight = network.fromBlock ? (network.fromBlock - 1 || 1) : 0;
+        let skipGetLastHeight = false;
+        let newHeight: number = -1;
         while (true) {
-            let newHeight = await api.getLatestHeight(lastHeight);
+            if (!skipGetLastHeight)
+                newHeight = await api.getLatestHeight(lastHeight);
 
             //no new block commited into network
             if (lastHeight == newHeight) {
@@ -121,6 +123,7 @@ export class Watcher {
                 await this.callback(block);
 
             lastHeight = height + targetBlocks.length;
+            skipGetLastHeight = lastHeight < newHeight ? true : false;
             //await new Promise(res => setTimeout(res, 5000))
         }
     }

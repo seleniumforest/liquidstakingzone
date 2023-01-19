@@ -109,7 +109,7 @@ export class NetworkManager {
                 .map(x => x.endpoint);
 
         let res = result
-            .filter(x => x.ok / (x.ok + x.fail) > this.minSuccessRate)
+            //.filter(x => x.ok / (x.ok + x.fail) > this.minSuccessRate)
             .sort((a, b) => {
                 if (a.priority)
                     return -1;

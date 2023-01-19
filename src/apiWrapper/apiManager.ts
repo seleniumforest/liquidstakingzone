@@ -19,6 +19,7 @@ export class ApiManager {
     }
 
     async getLatestHeight(lastKnownHeight: number = 0): Promise<number> {
+        //console.log("Getting enpoints to fetch latest height")
         let endpoints = this.manager.getEndpoints();
 
         let results = await Promise.allSettled(endpoints.map(async rpc => {
@@ -39,13 +40,15 @@ export class ApiManager {
         let success = results.filter(isFulfilled).map(x => x.value) as number[];
         let result = Math.max(...success, lastKnownHeight);
 
-        if (result === 0)
+        if (result === 0) {
             throw new CantGetLatestHeightErr(this.manager.network, endpoints);
+        }
 
         return result;
     }
 
     async getBlockHeader(height: number): Promise<BlockHeader> {
+        //console.log("Getting enpoints to fetch block header " + height)
         let endpoints = this.manager.getEndpoints();
 
         for (const rpc of endpoints) {
@@ -80,11 +83,13 @@ export class ApiManager {
     }
 
     async getTxsInBlock(height: number): Promise<RawTx[]> {
+        //console.log("Getting enpoints to fetch txs in block " + height)
         let endpoints = this.manager.getEndpoints();
+
         //temporary empty block optimization
-        let [ empty, nonEmpty ] = this.blockStats;
+        let [empty, nonEmpty] = this.blockStats;
         let emptyBlockRatio = empty / (empty + nonEmpty);
-        if (emptyBlockRatio > 0.5)
+        if (endpoints.length > 4 && emptyBlockRatio > 0.5)
             endpoints = endpoints.slice(0, Math.round(endpoints.length / 2))
 
         for (const rpc of endpoints) {

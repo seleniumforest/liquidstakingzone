@@ -15,8 +15,8 @@ const processBlock = async (block: Block, registry: Registry) => {
 (async () => {
     await Watcher
         .create()
-        .addNetwork({ name: "stride", fromBlock: 1 })
-        //.useBatchFetching(10)
+        .addNetwork({ name: "stride", fromBlock: 1987123 })
+        .useBatchFetching(3)
         .recieve(
             RecieveData.HEADERS_AND_TRANSACTIONS,
             //async (block) => await processBlock(block, registryTypes.strideRegistry)
