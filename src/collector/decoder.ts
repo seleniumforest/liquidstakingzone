@@ -6,7 +6,7 @@ import { AuthInfo, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { fromBase64 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
 
-const decodeTxs = (block: Block, registry: Registry): DecodedBlock => {
+export const decodeTxs = (block: Block, registry: Registry): DecodedBlock => {
     let decodedTxs: DecodedTx[] = block.txs.map(tx => {
         let decodedTx = decodeTxRaw(Buffer.from(fromBase64(tx.tx || "")));
         let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, "stride");
@@ -51,9 +51,7 @@ const decodeTxs = (block: Block, registry: Registry): DecodedBlock => {
     }
 }
 
-export {
-    decodeTxs
-}
+export type CoinTuple = [string, string];
 
 export interface DecodedTxRaw {
     readonly authInfo: AuthInfo;

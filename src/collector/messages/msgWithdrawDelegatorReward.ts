@@ -1,6 +1,5 @@
 import { getMsgData, insertMsg, msgData } from ".";
-import { CoinTuple } from '..';
-import { DecodedTx } from "../decoder";
+import { CoinTuple, DecodedTx } from "../decoder";
 import { getRewardsFromEvents } from "../helpers";
 
 export interface msgWithdrawDelegatorReward extends msgData {

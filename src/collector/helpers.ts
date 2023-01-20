@@ -1,6 +1,6 @@
 import { Coin } from "@cosmjs/proto-signing";
-import { CoinTuple, TxEvent } from ".";
 import { Int53 } from "@cosmjs/math";
+import { CoinTuple, TxEvent } from "./decoder";
 
 export const apiToSmallInt = (input: number) => {
     const asInt = Int53.fromString(input.toString());

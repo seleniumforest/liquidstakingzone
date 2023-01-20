@@ -1,7 +1,6 @@
 import { Coin } from "@cosmjs/amino";
 import { getMsgData, insertMsg, msgData } from ".";
-import { CoinTuple } from "..";
-import { DecodedTx } from "../decoder";
+import { CoinTuple, DecodedTx } from "../decoder";
 
 export interface msgSendData extends msgData {
     fromAddress: string,

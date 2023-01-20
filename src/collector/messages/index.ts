@@ -1,6 +1,5 @@
-import { CoinTuple } from "..";
 import { client } from "../clickhouse";
-import { DecodedTx } from "../decoder";
+import { CoinTuple, DecodedTx } from "../decoder";
 import { insertMsgLiquidStake } from "./msgLiquidStake";
 import { insertMsgSend } from "./msgSend";
 import { insertMsgWithdrawReward } from "./msgWithdrawDelegatorReward";

@@ -5,11 +5,9 @@ import { Registry as StrideRegistry } from "stridejs/node_modules/@cosmjs/proto-
 
 const { registry: strideTypes } = getSigningStrideClientOptions();
 
-const registryTypes = {
+export const registryTypes = {
     cosmosRegistry: new CosmjsRegistry(defaultRegistryTypes),
     strideRegistry: strideTypes
 }
 
 export type Registry = CosmjsRegistry | StrideRegistry
-
-export { registryTypes };
