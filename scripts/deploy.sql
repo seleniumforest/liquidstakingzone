@@ -58,6 +58,15 @@ CREATE TABLE Stride.msgs_MsgDelegate (
     validatorAddress String,
     amount Tuple (String, UInt256)
 ) ENGINE = MergeTree() PRIMARY KEY (id);
+/* /cosmos.gov.v1beta1.MsgVote */
+CREATE TABLE Stride.msgs_MsgVote (
+    id UUID,
+    txhash String,
+    fee Tuple (String, UInt256),
+    proposalId String,
+    voter String,
+    option UInt8
+) ENGINE = MergeTree() PRIMARY KEY (id);
 /*
  
  Tables with Stride specific messages
