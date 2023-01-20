@@ -1,14 +1,15 @@
 import { createClient } from '@clickhouse/client'
+import { number } from 'yargs';
 import { DecodedBlock } from './decoder';
 import { msgsMap } from './messages';
 
-const client = createClient({
+export const client = createClient({
     host: process.env.CLICKHOUSE_HOST || "http://localhost:8123",
     password: process.env.CLICKHOUSE_PASS || "",
     database: process.env.CLICKHOUSE_DB || "Stride"
 })
 
-const insertStrideBlock = async (block: DecodedBlock) => {
+export const insertStrideBlock = async (block: DecodedBlock) => {
     try {
         //insert block header
         await client.insert({
@@ -19,7 +20,7 @@ const insertStrideBlock = async (block: DecodedBlock) => {
             format: 'JSONEachRow',
         });
 
-        
+
         let knownMsgsCount = 0;
         let unknownMsgsCount = 0;
         if (block.txs.length > 0) {
@@ -58,7 +59,50 @@ const insertStrideBlock = async (block: DecodedBlock) => {
     }
 }
 
-export {
-    insertStrideBlock,
-    client
-};
+const getLastBlock = async (): Promise<{ height: number, hashes: string[] }> => {
+    let response = await client.query({
+        query: `
+            SELECT txhash, height FROM Stride.transactions
+            WHERE height = (
+                SELECT MAX(height) 
+                FROM Stride.transactions
+            )
+        `,
+        clickhouse_settings: {
+            wait_end_of_query: 1,
+        },
+    });
+    let data = ((await response.json()) as any).data;
+
+    return {
+        hashes: data.map((x: { height: number, txhash: string }) => x.txhash),
+        height: data[0].height
+    }
+}
+
+
+//In the case of indexer crashes on block n, we need to clean this block data to aviod inconsistency
+export const prepareDbToWrite = async () => {
+    let lastBlock = await getLastBlock();
+    let hashesString = lastBlock.hashes.map(x => `\'${x}\'`).join(",");
+    let queries = [
+        `ALTER TABLE Stride.transactions DELETE WHERE height = ${lastBlock.height}`,
+        `ALTER TABLE Stride.block_headers DELETE WHERE height = ${lastBlock.height}`,
+        `ALTER TABLE Stride.msgs_MsgSend DELETE WHERE txhash in (${hashesString})`,
+        `ALTER TABLE Stride.msgs_MsgWithdrawDelegatorReward DELETE WHERE txhash in (${hashesString})`,
+        `ALTER TABLE Stride.msgs_MsgDelegate DELETE WHERE txhash in (${hashesString})`,
+        `ALTER TABLE Stride.msgs_MsgLiquidStake DELETE WHERE txhash in (${hashesString})`,
+        `ALTER TABLE Stride.msgs_MsgRedeemStake DELETE WHERE txhash in (${hashesString})`
+    ];
+
+    let result = await Promise.allSettled(
+        queries.map(async (query) => {
+            await client.exec({
+                query
+            });
+        })
+    );
+    //todo check, are all result promises fulfilled?
+
+    return lastBlock.height - 1;
+}

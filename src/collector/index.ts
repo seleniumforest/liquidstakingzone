@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 import { Block, RecieveData, Watcher } from "../apiWrapper/index";
-import { Registry, registryTypes } from "./registryTypes";
-import { insertStrideBlock } from "./clickhouse";
+import { Registry } from "./registryTypes";
+import { insertStrideBlock, prepareDbToWrite } from "./clickhouse";
 import { decodeTxs } from './decoder';
 
 const processBlock = async (block: Block, registry: Registry) => {
@@ -13,6 +13,8 @@ const processBlock = async (block: Block, registry: Registry) => {
 
 //entry point
 (async () => {
+    let lastSavedBlock = await prepareDbToWrite();
+    //if indexer crashes, it can start from lastSavedBlock
     await Watcher
         .create()
         .addNetwork({ name: "stride", fromBlock: 1987123 })
