@@ -1,20 +1,25 @@
 import Long from 'long';
 import { getMsgData, insertMsg, msgData } from ".";
-import { DecodedTx } from "../decoder";
+import { CoinTuple, DecodedTx, EventLog } from "../decoder";
+import { getValueByTwoKeys, parseCoin } from '../helpers';
 
 export interface msgLiquidStake extends msgData {
     creator: string,
-    amount: string,
-    hostDenom: string
+    amount: CoinTuple,
+    recievedStTokenAmount: CoinTuple
 } 
 
 export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any) : Promise<void> => {
-    let data = {
+    let data: msgLiquidStake = {
         ...getMsgData(tx),
         creator: msg.creator,
-        amount: (msg.amount as Long).toString(),
-        hostDenom: msg.hostDenom
+        amount: [msg.hostDenom, (msg.amount as Long).toString()],
+        recievedStTokenAmount: getRecievedStAmountFromEvents(tx.tx_result.events)
     };
 
     await insertMsg("msgs_MsgLiquidStake", data)
+}
+
+const getRecievedStAmountFromEvents = (events: EventLog) => {
+    return parseCoin(getValueByTwoKeys(events, "coinbase", "amount"))
 }

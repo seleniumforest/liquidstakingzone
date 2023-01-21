@@ -79,8 +79,8 @@ CREATE TABLE Stride.msgs_MsgLiquidStake (
     txhash String,
     fee Tuple (String, UInt256),
     creator String,
-    amount String,
-    hostDenom String
+    amount Tuple (String, UInt256),
+    recievedStTokenAmount Tuple (String, UInt256)
 ) ENGINE = MergeTree() PRIMARY KEY (id);
 /* stride.stakeibc.MsgRedeemStake */
 CREATE TABLE Stride.msgs_MsgRedeemStake (

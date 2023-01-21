@@ -67,7 +67,7 @@ export interface DecodedBlock extends Omit<Block, "txs"> {
     txs: DecodedTx[]
 }
 
-type EventLog = {
+export type EventLog = {
     type: string,
     attributes: {
         key?: string,

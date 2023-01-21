@@ -47,7 +47,7 @@ export const getRewardsFromEvents = (events: TxEvent[]): CoinTuple => {
     return parseCoin(getValueByTwoKeys(events, "withdraw_rewards", "amount"));
 }
 
-const getValueByTwoKeys = (events: TxEvent[], k1: string, k2: string): string => {
+export const getValueByTwoKeys = (events: TxEvent[], k1: string, k2: string): string => {
     return events.filter(x => x.type === k1)
         .flatMap(x => x.attributes)
         .find(x => x.key === k2)

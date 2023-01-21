@@ -105,7 +105,7 @@ export class NetworkManager {
         if (minRequests < this.minRequestsToTest)
             return result
                 .sort((a, _) => a.priority ? -1 : 1)
-                .map(x => {console.log(JSON.stringify(x)); return x})
+                //.map(x => {console.log(JSON.stringify(x)); return x})
                 .map(x => x.endpoint);
 
         let res = result
@@ -123,7 +123,7 @@ export class NetworkManager {
                 return (a.ok / (a.fail || 1)) > (b.ok / (b.fail || 1)) ? 1 : 0;
             });
 
-        res.forEach(r => console.log(JSON.stringify(r)));
+        //res.forEach(r => console.log(JSON.stringify(r)));
         return res
             .map(x => x.endpoint);
     }
