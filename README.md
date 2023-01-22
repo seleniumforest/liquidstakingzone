@@ -2,10 +2,6 @@
 
 Grabs transactions from cosmos sdk chain and writes into clickhouse db
 
-To run, first edit .env file and deploy DB schema
+To run, first edit .env file and run 
 
-``` clickhouse-client --multiquery < deploy.sql  ```
-
-Then run 
-
-``` ts-node src/collector/index.ts ```
+``` yarn run deployDb && yarn run start ```
