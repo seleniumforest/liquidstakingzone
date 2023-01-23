@@ -9,7 +9,6 @@ export interface Network {
 }
 
 export class Watcher {
-    //chain name and block to start processing from 
     chains: Network[] = [];
     //depolyed chain-registry urls
     registryUrls: string[] = [];

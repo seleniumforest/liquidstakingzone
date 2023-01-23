@@ -1,4 +1,4 @@
-import { Block } from "../apiWrapper/index";
+import { Block } from "./integrations/tendermint/index";
 import { decodePubkey, decodeTxRaw } from "@cosmjs/proto-signing";
 import { Registry } from "./registryTypes";
 import { apiToSmallInt, tryParseJson } from './helpers';

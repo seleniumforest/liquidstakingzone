@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
-import { Block, RecieveData, Watcher } from "../apiWrapper/index";
+import { Block, RecieveData, Watcher } from "./integrations/tendermint/index";
 import { Registry, registryTypes } from "./registryTypes";
-import { insertStrideBlock, prepareDbToWrite } from "./clickhouse";
+import { insertStrideBlock } from "./clickhouse";
 import { decodeTxs } from './decoder';
 
 const processBlock = async (block: Block, registry: Registry) => {
