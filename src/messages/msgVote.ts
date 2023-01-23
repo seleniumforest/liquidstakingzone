@@ -1,4 +1,5 @@
-import { getMsgData, insertMsg, msgData } from ".";
+import { getMsgData, msgData } from ".";
+import { insertData } from "../clickhouse";
 import { DecodedTx } from "../decoder";
 
 export interface msgVoteData extends msgData {
@@ -23,5 +24,5 @@ export const insertMsgVote = async (tx: DecodedTx, msg: any): Promise<void> => {
         option: msg.option
     };
 
-    await insertMsg("msgs_MsgVote", data);
+    await insertData("msgs_MsgVote", data);
 }

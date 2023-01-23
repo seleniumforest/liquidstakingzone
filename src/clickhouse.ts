@@ -1,6 +1,7 @@
 import { createClient } from '@clickhouse/client'
 import { number } from 'yargs';
 import { DecodedBlock } from './decoder';
+import { Price } from './integrations/coingecko';
 import { msgsMap } from './messages';
 
 export const client = createClient({
@@ -9,33 +10,30 @@ export const client = createClient({
     database: process.env.CLICKHOUSE_DB || "Stride"
 })
 
+export const insertData = async (table: string, data: any): Promise<void> => {
+    await client.insert({
+        table: table,
+        values: data,//Array.isArray(data) ? data : [data],
+        format: 'JSONEachRow'
+    });
+}
+
 export const insertStrideBlock = async (block: DecodedBlock) => {
     try {
         //insert block header
-        await client.insert({
-            table: 'block_headers',
-            values: [
-                block.header
-            ],
-            format: 'JSONEachRow',
-        });
+        await insertData("block_headers", block.header)
 
 
         let knownMsgsCount = 0;
         let unknownMsgsCount = 0;
         if (block.txs.length > 0) {
-            //insert transactions
-            await client.insert({
-                table: 'transactions',
-                values: block.txs.map(tx => ({
-                    height: block.height,
-                    txhash: tx.hash,
-                    sender: tx.sender,
-                    code: tx.tx_result.code,
-                    rawdata: JSON.stringify(tx)
-                })),
-                format: 'JSONEachRow',
-            });
+            await insertData('transactions', block.txs.map(tx => ({
+                height: block.height,
+                txhash: tx.hash,
+                sender: tx.sender,
+                code: tx.tx_result.code,
+                rawdata: JSON.stringify(tx)
+            })))
 
             //insert each msg
             for (const tx of block.txs) {
@@ -80,6 +78,21 @@ const getLastBlock = async (): Promise<{ height: number, hashes: string[] }> => 
     }
 }
 
+export const getPrices = async (): Promise<{ coin: string, latestDate: number }[]> => {
+    let response = await client.query({
+        query: `
+            SELECT coin, MAX(date) as latestDate
+            FROM Stride.price_history
+            GROUP BY coin
+        `,
+        clickhouse_settings: {
+            wait_end_of_query: 1,
+        },
+    });
+    let data = ((await response.json()) as any).data;
+
+    return data.map(({ coin, latestDate }: { coin: string, latestDate: number }) => ({ coin, latestDate: Number(latestDate) }));
+}
 
 //In the case of indexer crashes on block n, we need to clean this block data to aviod inconsistency
 export const prepareDbToWrite = async () => {

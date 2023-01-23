@@ -1,5 +1,6 @@
 import Long from 'long';
-import { getMsgData, insertMsg, msgData } from ".";
+import { getMsgData, msgData } from ".";
+import { insertData } from '../clickhouse';
 import { CoinTuple, DecodedTx, EventLog } from "../decoder";
 import { getValueByTwoKeys, parseCoin } from '../helpers';
 
@@ -17,7 +18,7 @@ export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any) : Promise<vo
         recievedStTokenAmount: getRecievedStAmountFromEvents(tx.tx_result.events)
     };
 
-    await insertMsg("msgs_MsgLiquidStake", data)
+    await insertData("msgs_MsgLiquidStake", data)
 }
 
 const getRecievedStAmountFromEvents = (events: EventLog) => {

@@ -1,6 +1,9 @@
 import { Coin } from "@cosmjs/proto-signing";
 import { Int53 } from "@cosmjs/math";
 import { CoinTuple, TxEvent } from "./decoder";
+import { v4 as uuidv4 } from 'uuid';
+
+export const randomUUID = () => uuidv4();
 
 export const apiToSmallInt = (input: number) => {
     const asInt = Int53.fromString(input.toString());

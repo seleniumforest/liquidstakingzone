@@ -3,8 +3,7 @@ import { CoinTuple, DecodedTx } from "../decoder";
 import { insertMsgLiquidStake } from "./msgLiquidStake";
 import { insertMsgSend } from "./msgSend";
 import { insertMsgWithdrawReward } from "./msgWithdrawDelegatorReward";
-import { v4 as uuidv4 } from 'uuid';
-import { getFeeFromEvents } from "../helpers";
+import { getFeeFromEvents, randomUUID } from "../helpers";
 import { insertMsgDelegate } from "./msgDelegate";
 import { insertMsgRedeemStake } from "./msgRedeemStake";
 import { insertMsgVote } from "./msgVote";
@@ -18,18 +17,10 @@ export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void
     ["/cosmos.gov.v1beta1.MsgVote", insertMsgVote]
 ]); 
 
-export const insertMsg = async (table: string, data: any): Promise<void> => {
-    await client.insert({
-        table: table,
-        values: [data],
-        format: 'JSONEachRow'
-    });
-}
-
 //fills base fields that exist in every msg type
 export const getMsgData = (tx: DecodedTx) => {
     let data: msgData = { 
-        id: uuidv4(),
+        id: randomUUID(),
         txhash: tx.hash,
         fee: getFeeFromEvents(tx.tx_result.events)
     }

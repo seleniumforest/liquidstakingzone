@@ -93,3 +93,17 @@ CREATE TABLE Stride.msgs_MsgRedeemStake (
     hostZone String,
     receiver String
 ) ENGINE = MergeTree() PRIMARY KEY (id);
+
+
+/*
+ 
+ Tables with other data
+ 
+ */
+ /* Coingecko price history by days in usd */
+ CREATE TABLE Stride.price_history (
+    id UUID,
+    coin String,
+    date UInt64,
+    price Float32,
+) ENGINE = MergeTree() PRIMARY KEY (id);

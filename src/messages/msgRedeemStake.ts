@@ -1,5 +1,6 @@
 import Long from 'long';
-import { getMsgData, insertMsg, msgData } from ".";
+import { getMsgData, msgData } from ".";
+import { insertData } from '../clickhouse';
 import { DecodedTx } from "../decoder";
 
 export interface msgRedeemStake extends msgData {
@@ -18,5 +19,5 @@ export const insertMsgRedeemStake = async (tx: DecodedTx, msg: any) : Promise<vo
         receiver: msg.receiver
     }
 
-    await insertMsg("msgs_MsgRedeemStake", data)
+    await insertData("msgs_MsgRedeemStake", data)
 }

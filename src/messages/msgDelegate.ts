@@ -1,5 +1,6 @@
 import { Coin } from "@cosmjs/amino";
-import { getMsgData, insertMsg, msgData } from ".";
+import { getMsgData, msgData } from ".";
+import { insertData } from "../clickhouse";
 import { CoinTuple, DecodedTx } from "../decoder";
 import { toCoinTuple } from "../helpers";
 
@@ -17,5 +18,5 @@ export const insertMsgDelegate = async (tx: DecodedTx, msg: any): Promise<void> 
         amount: toCoinTuple(msg.amount as Coin)
     };
 
-    await insertMsg("msgs_MsgDelegate", data)
+    await insertData("msgs_MsgDelegate", data)
 }

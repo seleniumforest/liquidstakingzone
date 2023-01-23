@@ -4,6 +4,7 @@ import { Block, RecieveData, Watcher } from "./integrations/tendermint/index";
 import { Registry, registryTypes } from "./registryTypes";
 import { insertStrideBlock } from "./clickhouse";
 import { decodeTxs } from './decoder';
+import { fetchTokenPriceHistory, runPriceUpdateJob } from './integrations/coingecko';
 
 const processBlock = async (block: Block, registry: Registry) => {
     let blockData = decodeTxs(block, registry);
@@ -11,12 +12,8 @@ const processBlock = async (block: Block, registry: Registry) => {
         await insertStrideBlock(blockData);
 }
 
-//entry point
-(async () => {
-    //let lastSavedBlock = await prepareDbToWrite();
-    //if indexer crashes, it can start from lastSavedBlock
-
-    
+const priceUpdateJob = async () => await runPriceUpdateJob();
+const fetchBlocksJob = async () =>
     await Watcher
         .create()
         .addNetwork({ name: "stride", fromBlock: 1959063 })
@@ -24,7 +21,17 @@ const processBlock = async (block: Block, registry: Registry) => {
         .recieve(
             RecieveData.HEADERS_AND_TRANSACTIONS,
             async (block) => await processBlock(block, registryTypes.strideRegistry)
-           // async (block) => console.log(block.height, block.txs.length)
+            // async (block) => console.log(block.height, block.txs.length)
         )
         .run();
+
+//entry point
+(async () => {
+    //let lastSavedBlock = await prepareDbToWrite();
+    //if indexer crashes, it can start from lastSavedBlock
+
+    await Promise.allSettled([
+        priceUpdateJob(),
+        fetchBlocksJob()
+    ]);
 })();

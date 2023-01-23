@@ -1,4 +1,5 @@
-import { getMsgData, insertMsg, msgData } from ".";
+import { getMsgData, msgData } from ".";
+import { insertData } from "../clickhouse";
 import { CoinTuple, DecodedTx } from "../decoder";
 import { getRewardsFromEvents } from "../helpers";
 
@@ -9,16 +10,12 @@ export interface msgWithdrawDelegatorReward extends msgData {
 }
 
 export const insertMsgWithdrawReward = async (tx: DecodedTx, msg: any): Promise<void> => {
-    await insertMsg("msgs_MsgWithdrawDelegatorReward", getMsgWithdrawRewardData(tx, msg))
-}
-
-const getMsgWithdrawRewardData = (tx: DecodedTx, msg: any): msgWithdrawDelegatorReward => {
     let result = {
         ...getMsgData(tx),
         delegatorAddress: msg.delegatorAddress,
         validatorAddress: msg.validatorAddress,
         reward: getRewardsFromEvents(tx.tx_result.events)
-    }
+    } 
 
-    return result;
+    await insertData("msgs_MsgWithdrawDelegatorReward", result)
 }
