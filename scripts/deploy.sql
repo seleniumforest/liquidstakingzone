@@ -93,17 +93,37 @@ CREATE TABLE Stride.msgs_MsgRedeemStake (
     hostZone String,
     receiver String
 ) ENGINE = MergeTree() PRIMARY KEY (id);
-
-
 /*
  
  Tables with other data
  
  */
- /* Coingecko price history by days in usd */
- CREATE TABLE Stride.price_history (
+/* Coingecko price history by days in usd */
+CREATE TABLE Stride.price_history (
     id UUID,
     coin String,
     date UInt64,
     price Float32,
 ) ENGINE = MergeTree() PRIMARY KEY (id);
+/* Cached zones data */
+-- CREATE TABLE Stride.zones_accounts (
+--     zone String,
+--     address String,
+--     delegationAcc String,
+--     feeAcc String,
+--     redemptionAcc String,
+--     withdrawalAcc String
+-- ) ENGINE = MergeTree() PRIMARY KEY (zone);
+/* Txs on Cosmoshub/Juno/Osmo/Stars on fees account */
+CREATE TABLE Stride.zones_fees_collected (
+    txhash String,
+    height UInt64,
+    sender String,
+    code UInt8,
+    rawdata String,
+    fee Tuple (String, UInt256),
+    zone String,
+    feeAccount String,
+    fromAddress String,
+    amount Array(Tuple (String, UInt256))
+) ENGINE = MergeTree() PRIMARY KEY (txhash);

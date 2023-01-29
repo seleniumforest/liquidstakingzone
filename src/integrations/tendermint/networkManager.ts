@@ -1,7 +1,8 @@
 import axios from "axios";
 import { Chain } from "@chain-registry/types";
 import { Network } from "./watcher";
-import { isFulfilled } from "./constants";
+import { defaultRegistryUrls, isFulfilled } from "./constants";
+import { chains } from "chain-registry";
 
 export class NetworkManager {
     readonly minRequestsToTest: number = 20;
@@ -11,16 +12,12 @@ export class NetworkManager {
 
     private constructor(network: string, rpcEndpoints: Stats[]) {
         this.network = network;
+        rpcEndpoints.forEach((rpc) => this.rpcRank.set(rpc.endpoint, rpc));
 
-        console.log(`Starting network ${network}`);
-        rpcEndpoints.forEach((rpc) => {
-            let rpcUrl = rpc.endpoint;
-            console.log(`Found rpc ${rpcUrl}`);
-            this.rpcRank.set(rpcUrl, rpc);
-        });
+        console.log(`NetworkManager: Found RPCs: ${rpcEndpoints.map(x => x.endpoint).join(", ")} for network ${JSON.stringify(network)}`)
     }
 
-    static async create(network: Network, registryUrls: string[]): Promise<NetworkManager> {
+    static async create(network: Network, registryUrls: string[] = defaultRegistryUrls): Promise<NetworkManager> {
         let chainData = await this.fetchChainsData(registryUrls, network.name);
 
         let registryRpcUrls = chainData?.apis?.rpc?.map(x => x.address)!;
@@ -76,14 +73,21 @@ export class NetworkManager {
             try {
                 let response = await axios.get<Chain>(
                     `${url}/${chain}/chain.json`,
-                    { timeout: 10000 })
+                    {
+                        timeout: 10000,
+                        // headers: {
+                        //     "authority": "registry.ping.pub"
+                        // }
+                    })
 
                 return response.data;
             }
             catch (err: any) { console.log(err?.message) }
         }
 
-        throw new Error("Cannot get chain info from registry");
+        return chains.find(x => x.chain_name === chain)!
+
+        //throw new Error("Cannot get chain info from registry");
     }
 
     reportStats(url: string, result: boolean): void {

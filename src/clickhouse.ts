@@ -13,15 +13,16 @@ export const client = createClient({
 export const insertData = async (table: string, data: any): Promise<void> => {
     await client.insert({
         table: table,
-        values: data,//Array.isArray(data) ? data : [data],
+        values: Array.isArray(data) ? data : [data],
         format: 'JSONEachRow'
     });
 }
 
-export const insertStrideBlock = async (block: DecodedBlock) => {
+export const insertBlock = async (block: DecodedBlock) => {
     try {
         //insert block header
-        await insertData("block_headers", block.header)
+        if (block.header)
+            await insertData("block_headers", block.header)
 
 
         let knownMsgsCount = 0;
@@ -57,7 +58,7 @@ export const insertStrideBlock = async (block: DecodedBlock) => {
     }
 }
 
-const getLastBlock = async (): Promise<{ height: number, hashes: string[] }> => {
+export const getLastBlock = async (): Promise<{ height: number, hashes: string[] }> => {
     let response = await client.query({
         query: `
             SELECT txhash, height FROM Stride.transactions
@@ -76,6 +77,21 @@ const getLastBlock = async (): Promise<{ height: number, hashes: string[] }> => 
         hashes: data.map((x: { height: number, txhash: string }) => x.txhash),
         height: data[0].height
     }
+}
+
+export const getLastCollectedFeesHeight = async (): Promise<{ zone: String, height: number }[]> => {
+    let response = await client.query({
+        query: `
+            SELECT distinct zone, MAX(height) as height
+            FROM Stride.zones_fees_collected
+            GROUP BY zone
+        `,
+        clickhouse_settings: {
+            wait_end_of_query: 1,
+        },
+    });
+    let data = ((await response.json()) as any).data;
+    return data.map((x: { zone: string, height: number }) => ({ zone: x.zone, height: x.height }));
 }
 
 export const getPrices = async (): Promise<{ coin: string, latestDate: number }[]> => {

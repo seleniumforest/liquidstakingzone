@@ -1,7 +1,8 @@
-import { Coin } from "@cosmjs/proto-signing";
+import { Coin, Registry } from "@cosmjs/proto-signing";
 import { Int53 } from "@cosmjs/math";
 import { CoinTuple, TxEvent } from "./decoder";
 import { v4 as uuidv4 } from 'uuid';
+import { defaultRegistryTypes } from "@cosmjs/stargate";
 
 export const randomUUID = () => uuidv4();
 
@@ -56,3 +57,5 @@ export const getValueByTwoKeys = (events: TxEvent[], type: string, key: string):
         .find(x => x.key === key)
         ?.value || "";
 }
+
+export const defaultRegistry = new Registry(defaultRegistryTypes);
