@@ -19,12 +19,12 @@ const priceUpdateJob = async () => await runPriceUpdateJob();
 const fetchBlocksJob = async () =>
     await Watcher
         .create()
-        .addNetwork({ name: "stride", fromBlock: 1959063 })
+        .addNetwork({ name: "stride" })
         .useBatchFetching(3)
         .recieve(
             RecieveData.HEADERS_AND_TRANSACTIONS,
-            async (block) => await processBlock(block, registryTypes.strideRegistry)
-            // async (block) => console.log(block.height, block.txs.length)
+            //async (block) => await processBlock(block, registryTypes.strideRegistry)
+             async (block) => console.log(block.height, block.txs.length)
         )
         .run();
 
@@ -33,8 +33,8 @@ const fetchBlocksJob = async () =>
     //let lastSavedBlock = await prepareDbToWrite();
     //if indexer crashes, it can start from lastSavedBlock
     await Promise.allSettled([
-        hostZoneWatcherJob(),
+        //hostZoneWatcherJob(),
         //priceUpdateJob(),
-        //fetchBlocksJob()
+        fetchBlocksJob()
     ]);
 })();

@@ -7,8 +7,6 @@ import { Network } from "./watcher";
 
 export class ApiManager {
     readonly manager: NetworkManager;
-    //empty and non-empty blocks
-    blockStats: [number, number] = [0, 0];
 
     private constructor(manager: NetworkManager) {
         this.manager = manager;
@@ -68,7 +66,8 @@ export class ApiManager {
                     time: moment(header.time).unix(),
                     hash: data.result.block_id.hash,
                     chainId: data.result.block.header.chain_id,
-                    operatorAddress: data.result.block.header.proposer_address
+                    operatorAddress: data.result.block.header.proposer_address,
+                    txCount: data.result.block.data.txs.length
                 }
             } catch (err: any) {
                 if (err instanceof AxiosError)
@@ -85,12 +84,6 @@ export class ApiManager {
     async getTxsInBlock(height: number): Promise<RawTx[]> {
         //console.log("Getting enpoints to fetch txs in block " + height)
         let endpoints = this.manager.getEndpoints();
-
-        //temporary empty block optimization
-        let [empty, nonEmpty] = this.blockStats;
-        let emptyBlockRatio = empty / (empty + nonEmpty);
-        if (endpoints.length > 4 && emptyBlockRatio > 0.5)
-            endpoints = endpoints.slice(0, Math.round(endpoints.length / 2))
 
         for (const rpc of endpoints) {
             try {
@@ -115,7 +108,6 @@ export class ApiManager {
                 //let result: Tx[] = allTxs.map(this.decodeTx);
 
                 if (allTxs.length !== 0) {
-                    this.blockStats[1]++;
                     return allTxs;
                 }
                 this.manager.reportStats(rpc, true);
@@ -126,7 +118,6 @@ export class ApiManager {
         }
 
         //probably, that's empty block
-        this.blockStats[0]++;
         return [];
 
         //throw new CantGetTxsInBlockErr(this.manager.network, height, endpoints);
@@ -159,7 +150,8 @@ export interface BlockHeader {
     time: number,
     hash: string,
     chainId: string,
-    operatorAddress: string
+    operatorAddress: string,
+    txCount: number
 }
 
 export interface RawTx {

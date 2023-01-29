@@ -74,14 +74,11 @@ export class Watcher {
         }
 
         if (this.mode === RecieveData.HEADERS_AND_TRANSACTIONS) {
-            let [header, txs] = await Promise.allSettled([
-                api.getBlockHeader(height),
-                api.getTxsInBlock(height)
-            ]);
+            let header = await api.getBlockHeader(height);
 
             return {
-                header: (header as PromiseFulfilledResult<BlockHeader>)?.value, //kekw
-                txs: (txs as PromiseFulfilledResult<RawTx[]>)?.value,
+                header,
+                txs: header.txCount === 0 ? [] : await api.getTxsInBlock(height),
                 height,
                 chain
             }
