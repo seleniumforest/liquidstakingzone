@@ -8,13 +8,7 @@ const geckoTokenIds = ["cosmos", "osmosis", "juno-network", "stargaze", "stride"
 const $1hourInMs = 3600 * 1000;
 const $90daysInMs = $1hourInMs * 24 * 90;
 
-
-export const runPriceUpdateJob = async () => {
-    setInterval(updateJob, $1hourInMs);
-    await updateJob();
-}
-
-const updateJob = async () => {
+export const priceUpdateJob = async () => {
     console.log("Running price update job");
     let prices = await getPrices();
     let tokens = geckoTokenIds.map(x => ({
@@ -29,7 +23,7 @@ const updateJob = async () => {
     }
 };
 
-export const fetchTokenPriceHistory = async (token: string, from?: number) => {
+const fetchTokenPriceHistory = async (token: string, from?: number) => {
     let prices: Price[] = [];
     from = from || firstBlockTimestamp;
     let to = Date.now();

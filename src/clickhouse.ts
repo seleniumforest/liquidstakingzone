@@ -1,7 +1,5 @@
 import { createClient } from '@clickhouse/client'
-import { number } from 'yargs';
 import { DecodedBlock } from './decoder';
-import { Price } from './integrations/coingecko';
 import { msgsMap } from './messages';
 
 export const client = createClient({
@@ -9,6 +7,9 @@ export const client = createClient({
     password: process.env.CLICKHOUSE_PASS || "",
     database: process.env.CLICKHOUSE_DB || "Stride"
 })
+
+process.once('SIGINT', () => client.close());
+process.once('SIGTERM', () => client.close());
 
 export const insertData = async (table: string, data: any): Promise<void> => {
     await client.insert({
@@ -52,7 +53,7 @@ export const insertBlock = async (block: DecodedBlock) => {
                 }
             };
         }
-        console.log(`Saved block ${block.height} with ${knownMsgsCount} known messages, ${unknownMsgsCount} unknown`)
+        console.log(`Saved block ${block.height} with total ${block.txs.length} transactions, ${knownMsgsCount} known messages, ${unknownMsgsCount} unknown`)
     } catch (e: any) {
         console.log(e)
     }
@@ -61,17 +62,24 @@ export const insertBlock = async (block: DecodedBlock) => {
 export const getLastBlock = async (): Promise<{ height: number, hashes: string[] }> => {
     let response = await client.query({
         query: `
-            SELECT txhash, height FROM Stride.transactions
-            WHERE height = (
-                SELECT MAX(height) 
-                FROM Stride.transactions
-            )
+            SELECT bhs.height as height, txhash 
+            FROM Stride.transactions txs 
+            RIGHT JOIN (
+                SELECT *
+                FROM Stride.block_headers bhs
+                WHERE height = (SELECT MAX(height) FROM Stride.block_headers)
+            ) as bhs on txs.height = bhs.height
         `,
         clickhouse_settings: {
             wait_end_of_query: 1,
         },
     });
     let data = ((await response.json()) as any).data;
+    if (!data.length)
+        return {
+            height: 0,
+            hashes: []
+        };
 
     return {
         hashes: data.map((x: { height: number, txhash: string }) => x.txhash),
@@ -113,6 +121,9 @@ export const getPrices = async (): Promise<{ coin: string, latestDate: number }[
 //In the case of indexer crashes on block n, we need to clean this block data to aviod inconsistency
 export const prepareDbToWrite = async () => {
     let lastBlock = await getLastBlock();
+    if (lastBlock.height === 0)
+        return 0;
+
     let hashesString = lastBlock.hashes.map(x => `\'${x}\'`).join(",");
     let queries = [
         `ALTER TABLE Stride.transactions DELETE WHERE height = ${lastBlock.height}`,
@@ -124,14 +135,14 @@ export const prepareDbToWrite = async () => {
         `ALTER TABLE Stride.msgs_MsgRedeemStake DELETE WHERE txhash in (${hashesString})`
     ];
 
-    let result = await Promise.allSettled(
-        queries.map(async (query) => {
-            await client.exec({
-                query
-            });
-        })
-    );
-    //todo check, are all result promises fulfilled?
+    for (const query of queries) {
+        let result = await client.exec({
+            query,
+            clickhouse_settings: {
+                wait_end_of_query: 1,
+            }
+        });
+    }
 
-    return lastBlock.height - 1;
+    return lastBlock.height;
 }

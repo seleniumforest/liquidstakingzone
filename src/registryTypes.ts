@@ -1,13 +1,12 @@
 import { Registry as CosmjsRegistry } from "@cosmjs/proto-signing";
-import { defaultRegistryTypes } from "@cosmjs/stargate";
-import { getSigningStrideClientOptions } from "stridejs";
+import { strideProtoRegistry } from "stridejs";
+import { cosmosProtoRegistry, ibcProtoRegistry } from "osmojs";
 import { Registry as StrideRegistry } from "stridejs/node_modules/@cosmjs/proto-signing";
 
-const { registry: strideTypes } = getSigningStrideClientOptions();
-
 export const registryTypes = {
-    cosmosRegistry: new CosmjsRegistry(defaultRegistryTypes),
-    strideRegistry: strideTypes
+    cosmosRegistry: new CosmjsRegistry(cosmosProtoRegistry),
+    strideRegistry: new CosmjsRegistry(strideProtoRegistry),
+    universalRegistry: new CosmjsRegistry([...cosmosProtoRegistry, ...strideProtoRegistry, ...ibcProtoRegistry])
 }
 
 export type Registry = CosmjsRegistry | StrideRegistry

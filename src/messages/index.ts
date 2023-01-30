@@ -1,4 +1,3 @@
-import { client } from "../clickhouse";
 import { CoinTuple, DecodedTx } from "../decoder";
 import { insertMsgLiquidStake } from "./msgLiquidStake";
 import { insertMsgSend } from "./msgSend";
@@ -7,8 +6,8 @@ import { getFeeFromEvents, randomUUID } from "../helpers";
 import { insertMsgDelegate } from "./msgDelegate";
 import { insertMsgRedeemStake } from "./msgRedeemStake";
 import { insertMsgVote } from "./msgVote";
-import { insertMsgRecvPacket } from "./msgRecvPacket";
 
+//todo fix any
 export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void>>([
     ["/stride.stakeibc.MsgLiquidStake", insertMsgLiquidStake],
     ["/stride.stakeibc.MsgRedeemStake", insertMsgRedeemStake],
@@ -16,7 +15,7 @@ export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void
     ["/cosmos.staking.v1beta1.MsgDelegate", insertMsgDelegate],
     ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward", insertMsgWithdrawReward],
     ["/cosmos.gov.v1beta1.MsgVote", insertMsgVote],
-   // ["/ibc.core.channel.v1.MsgRecvPacket", insertMsgRecvPacket]
+    ["/cosmos.gov.v1.MsgVote", insertMsgVote]
 ]); 
 
 //fills base fields that exist in every msg type

@@ -14,14 +14,14 @@ export const apiToSmallInt = (input: number) => {
 export const tryParseJson = <T>(data: string): T | null => {
     try {
         return JSON.parse(data) as T;
-    } catch (err: any) { 
+    } catch (err: any) {
         return null;
     }
 }
 
 export const toCoinTuple = (coin: Coin): CoinTuple => {
     return [coin.denom, coin.amount];
-} 
+}
 
 //splits 243693ustrd to amount and denom
 export const parseCoin = (coin: string): CoinTuple => {
@@ -58,11 +58,16 @@ export const getValueByTwoKeys = (events: TxEvent[], type: string, key: string):
         ?.value || "";
 }
 
-export const defaultRegistry = new Registry(defaultRegistryTypes);
-
 export const earliestPossibleBlocks = [
     { zone: "cosmos", height: 11925500 },
     { zone: "osmo", height: 5880000 },
     { zone: "juno", height: 4663000 },
     { zone: "stars", height: 4520000 }
 ];
+
+const minute = 60000;
+const hour = minute * 60;
+const day = hour * 24;
+export const timeSpans = {
+    minute, hour, day
+}

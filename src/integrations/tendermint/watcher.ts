@@ -1,6 +1,5 @@
-import { defaultRegistryUrls, RecieveData } from './constants';
-import { Chain } from "@chain-registry/types";
-import { ApiManager, BlockHeader, RawTx, Tx } from './apiManager';
+import { defaultRegistryUrls } from './constants';
+import { ApiManager, BlockHeader, RawTx } from './apiManager';
 
 export interface Network {
     name: string,
@@ -12,12 +11,8 @@ export class Watcher {
     chains: Network[] = [];
     //depolyed chain-registry urls
     registryUrls: string[] = [];
-    //data for each chain
-    chainData: Map<string, Chain> = new Map();
     networks: Map<string, ApiManager> = new Map();
     callback: (block: Block) => Promise<void> = () => Promise.reject("No callback provided");
-    //what kind of data to fetch
-    mode: RecieveData = RecieveData.HEADERS;
     maxBlocksInBatch: number = 1;
 
     //Builder section
@@ -41,8 +36,7 @@ export class Watcher {
         return this;
     }
 
-    recieve(mode: RecieveData, handler: (block: Block) => Promise<void>) {
-        this.mode = mode;
+    recieve(handler: (block: Block) => Promise<void>) {
         this.callback = handler;
 
         return this;
@@ -50,59 +44,50 @@ export class Watcher {
 
     //Execution section
     async run(): Promise<void> {
-        await Promise.allSettled(this.chains.map(async (network) => {
+        let chainWorkers = this.chains.map(async (network) => {
             while (true) {
                 try {
                     let apiManager = await ApiManager.createApiManager(network, this.registryUrls);
                     this.networks.set(network.name, apiManager);
+                    console.log(`Running network ${network.name} from block ${network.fromBlock}`)
                     await this.runNetwork(network);
                 } catch (err) {
-                    //todo handle every error type with instanceof
-                    //console.log(err);
                     await new Promise(res => setTimeout(res, 30000));
                 }
             }
-        }))
+        });
+
+        await Promise.allSettled(chainWorkers);
     }
 
     private async composeBlock(chain: string, height: number): Promise<Block> {
         let api = this.networks.get(chain)!;
+        let header = await api.getBlockHeader(height);
 
-        if (this.mode === RecieveData.HEADERS) {
-            let header = await api.getBlockHeader(height);
-            return { header, height, chain, txs: [] };
+        return {
+            header,
+            txs: header.txCount === 0 ? [] : await api.getTxsInBlock(height),
+            height,
+            chain
         }
-
-        if (this.mode === RecieveData.HEADERS_AND_TRANSACTIONS) {
-            let header = await api.getBlockHeader(height);
-
-            return {
-                header,
-                txs: header.txCount === 0 ? [] : await api.getTxsInBlock(height),
-                height,
-                chain
-            }
-        }
-
-        return { height, chain, txs: [] };
     }
 
     async runNetwork(network: Network): Promise<void> {
         let api = this.networks.get(network.name)!;
-        let lastHeight = network.fromBlock ? (network.fromBlock - 1 || 1) : 0;
-        let skipGetLastHeight = false;
+        let lastIndexedHeight = network.fromBlock ? (network.fromBlock || 1) : 0;
+        let skipGetLatestHeight = false;
         let newHeight: number = -1;
         while (true) {
-            if (!skipGetLastHeight)
-                newHeight = await api.getLatestHeight(lastHeight);
+            if (!skipGetLatestHeight)
+                newHeight = await api.getLatestHeight(lastIndexedHeight);
 
             //no new block commited into network
-            if (lastHeight == newHeight) {
+            if (lastIndexedHeight == newHeight) {
                 await new Promise(res => setTimeout(res, 1000))
                 continue;
             }
 
-            let height = lastHeight === 0 ? newHeight : lastHeight
+            let height = lastIndexedHeight === 0 ? newHeight : lastIndexedHeight
             let targetBlocks = [...Array(this.maxBlocksInBatch).keys()]
                 .map(i => i + height)
                 .filter(x => x <= newHeight);
@@ -115,11 +100,14 @@ export class Watcher {
                 .map(b => (b as PromiseFulfilledResult<Block>)?.value)
                 .sort((a, b) => (Number(a.height) > Number(b.height) ? 1 : -1));
 
-            for (let block of blocks)
-                await this.callback(block);
+            for (let block of blocks) {
+                try {
+                    await this.callback(block);
+                } catch (e: any) { console.log("Error executing callback " + e?.message + "\n" + e?.stack) }
+            }
 
-            lastHeight = height + targetBlocks.length;
-            skipGetLastHeight = lastHeight < newHeight ? true : false;
+            lastIndexedHeight = height + targetBlocks.length;
+            skipGetLatestHeight = lastIndexedHeight < newHeight ? true : false;
             //await new Promise(res => setTimeout(res, 5000))
         }
     }

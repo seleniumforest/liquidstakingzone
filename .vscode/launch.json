@@ -7,21 +7,31 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "test",
+            "name": "Fetch Blocks Job",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/index.ts",
+            "program": "${workspaceFolder}/src/jobs/fetchBlocksJob.ts",
             "runtimeExecutable": "ts-node"
         },
         {
             "type": "node",
             "request": "launch",
-            "name": "script",
+            "name": "Host Zone Watcher Job",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/populateDb.ts",
+            "program": "${workspaceFolder}/src/jobs/hostZoneWatcherJob.ts",
+            "runtimeExecutable": "ts-node"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Price Update Job",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/src/jobs/priceUpdateJob.ts",
             "runtimeExecutable": "ts-node"
         }
     ]
