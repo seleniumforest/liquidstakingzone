@@ -33,8 +33,8 @@ const fetchBlocksJob = async () =>
     //let lastSavedBlock = await prepareDbToWrite();
     //if indexer crashes, it can start from lastSavedBlock
     await Promise.allSettled([
-        //hostZoneWatcherJob(),
+        hostZoneWatcherJob(),
         //priceUpdateJob(),
-        fetchBlocksJob()
+        //fetchBlocksJob()
     ]);
 })();

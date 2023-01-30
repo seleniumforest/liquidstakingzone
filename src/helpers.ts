@@ -59,3 +59,10 @@ export const getValueByTwoKeys = (events: TxEvent[], type: string, key: string):
 }
 
 export const defaultRegistry = new Registry(defaultRegistryTypes);
+
+export const earliestPossibleBlocks = [
+    { zone: "cosmos", height: 11925500 },
+    { zone: "osmo", height: 5880000 },
+    { zone: "juno", height: 4663000 },
+    { zone: "stars", height: 4520000 }
+];

@@ -55,7 +55,7 @@ export class NetworkManager {
             return Promise.resolve(url);
         }));
 
-        result.forEach(rpc => console.log(isFulfilled(rpc) ? rpc.value + "is alive" : rpc.reason));
+        //result.forEach(rpc => console.log(isFulfilled(rpc) ? rpc.value + " is alive" : rpc.reason));
         return result.filter(isFulfilled).map(x => x.value!);
     }
 

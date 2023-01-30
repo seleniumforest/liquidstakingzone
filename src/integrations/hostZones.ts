@@ -1,34 +1,27 @@
 import axios from "axios";
 import { getLastCollectedFeesHeight, insertBlock } from "../clickhouse";
 import { decodeTxs } from "../decoder";
-import { defaultRegistry } from "../helpers";
+import { defaultRegistry, earliestPossibleBlocks } from "../helpers";
 import { insertMsgRecvPacket } from "../messages/msgRecvPacket";
 import { Block, NetworkManager, RawTx } from "./tendermint";
 
 const $1hourInMs = 3600 * 1000;
 const hostZoneUrl = "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone";
-const earliestPossibleBlocks = [
-    { zone: "cosmos", height: 11925500 },
-    { zone: "osmo", height: 5880000 },
-    { zone: "juno", height: 4663000 },
-    { zone: "stars", height: 4520000 }
-];
 
 export const runHostZoneWatcher = async () => {
-    setInterval(updateJob, $1hourInMs);
+    setInterval(updateJob, $1hourInMs * 6);
     await updateJob();
 }
 
 const updateJob = async () => {
-    console.log(`Update host zones transactions job: ${Date.now().toString()}`);
+    console.log(`Update host zones transactions job: ${new Date()}`);
     let zoneAddresses = await fetchZoneAddresses();
     let lastBlocks = await getLastCollectedFeesHeight();
 
     for (const zone of zoneAddresses) {
-        //if (zone.prefix === "cosmos" || zone.prefix === "juno" || zone.prefix === "osmo") continue;
-        console.log("Updating " + zone.prefix)
-        let lastSavedBlock = 
-            lastBlocks.find(x => x.zone === zone.prefix)?.height || 
+        console.log("Updating network " + zone.prefix)
+        let lastSavedBlock =
+            lastBlocks.find(x => x.zone === zone.prefix)?.height ||
             earliestPossibleBlocks.find(x => x.zone === zone.prefix)?.height;
 
         let zoneEnpoints = await NetworkManager.create({
@@ -47,37 +40,44 @@ const updateJob = async () => {
             };
             let decoded = decodeTxs(txBlock, defaultRegistry, zone.prefix);
 
-            for (const tx of decoded.txs) {
+            for (const tx of decoded.txs)
                 for (const msg of tx.tx_result.data.body.messages) {
-                    if (msg.typeUrl === "/ibc.core.channel.v1.MsgRecvPacket")
-                        await insertMsgRecvPacket(tx, msg.value, zone.feeAcc);
+                    if (msg.typeUrl !== "/ibc.core.channel.v1.MsgRecvPacket")
+                        return;
+
+                    await insertMsgRecvPacket(tx, msg.value, zone.feeAcc);
                     console.log(`Inserted ${zone.prefix} tx ${tx.hash}`)
                 }
-            };
         }
     }
 
-    console.log(`Finished update host zones transactions job: ${Date.now().toLocaleString()}`)
+    console.log(`Finished update host zones transactions job: ${new Date()}`)
 };
 
 const fetchAllTxs = async (zone: HostZoneConfig, lastSavedBlock: number, endpoints: string[]): Promise<RawTx[]> => {
-    let page = 1;
-    let perPage = 20;
     let totalCount = 0;
     let result: RawTx[] = [];
 
-    do {
-        for (const endp of endpoints) {
-            console.log("Trying to fetch data from " + endp);
-            let query = encodeURIComponent(`tx.height > ${lastSavedBlock} AND coin_received.receiver = '${zone.feeAcc}'`);
-            let fetchUrl = `${endp}/tx_search?query="${query}"&page=${page++}&per_page=${perPage}`;
+    for (const endp of endpoints) {
+        let page = 1;
+        let perPage = 20;
 
-            let response = await axios.get<{ result: { total_count: number, txs: RawTx[] } }>(fetchUrl);
-            result.push(...response.data.result.txs);
-            totalCount = response.data.result.total_count;
+        try {
+            do {
+                console.log("Trying to fetch data from " + endp);
+                let query = encodeURIComponent(`tx.height > ${lastSavedBlock} AND coin_received.receiver = '${zone.feeAcc}'`);
+                let fetchUrl = `${endp}/tx_search?query="${query}"&page=${page++}&per_page=${perPage}`;
+
+                let response = await axios.get<{ result: { total_count: number, txs: RawTx[] } }>(fetchUrl, { timeout: 30000 });
+                result.push(...response.data.result.txs);
+                totalCount = Number(response.data.result.total_count);
+            } while (result.length < totalCount);
+            break;
+        } catch (e: any) {
+            console.log(e?.message);
+            result = [];
         }
-    } while (result.length <= totalCount);
-
+    }
     return result;
 }
 
