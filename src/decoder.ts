@@ -26,6 +26,7 @@ export const decodeTxs = (block: Block, registry: Registry, prefix: string = "st
         let result: DecodedTx = {
             ...tx,
             sender: senderAddr,
+            date: block.date,
             tx_result: {
                 ...tx.tx_result,
                 data: decodedTx,
@@ -50,6 +51,7 @@ export const decodeTxs = (block: Block, registry: Registry, prefix: string = "st
     }
 }
 
+//[0] is denom and [1] is amount
 export type CoinTuple = [string, string];
 
 export interface DecodedTxRaw {
@@ -77,6 +79,7 @@ export type EventLog = {
 export interface DecodedTx {
     tx?: string;
     sender: string,
+    date?: number,
     tx_result: {
         code: number;
         log: EventLog;

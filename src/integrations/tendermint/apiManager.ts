@@ -63,7 +63,7 @@ export class ApiManager {
 
                 return {
                     height: parseInt(header.height),
-                    time: moment(header.time).unix(),
+                    date: moment(header.time).unix(),
                     hash: data.result.block_id.hash,
                     chainId: data.result.block.header.chain_id,
                     operatorAddress: data.result.block.header.proposer_address,
@@ -147,7 +147,7 @@ interface TxsResponse {
 
 export interface BlockHeader {
     height: number,
-    time: number,
+    date: number,
     hash: string,
     chainId: string,
     operatorAddress: string,

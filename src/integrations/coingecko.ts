@@ -3,7 +3,7 @@ import { getPrices, insertData } from "../clickhouse";
 import { randomUUID } from "../helpers";
 
 const client = new CoinGecko();
-const firstBlockTimestamp = 1662292800000;
+const firstStrideBlockTimestamp = 1662292800000;
 const geckoTokenIds = ["cosmos", "osmosis", "juno-network", "stargaze", "stride"];
 const $1hourInMs = 3600 * 1000;
 const $90daysInMs = $1hourInMs * 24 * 90;
@@ -25,7 +25,7 @@ export const priceUpdateJob = async () => {
 
 const fetchTokenPriceHistory = async (token: string, from?: number) => {
     let prices: Price[] = [];
-    from = from || firstBlockTimestamp;
+    from = from || firstStrideBlockTimestamp;
     let to = Date.now();
     console.log(`Updating prices for ${token} from timestamp ${from}`)
 

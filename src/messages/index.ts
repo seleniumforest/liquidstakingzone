@@ -12,18 +12,22 @@ export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void
     ["/stride.stakeibc.MsgLiquidStake", insertMsgLiquidStake],
     ["/stride.stakeibc.MsgRedeemStake", insertMsgRedeemStake],
     ["/cosmos.bank.v1beta1.MsgSend", insertMsgSend],
+    ["/cosmos.bank.v1.MsgSend", insertMsgSend],
     ["/cosmos.staking.v1beta1.MsgDelegate", insertMsgDelegate],
+    ["/cosmos.staking.v1.MsgDelegate", insertMsgDelegate],
     ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward", insertMsgWithdrawReward],
+    ["/cosmos.distribution.v1.MsgWithdrawDelegatorReward", insertMsgWithdrawReward],
     ["/cosmos.gov.v1beta1.MsgVote", insertMsgVote],
     ["/cosmos.gov.v1.MsgVote", insertMsgVote]
 ]); 
 
 //fills base fields that exist in every msg type
-export const getMsgData = (tx: DecodedTx) => {
+export const getMsgBaseData = (tx: DecodedTx) => {
     let data: msgData = { 
         id: randomUUID(),
         txhash: tx.hash,
-        fee: getFeeFromEvents(tx.tx_result.events)
+        fee: getFeeFromEvents(tx.tx_result.events),
+        date: tx.date
     }
     
     return data;
@@ -32,5 +36,6 @@ export const getMsgData = (tx: DecodedTx) => {
 export interface msgData {
     id: string,
     txhash: string,
-    fee: CoinTuple
+    fee: CoinTuple,
+    date?: number
 } 

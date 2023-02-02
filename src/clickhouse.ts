@@ -34,6 +34,7 @@ export const insertBlock = async (block: DecodedBlock) => {
                 txhash: tx.hash,
                 sender: tx.sender,
                 code: tx.tx_result.code,
+                date: block.date,
                 rawdata: JSON.stringify(tx)
             })))
 

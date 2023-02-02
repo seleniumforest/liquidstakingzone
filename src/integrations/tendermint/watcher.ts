@@ -68,7 +68,8 @@ export class Watcher {
             header,
             txs: header.txCount === 0 ? [] : await api.getTxsInBlock(height),
             height,
-            chain
+            chain,
+            date: header.date
         }
     }
 
@@ -116,6 +117,7 @@ export class Watcher {
 export interface Block {
     chain: string;
     height: number;
+    date?: number;
     header?: BlockHeader;
     txs: RawTx[];
 }

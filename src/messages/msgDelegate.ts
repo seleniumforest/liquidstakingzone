@@ -1,5 +1,5 @@
 import { Coin } from "@cosmjs/amino";
-import { getMsgData, msgData } from ".";
+import { getMsgBaseData, msgData } from ".";
 import { insertData } from "../clickhouse";
 import { CoinTuple, DecodedTx } from "../decoder";
 import { toCoinTuple } from "../helpers";
@@ -11,8 +11,8 @@ export interface msgDelegate extends msgData {
 }
 
 export const insertMsgDelegate = async (tx: DecodedTx, msg: any): Promise<void> => {
-    let data = {
-        ...getMsgData(tx),
+    let data: msgDelegate = {
+        ...getMsgBaseData(tx),
         delegatorAddress: msg.delegatorAddress,
         validatorAddress: msg.validatorAddress,
         amount: toCoinTuple(msg.amount as Coin)

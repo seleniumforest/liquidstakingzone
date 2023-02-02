@@ -12,17 +12,18 @@ CREATE DATABASE Stride;
 CREATE TABLE Stride.block_headers (
     height UInt64,
     hash String,
-    time DateTime,
+    date UInt64,
     chainId String,
     operatorAddress String
 ) ENGINE = MergeTree() PRIMARY KEY (height);
 CREATE TABLE Stride.transactions (
     txhash String,
+    date UInt64,
     /* "foreign key" to Stride.block_headers */
     height UInt64,
     sender String,
     code UInt8,
-    rawdata String
+    /*rawdata String */
 ) ENGINE = MergeTree() PRIMARY KEY (txhash);
 /*
  
@@ -35,6 +36,7 @@ CREATE TABLE Stride.msgs_MsgSend (
     /* "foreign key" to Stride.transactions */
     txhash String,
     fee Tuple (String, UInt256),
+    date UInt64,
     fromAddress String,
     toAddress String,
     /* denom and amount */
@@ -45,6 +47,7 @@ CREATE TABLE Stride.msgs_MsgWithdrawDelegatorReward (
     id UUID,
     txhash String,
     fee Tuple (String, UInt256),
+    date UInt64,
     delegatorAddress String,
     validatorAddress String,
     reward Tuple (String, UInt256)
@@ -54,6 +57,7 @@ CREATE TABLE Stride.msgs_MsgDelegate (
     id UUID,
     txhash String,
     fee Tuple (String, UInt256),
+    date UInt64,
     delegatorAddress String,
     validatorAddress String,
     amount Tuple (String, UInt256)
@@ -63,6 +67,7 @@ CREATE TABLE Stride.msgs_MsgVote (
     id UUID,
     txhash String,
     fee Tuple (String, UInt256),
+    date UInt64,
     proposalId String,
     voter String,
     option UInt8
@@ -75,23 +80,28 @@ CREATE TABLE Stride.msgs_MsgVote (
 /* stride.stakeibc.MsgLiquidStake */
 CREATE TABLE Stride.msgs_MsgLiquidStake (
     id UUID,
+    date UInt64,
     /* "foreign key" to Stride.transactions */
     txhash String,
     fee Tuple (String, UInt256),
     creator String,
     amount Tuple (String, UInt256),
-    recievedStTokenAmount Tuple (String, UInt256)
+    recievedStTokenAmount Tuple (String, UInt256),
+    redemptionRate Float32,
+    zone String
 ) ENGINE = MergeTree() PRIMARY KEY (id);
 /* stride.stakeibc.MsgRedeemStake */
 CREATE TABLE Stride.msgs_MsgRedeemStake (
     id UUID,
+    date UInt64,
     /* "foreign key" to Stride.transactions */
     txhash String,
     fee Tuple (String, UInt256),
     creator String,
     amount String,
     hostZone String,
-    receiver String
+    receiver String,
+    zone String
 ) ENGINE = MergeTree() PRIMARY KEY (id);
 /*
  
@@ -120,7 +130,6 @@ CREATE TABLE Stride.zones_fees_collected (
     height UInt64,
     sender String,
     code UInt8,
-    rawdata String,
     fee Tuple (String, UInt256),
     zone String,
     feeAccount String,

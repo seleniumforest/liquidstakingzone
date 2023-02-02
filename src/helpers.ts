@@ -1,8 +1,26 @@
-import { Coin, Registry } from "@cosmjs/proto-signing";
+import { Coin } from "@cosmjs/proto-signing";
 import { Int53 } from "@cosmjs/math";
 import { CoinTuple, TxEvent } from "./decoder";
 import { v4 as uuidv4 } from 'uuid';
-import { defaultRegistryTypes } from "@cosmjs/stargate";
+import { fromBech32 } from "@cosmjs/encoding";
+
+export const denomToZone = (denom: string) => {
+    switch (denom) {
+        case "stuatom": case "uatom": return "atom";
+        case "stuosmo": case "uosmo": return "osmo";
+        case "stujuno": case "ujuno": return "juno";
+        case "stustars": case "ustars": return "ustars";
+    }
+}
+
+export const getZoneFromAddress = (addr: string) => {
+    let addrPrefix = fromBech32(addr).prefix;
+
+    switch (addrPrefix) {
+        case "cosmos": return "atom";
+        default: return addrPrefix;
+    }
+}
 
 export const randomUUID = () => uuidv4();
 

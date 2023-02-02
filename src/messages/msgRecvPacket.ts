@@ -1,13 +1,10 @@
-import { fromBase64, fromBech32 } from '@cosmjs/encoding';
+import { fromBase64 } from '@cosmjs/encoding';
 import { Coin, Registry } from '@cosmjs/proto-signing';
 import { defaultRegistryTypes } from '@cosmjs/stargate';
-import Long from 'long';
-import { getMsgData } from ".";
 import { insertData } from '../clickhouse';
 import { DecodedTx } from "../decoder";
 import { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { insertMsgSend } from './msgSend';
-import { getFeeFromEvents } from '../helpers';
+import { getFeeFromEvents, getZoneFromAddress } from '../helpers';
 
 export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any, feeAcc: string): Promise<void> => {
     let msgPacket = JSON.parse(new TextDecoder().decode(msg.packet.data))?.data;
@@ -26,9 +23,8 @@ export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any, feeAcc: strin
                 height: tx.height,
                 sender: tx.sender,
                 code: tx.tx_result.code,
-                //rawdata: ,
                 fee: getFeeFromEvents(tx.tx_result.events),
-                zone: fromBech32(decoded.toAddress).prefix,
+                zone: getZoneFromAddress(decoded.toAddress),
                 fromAddress: decoded.fromAddress,
                 feeAccount: decoded.toAddress,
                 amount: decoded.amount.map((x: Coin) => ([x.denom, x.amount]))

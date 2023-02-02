@@ -38,7 +38,6 @@ const run = async () => {
     let lastBlocks = earliestPossibleBlocks;
 
     for (const zone of zoneAddresses) {
-        // if (zone.prefix !== "osmo") continue;
         console.log("Updating " + zone.prefix)
         let earliestBlock = lastBlocks.find(x => x.zone === zone.prefix)!;
         if (!earliestBlock) continue;
@@ -53,7 +52,7 @@ const run = async () => {
                 chain: zone.prefix,
                 height: Number(tx.height)
             };
-            let decoded = decodeTxs(txBlock, registryTypes.cosmosRegistry, zone.prefix);
+            let decoded = decodeTxs(txBlock, registryTypes.universalRegistry, zone.prefix);
 
             for (const tx of decoded.txs) {
                 for (const msg of tx.tx_result.data.body.messages) {
