@@ -44,7 +44,7 @@ export const toCoinTuple = (coin: Coin): CoinTuple => {
 //splits 243693ustrd to amount and denom
 export const parseCoin = (coin: string): CoinTuple => {
     if (!coin)
-        return ["", ""];
+        return ["ustrd", "0"];
 
     let separatorIndex = Array.from(coin).findIndex(x => !Number.isInteger(parseInt(x)));
 
