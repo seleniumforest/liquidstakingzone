@@ -3,6 +3,7 @@ import { DecodedBlock } from './decoder';
 import { msgsMap } from './messages';
 
 export const client = createClient({
+    username: process.env.CLICKHOUSE_USER || "default",
     host: process.env.CLICKHOUSE_HOST || "http://localhost:8123",
     password: process.env.CLICKHOUSE_PASS || "",
     database: process.env.CLICKHOUSE_DB || "Stride"

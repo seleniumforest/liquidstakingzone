@@ -36,6 +36,7 @@ CREATE TABLE Stride.msgs_MsgSend (
     /* "foreign key" to Stride.transactions */
     txhash String,
     fee Tuple (String, UInt256),
+    txcode UInt8,
     date UInt64,
     fromAddress String,
     toAddress String,
@@ -48,6 +49,7 @@ CREATE TABLE Stride.msgs_MsgWithdrawDelegatorReward (
     txhash String,
     fee Tuple (String, UInt256),
     date UInt64,
+    txcode UInt8,
     delegatorAddress String,
     validatorAddress String,
     reward Tuple (String, UInt256)
@@ -58,6 +60,7 @@ CREATE TABLE Stride.msgs_MsgDelegate (
     txhash String,
     fee Tuple (String, UInt256),
     date UInt64,
+    txcode UInt8,
     delegatorAddress String,
     validatorAddress String,
     amount Tuple (String, UInt256)
@@ -68,6 +71,7 @@ CREATE TABLE Stride.msgs_MsgVote (
     txhash String,
     fee Tuple (String, UInt256),
     date UInt64,
+    txcode UInt8,
     proposalId String,
     voter String,
     option UInt8
@@ -85,6 +89,7 @@ CREATE TABLE Stride.msgs_MsgLiquidStake (
     txhash String,
     fee Tuple (String, UInt256),
     creator String,
+    txcode UInt8,
     amount Tuple (String, UInt256),
     recievedStTokenAmount Tuple (String, UInt256),
     redemptionRate Float32,
@@ -97,6 +102,7 @@ CREATE TABLE Stride.msgs_MsgRedeemStake (
     /* "foreign key" to Stride.transactions */
     txhash String,
     fee Tuple (String, UInt256),
+    txcode UInt8,
     creator String,
     amount String,
     hostZone String,

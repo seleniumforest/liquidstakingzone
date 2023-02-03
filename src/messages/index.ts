@@ -27,7 +27,8 @@ export const getMsgBaseData = (tx: DecodedTx) => {
         id: randomUUID(),
         txhash: tx.hash,
         fee: getFeeFromEvents(tx.tx_result.events),
-        date: tx.date
+        date: tx.date,
+        txcode: tx.tx_result.code
     }
     
     return data;
@@ -37,5 +38,6 @@ export interface msgData {
     id: string,
     txhash: string,
     fee: CoinTuple,
-    date?: number
+    date?: number,
+    txcode: number
 } 
