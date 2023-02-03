@@ -1,29 +1,13 @@
 import CoinGecko from "coingecko-api";
-import { getPrices, insertData } from "../clickhouse";
+import { insertData } from "../clickhouse";
 import { randomUUID } from "../helpers";
 
 const client = new CoinGecko();
 const firstStrideBlockTimestamp = 1662292800000;
-const geckoTokenIds = ["cosmos", "osmosis", "juno-network", "stargaze", "stride"];
 const $1hourInMs = 3600 * 1000;
 const $90daysInMs = $1hourInMs * 24 * 90;
 
-export const priceUpdateJob = async () => {
-    console.log("Running price update job");
-    let prices = await getPrices();
-    let tokens = geckoTokenIds.map(x => ({
-        coin: x,
-        latestDate: prices.find(p => p.coin === x)?.latestDate
-    }));
-
-    for (let token of tokens) {
-        await fetchTokenPriceHistory(token.coin, token.latestDate);
-        //to prevent spamming
-        await new Promise((res) => setTimeout(res, 2000));
-    }
-};
-
-const fetchTokenPriceHistory = async (token: string, from?: number) => {
+export const fetchTokenPriceHistory = async (token: string, from?: number) => {
     let prices: Price[] = [];
     from = from || firstStrideBlockTimestamp;
     let to = Date.now();
@@ -46,7 +30,7 @@ const fetchTokenPriceHistory = async (token: string, from?: number) => {
                     price
                 })
             });
-        } catch (e) { console.log(e) }
+        } catch (e: any) { console.log(`fetchTokenPriceHistory: Error fetching prices ${e?.message}`); }
     }
 
     await insertData('price_history', prices);;

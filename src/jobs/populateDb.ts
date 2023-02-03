@@ -1,7 +1,6 @@
 /*
     One-time script to get transactions from fee accounts in different networks
 */
-
 import axios from "axios";
 import { decodeTxs } from "../decoder";
 import { Block, RawTx } from "../integrations/tendermint";
@@ -9,17 +8,15 @@ import { insertMsgRecvPacket } from "../messages/msgRecvPacket";
 import moment from "moment";
 import write from 'write';
 import { registryTypes } from "../registryTypes";
+import { fetchZoneInfo, HostZoneConfig } from "../integrations/strideApi";
 
-const hostZoneUrl = "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone";
 const earliestPossibleBlocks = [
     {
         zone: "cosmos",
-        //rpc: "https://cosmos-mainnet-archive.allthatnode.com:26657",
         rpc: "https://cosmosarchive-rpc.quickapi.com:443"
     },
     {
         zone: "osmo",
-        //rpc: "https://osmosis-mainnet-archive.allthatnode.com:26657",
         rpc: "https://osmosisarchive-rpc.quickapi.com:443"
     },
     {
@@ -34,7 +31,7 @@ const earliestPossibleBlocks = [
 
 
 const run = async () => {
-    let zoneAddresses = await fetchZoneAddresses();
+    let zoneAddresses = await fetchZoneInfo();
     let lastBlocks = earliestPossibleBlocks;
 
     for (const zone of zoneAddresses) {
@@ -84,35 +81,4 @@ const fetchAllTxs = async (zone: HostZoneConfig, rpc: string): Promise<RawTx[]> 
     return result;
 }
 
-//todo make caching into db
-const fetchZoneAddresses = async (): Promise<HostZoneConfig[]> => {
-    try {
-        let data = (await axios.get(hostZoneUrl)).data.host_zone;
-
-        return data.map((zone: any) => ({
-            zone: zone.chain_id,
-            prefix: zone.bech32prefix,
-            address: zone.address,
-            delegationAcc: zone.delegation_account.address,
-            feeAcc: zone.fee_account.address,
-            redemptionAcc: zone.redemption_account.address,
-            withdrawalAcc: zone.withdrawal_account.address
-        }))
-    }
-    catch (e: any) {
-        console.log("Error fetching zone config");
-        return [];
-    }
-}
-
 run();
-
-interface HostZoneConfig {
-    zone: string,
-    prefix: string,
-    address: string,
-    delegationAcc: string,
-    feeAcc: string,
-    redemptionAcc: string,
-    withdrawalAcc: string
-}

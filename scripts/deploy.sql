@@ -115,7 +115,7 @@ CREATE TABLE Stride.redemptionRates (
     dateEnd UInt64,
     redemptionRate Float64,
     zone String,
-) ENGINE = MergeTree() PRIMARY KEY (epochNumber);
+) ENGINE = MergeTree() PRIMARY KEY (epochNumber, zone);
 /*
  
  Tables with other data

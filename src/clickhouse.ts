@@ -175,3 +175,11 @@ export interface RedemptionRate {
 export const setRedemptionRate = async (rate: RedemptionRate) => {
     return await insertData("redemptionRates", rate);
 }
+export const deleteRedemptionRate = async (epoch: number, zone: string) => {
+    await client.exec({
+        query: `ALTER TABLE Stride.redemptionRates DELETE WHERE epochNumber = ${epoch} AND zone = '${zone}'`,
+        clickhouse_settings: {
+            wait_end_of_query: 1,
+        }
+    });
+}
