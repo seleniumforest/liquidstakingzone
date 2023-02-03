@@ -1,13 +1,12 @@
 import axios from "axios";
-import { getLastCollectedFeesHeight } from "../clickhouse";
 import { decodeTxs } from "../decoder";
-import { earliestPossibleBlocks } from "../helpers";
 import { insertMsgRecvPacket } from "../messages/msgRecvPacket";
-import { registryTypes } from "../registryTypes";
-import { fetchZoneInfo, HostZoneConfig } from "../integrations/strideApi";
-import { Block, NetworkManager, RawTx } from "../integrations/tendermint";
+import { fetchZoneInfo, HostZoneConfig } from "../externalServices/strideApi";
+import { Block, NetworkManager, RawTx } from "../externalServices/tendermint";
 import { insertRedemptionRate } from "../messages/msgLiquidStake";
 import { schedule } from "node-cron";
+import { getLastCollectedFeesHeight } from "../db";
+import { earliestPossibleBlocks, universalRegistry } from "../constants";
 
 export const hostZoneWatcherJob = async () => {
     console.log(`Update host zones transactions job: ${new Date()}`);
@@ -43,7 +42,7 @@ export const hostZoneWatcherJob = async () => {
                 chain: zone.prefix,
                 height: Number(tx.height)
             };
-            let decoded = decodeTxs(txBlock, registryTypes.cosmosRegistry, zone.prefix);
+            let decoded = decodeTxs(txBlock, universalRegistry, zone.prefix);
 
             for (const tx of decoded.txs)
                 for (const msg of tx.tx_result.data.body.messages) {

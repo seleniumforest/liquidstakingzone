@@ -3,12 +3,12 @@
 */
 import axios from "axios";
 import { decodeTxs } from "../decoder";
-import { Block, RawTx } from "../integrations/tendermint";
+import { Block, RawTx } from "../externalServices/tendermint";
 import { insertMsgRecvPacket } from "../messages/msgRecvPacket";
 import moment from "moment";
 import write from 'write';
-import { registryTypes } from "../registryTypes";
-import { fetchZoneInfo, HostZoneConfig } from "../integrations/strideApi";
+import { fetchZoneInfo, HostZoneConfig } from "../externalServices/strideApi";
+import { universalRegistry } from "../constants";
 
 const earliestPossibleBlocks = [
     {
@@ -40,7 +40,7 @@ const run = async () => {
         if (!earliestBlock) continue;
 
         let txs: any = await fetchAllTxs(zone, earliestBlock.rpc);
-        await write(`./data/fees_collected_${zone.prefix}_${moment().format("DDMMYYYY")}.json`, JSON.stringify(txs));
+        //await write(`./data/fees_collected_${zone.prefix}_${moment().format("DDMMYYYY")}.json`, JSON.stringify(txs));
         console.log(`Zone ${zone.prefix} found ${txs.length} txs`);
 
         for (const tx of txs) {
@@ -49,7 +49,7 @@ const run = async () => {
                 chain: zone.prefix,
                 height: Number(tx.height)
             };
-            let decoded = decodeTxs(txBlock, registryTypes.universalRegistry, zone.prefix);
+            let decoded = decodeTxs(txBlock, universalRegistry, zone.prefix);
 
             for (const tx of decoded.txs) {
                 for (const msg of tx.tx_result.data.body.messages) {

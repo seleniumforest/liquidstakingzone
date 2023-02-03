@@ -1,16 +1,15 @@
-import { Block } from "./integrations/tendermint/index";
+import { Block } from "./externalServices/tendermint/index";
 import { decodePubkey, decodeTxRaw } from "@cosmjs/proto-signing";
-import { Registry } from "./registryTypes";
 import { apiToSmallInt, tryParseJson } from './helpers';
 import { AuthInfo, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { fromBase64 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
+import { Registry } from "./constants";
 
 export const decodeTxs = (block: Block, registry: Registry, prefix: string = "stride"): DecodedBlock => {
     let decodedTxs: DecodedTx[] = block?.txs.map(tx => {
         let decodedTx = decodeTxRaw(Buffer.from(fromBase64(tx.tx || "")));
         let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, prefix);
-        //getSenderFromEvents(tx.tx_result.events);
 
         decodedTx.body.messages = decodedTx.body.messages.map(msg => {
             let decodedMsg = registry.decode(msg);

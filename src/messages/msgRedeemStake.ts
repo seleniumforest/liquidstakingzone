@@ -1,6 +1,6 @@
 import Long from 'long';
 import { getMsgBaseData, msgData } from ".";
-import { insertData } from '../clickhouse';
+import { insertData } from '../db/';
 import { DecodedTx } from "../decoder";
 import { getZoneFromAddress } from '../helpers';
 

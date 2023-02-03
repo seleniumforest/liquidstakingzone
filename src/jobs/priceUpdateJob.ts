@@ -1,6 +1,6 @@
-import { getPrices } from "../clickhouse";
-import { timeSpans } from "../helpers";
-import { fetchTokenPriceHistory } from "../integrations/coingecko";
+import { timeSpans } from "../constants";
+import { getPrices } from "../db/";
+import { fetchTokenPriceHistory } from "../externalServices/coingecko";
 
 const geckoTokenIds = ["cosmos", "osmosis", "juno-network", "stargaze", "stride"];
 

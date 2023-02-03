@@ -11,6 +11,7 @@ export const denomToZone = (denom: string) => {
         case "stujuno": case "ujuno": return "juno";
         case "stustars": case "ustars": return "stars";
         case "stuluna": case "uluna": return "luna";
+        default: return denom;
     }
 }
 
@@ -19,6 +20,7 @@ export const getZoneFromAddress = (addr: string) => {
 
     switch (addrPrefix) {
         case "cosmos": return "atom";
+        case "terra": return "luna";
         default: return addrPrefix;
     }
 }
@@ -75,18 +77,4 @@ export const getValueByTwoKeys = (events: TxEvent[], type: string, key: string):
         .flatMap(x => x.attributes)
         .find(x => x.key === key)
         ?.value || "";
-}
-
-export const earliestPossibleBlocks = [
-    { zone: "cosmos", height: 11925500 },
-    { zone: "osmo", height: 5880000 },
-    { zone: "juno", height: 4663000 },
-    { zone: "stars", height: 4520000 }
-];
-
-const minute = 60000;
-const hour = minute * 60;
-const day = hour * 24;
-export const timeSpans = {
-    minute, hour, day
 }

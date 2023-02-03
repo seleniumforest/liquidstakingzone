@@ -1,6 +1,6 @@
 import Long from 'long';
 import { getMsgBaseData, msgData } from ".";
-import { deleteRedemptionRate, getRedemptionRates, insertData, setRedemptionRate } from '../clickhouse';
+import { deleteRedemptionRate, getRedemptionRates, insertData, setRedemptionRate } from '../db/';
 import { CoinTuple, DecodedTx, EventLog } from "../decoder";
 import { denomToZone, getValueByTwoKeys, parseCoin } from '../helpers';
 

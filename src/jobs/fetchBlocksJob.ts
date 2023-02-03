@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
-import { insertBlock, prepareDbToWrite } from '../clickhouse';
+import { Registry, universalRegistry } from '../constants';
+import { insertBlock, prepareDbToWrite } from '../db/';
 import { decodeTxs } from '../decoder';
-import { Block, Watcher } from '../integrations/tendermint';
-import { Registry, registryTypes } from '../registryTypes';
+import { Block, Watcher } from '../externalServices/tendermint';
 dotenv.config();
 
 const processBlock = async (block: Block, registry: Registry) => {
@@ -18,6 +18,6 @@ const processBlock = async (block: Block, registry: Registry) => {
         .create()
         .addNetwork({ name: "stride", fromBlock: startBlock })
         .useBatchFetching(3)
-        .recieve(async (block) => await processBlock(block, registryTypes.universalRegistry))
+        .recieve(async (block) => await processBlock(block, universalRegistry))
         .run()
 })();

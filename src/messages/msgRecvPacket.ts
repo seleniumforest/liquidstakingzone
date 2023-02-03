@@ -1,7 +1,7 @@
 import { fromBase64 } from '@cosmjs/encoding';
 import { Coin, Registry } from '@cosmjs/proto-signing';
 import { defaultRegistryTypes } from '@cosmjs/stargate';
-import { insertData } from '../clickhouse';
+import { insertData } from '../db/';
 import { DecodedTx } from "../decoder";
 import { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { getFeeFromEvents, getZoneFromAddress } from '../helpers';

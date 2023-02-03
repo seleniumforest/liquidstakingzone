@@ -1,6 +1,6 @@
 import { Coin } from "@cosmjs/amino";
 import { getMsgBaseData, msgData } from ".";
-import { insertData } from "../clickhouse";
+import { insertData } from "../db/";
 import { CoinTuple, DecodedTx } from "../decoder";
 
 export interface msgSendData extends msgData {

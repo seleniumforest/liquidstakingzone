@@ -5,10 +5,9 @@
   "typings": "./build/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "deployDb": "clickhouse-client --multiquery < scripts/deploy.sql",
-    "compile": "tsc",
-    "run": "node build/collector/index.js",
-    "start": "yarn install && yarn run compile && yarn run run"
+    "deploydb": "clickhouse-client --multiquery < scripts/deploy.sql",
+    "populatedb": "node build/jobs/populateDb.js",
+    "compile": "tsc"
   },
   "dependencies": {
     "@clickhouse/client": "^0.0.11",

@@ -1,5 +1,5 @@
 import { getMsgBaseData, msgData } from ".";
-import { insertData } from "../clickhouse";
+import { insertData } from "../db/";
 import { DecodedTx } from "../decoder";
 
 export interface msgVoteData extends msgData {
