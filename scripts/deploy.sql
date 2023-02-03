@@ -92,7 +92,6 @@ CREATE TABLE Stride.msgs_MsgLiquidStake (
     txcode UInt8,
     amount Tuple (String, UInt256),
     recievedStTokenAmount Tuple (String, UInt256),
-    redemptionRate Float32,
     zone String
 ) ENGINE = MergeTree() PRIMARY KEY (id);
 /* stride.stakeibc.MsgRedeemStake */
@@ -109,6 +108,14 @@ CREATE TABLE Stride.msgs_MsgRedeemStake (
     receiver String,
     zone String
 ) ENGINE = MergeTree() PRIMARY KEY (id);
+/* Stride epochs and redemption rates */
+CREATE TABLE Stride.redemptionRates (
+    epochNumber UInt32,
+    dateStart UInt64,
+    dateEnd UInt64,
+    redemptionRate Float64,
+    zone String,
+) ENGINE = MergeTree() PRIMARY KEY (epochNumber);
 /*
  
  Tables with other data

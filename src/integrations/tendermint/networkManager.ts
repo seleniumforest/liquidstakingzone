@@ -82,7 +82,7 @@ export class NetworkManager {
 
                 return response.data;
             }
-            catch (err: any) { console.log(err?.message) }
+            catch (err: any) { console.warn(`fetchChainsData: ${err?.message}`) }
         }
 
         return chains.find(x => x.chain_name === chain)!

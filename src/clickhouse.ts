@@ -148,3 +148,30 @@ export const prepareDbToWrite = async () => {
 
     return lastBlock.height;
 }
+
+export const getRedemptionRates = async () : Promise<RedemptionRate[]> => {
+    let response = await client.query({
+        query: `
+            SELECT *
+            FROM Stride.redemptionRates
+        `,
+        clickhouse_settings: {
+            wait_end_of_query: 1,
+        },
+    });
+    let data = ((await response.json()) as any).data;
+
+    return data.map((rate: RedemptionRate) => rate);
+}
+
+export interface RedemptionRate {
+    epochNumber: number,
+    dateStart: number,
+    dateEnd: number,
+    redemptionRate: number,
+    zone: string
+}
+
+export const setRedemptionRate = async (rate: RedemptionRate) => {
+    return await insertData("redemptionRates", rate);
+}
