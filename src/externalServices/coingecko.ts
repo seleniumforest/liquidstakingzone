@@ -1,5 +1,5 @@
 import CoinGecko from "coingecko-api";
-import { insertPrices, Price } from "../db";
+import { Price } from "../db";
 import { randomUUID } from "../helpers";
 
 const client = new CoinGecko();
@@ -33,5 +33,5 @@ export const fetchTokenPriceHistory = async (token: string, from?: number) => {
         } catch (e: any) { console.log(`fetchTokenPriceHistory: Error fetching prices ${e?.message}`); }
     }
 
-    await insertPrices(prices);
+    return prices;
 }
