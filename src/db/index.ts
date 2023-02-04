@@ -1,4 +1,6 @@
 import { createClient } from '@clickhouse/client'
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export const client = createClient({
     username: process.env.CLICKHOUSE_USER || "default",
