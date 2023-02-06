@@ -24,11 +24,13 @@ const composeRegistry = () => {
         ["/Stridelabs.stride.stakeibc.MsgDeleteValidator", "/stride.stakeibc.MsgDeleteValidator"],
         ["/Stridelabs.stride.stakeibc.MsgRestoreInterchainAccount", "/stride.stakeibc.MsgRestoreInterchainAccount"],
         ["/Stridelabs.stride.stakeibc.MsgUpdateValidatorSharesExchRate", "/stride.stakeibc.MsgUpdateValidatorSharesExchRate"],
-        ["/Stridelabs.stride.stakeibc.MsgClearBalance", "/stride.stakeibc.MsgUpdateValidatorSharesExchRate"],
+        ["/Stridelabs.stride.stakeibc.MsgClearBalance", "/stride.stakeibc.MsgClearBalance"],
         ["/Stridelabs.stride.stakeibc.MsgSetAirdropAllocations", "/stride.stakeibc.MsgSetAirdropAllocations"],
         ["/Stridelabs.stride.stakeibc.MsgClaimFreeAmount", "/stride.stakeibc.MsgClaimFreeAmount"],
         ["/Stridelabs.stride.stakeibc.MsgCreateAirdrop", "/stride.stakeibc.MsgCreateAirdrop"],
         ["/Stridelabs.stride.stakeibc.MsgDeleteAirdrop", "/stride.stakeibc.MsgDeleteAirdrop"],
+        ["/stride.interchainquery.MsgSubmitQueryResponse", "/stride.interchainquery.v1.MsgSubmitQueryResponse"]
+      //  '/stride.interchainquery.v1.MsgSubmitQueryResponse'
     ];
 
     remappedTypes.forEach(([oldTypeUrl, newTypeUrl]) => {
