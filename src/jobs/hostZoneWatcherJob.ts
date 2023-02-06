@@ -42,7 +42,7 @@ export const hostZoneWatcherJob = async () => {
                 chain: zone.prefix,
                 height: Number(tx.height)
             };
-            let decoded = decodeTxs(txBlock, universalRegistry, zone.prefix);
+            let decoded = decodeTxs(txBlock, zone.prefix);
 
             for (const tx of decoded.txs)
                 for (const msg of tx.tx_result.data.body.messages) {

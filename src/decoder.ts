@@ -4,16 +4,16 @@ import { apiToSmallInt, tryParseJson } from './helpers';
 import { AuthInfo, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { fromBase64 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
-import { Registry } from "./constants";
+import { universalRegistry } from "./constants";
 
-export const decodeTxs = (block: Block, registry: Registry, prefix: string = "stride"): DecodedBlock => {
+export const decodeTxs = (block: Block, prefix: string = "stride"): DecodedBlock => {
     let decodedTxs: DecodedTx[] = block?.txs.map(tx => {
         let decodedTx = decodeTxRaw(Buffer.from(fromBase64(tx.tx || "")));
         let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, prefix);
 
         decodedTx.body.messages = decodedTx.body.messages.map(msg => {
-            let decodedMsg = registry.decode(msg);
-
+            let decodedMsg = universalRegistry.decode(msg);
+            
             return {
                 typeUrl: msg.typeUrl,
                 value: {

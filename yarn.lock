@@ -1896,6 +1896,20 @@ stridejs@^0.5.0:
     "@osmonauts/lcd" "^0.6.0"
     protobufjs "^6.11.2"
 
+"stridejsold@npm:stridejs@0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/stridejs/-/stridejs-0.4.1.tgz#30f61928cb83004e6cce5ec36c723ca514090306"
+  integrity sha512-CtAZX0kfSR8GVpRZxth1U2yqDO83r+lKon3BBFO0STnwhKmBvHrxe0yVInFsgtAAOqrglUe+8YmkGo1e698yhg==
+  dependencies:
+    "@babel/runtime" "^7.18.9"
+    "@cosmjs/amino" "0.29.0"
+    "@cosmjs/proto-signing" "0.29.0"
+    "@cosmjs/stargate" "0.29.0"
+    "@cosmjs/tendermint-rpc" "^0.29.0"
+    "@osmonauts/helpers" "^0.6.0"
+    "@osmonauts/lcd" "^0.6.0"
+    protobufjs "^6.11.2"
+
 string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz"
