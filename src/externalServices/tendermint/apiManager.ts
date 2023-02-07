@@ -23,7 +23,7 @@ export class ApiManager {
         let results = await Promise.allSettled(rpcs.map(async rpc => {
             try {
                 let url = `${rpc}/status`
-                let result = await axios.get(url, { timeout: 2000 });
+                let result = await axios.get(url, { timeout: 5000 });
 
                 this.manager.reportStats(rpc, true);
                 return parseInt(result?.data?.result?.sync_info?.latest_block_height);
@@ -55,7 +55,7 @@ export class ApiManager {
                 let { data } = await axios({
                     method: "GET",
                     url,
-                    timeout: 2000
+                    timeout: 5000
                 });
 
                 this.manager.reportStats(rpc, true);
@@ -73,7 +73,7 @@ export class ApiManager {
                 if (err instanceof AxiosError)
                     this.manager.reportStats(rpc, false);
 
-                let msg = `Error fetching height in ${this.manager.network} rpc ${rpc} error : ${err?.message}`;
+                let msg = `Error fetching block header in ${this.manager.network} rpc ${rpc} error : ${err?.message}`;
 
                 //temporary optimization
                 await new Promise((res) => setTimeout(res, 60000));
@@ -100,7 +100,7 @@ export class ApiManager {
                         await axios({
                             method: "GET",
                             url,
-                            timeout: 2000
+                            timeout: 5000
                         });
 
                     totalTxs = result.total_count;
