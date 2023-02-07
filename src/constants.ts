@@ -1,16 +1,12 @@
-import { Registry as CosmjsRegistry } from "@cosmjs/proto-signing";
-import { strideProtoRegistry } from "stridejs";
+import { GeneratedType, Registry as CosmjsRegistry } from "@cosmjs/proto-signing";
+import { stride, strideProtoRegistry } from "stridejs";
 import { strideProtoRegistry as strideOldProtoRegistry } from "stridejsold";
 import { cosmosProtoRegistry, ibcProtoRegistry } from "osmojs";
 
 import { Registry as StrideRegistry } from "stridejs/node_modules/@cosmjs/proto-signing";
 
-const composeRegistry = () => {
-    let allTypes = [
-        ...cosmosProtoRegistry, 
-        ...strideProtoRegistry, 
-        ...ibcProtoRegistry
-    ];
+const composeMixedRegistry = () => {
+    let allTypes: [string, GeneratedType][] = [];
 
     //[[oldTypeUrl, newTypeUrl]]
     let remappedTypes = [
@@ -43,7 +39,14 @@ const composeRegistry = () => {
     return new CosmjsRegistry(allTypes);
 }
 
-export const universalRegistry = composeRegistry();
+export const strideMixedRegistry = composeMixedRegistry();
+export const stride041Registry = new CosmjsRegistry(strideOldProtoRegistry);
+export const stride050Registry = new CosmjsRegistry(strideProtoRegistry);
+export const universalRegistry = new CosmjsRegistry([
+    ...cosmosProtoRegistry, 
+    ...strideProtoRegistry, 
+    ...ibcProtoRegistry
+]);
 
 export type Registry = CosmjsRegistry | StrideRegistry
 //export type Zone = "atom" | "stars" | "osmo" | "juno" | "luna";

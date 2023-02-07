@@ -33,7 +33,7 @@ export const hostZoneWatcherJob = async () => {
             fromBlock: lastSavedBlock
         });
 
-        let txs = await fetchAllTxs(zone, lastSavedBlock!, zoneEnpoints.getEndpoints());
+        let txs = await fetchAllTxs(zone, lastSavedBlock!, zoneEnpoints.getRpcs());
         console.log(`Zone ${zone.prefix} found ${txs.length} txs`);
 
         for (const tx of txs) {

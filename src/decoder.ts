@@ -4,7 +4,27 @@ import { apiToSmallInt, tryParseJson } from './helpers';
 import { AuthInfo, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { fromBase64 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
-import { universalRegistry } from "./constants";
+import { stride041Registry, stride050Registry, strideMixedRegistry, universalRegistry } from "./constants";
+
+//<KEKW>
+const decodeMsg = (msg: any) => {
+    try {
+        return universalRegistry.decode(msg)
+    } catch {}
+
+    try {
+        return stride041Registry.decode(msg)
+    } catch {}
+
+    try {
+        return stride050Registry.decode(msg)
+    } catch {}
+
+    try {
+        return strideMixedRegistry.decode(msg)
+    } catch {}
+}
+//</KEKW>
 
 export const decodeTxs = (block: Block, prefix: string = "stride"): DecodedBlock => {
     let decodedTxs: DecodedTx[] = block?.txs.map(tx => {
@@ -12,7 +32,9 @@ export const decodeTxs = (block: Block, prefix: string = "stride"): DecodedBlock
         let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, prefix);
 
         decodedTx.body.messages = decodedTx.body.messages.map(msg => {
-            let decodedMsg = universalRegistry.decode(msg);
+            let decodedMsg = decodeMsg(msg);
+            if (!decodedMsg)
+                console.warn(`Cannot decode msgType ${msg.typeUrl} in block ${block.height}`)
             
             return {
                 typeUrl: msg.typeUrl,

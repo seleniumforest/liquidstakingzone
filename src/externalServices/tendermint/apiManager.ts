@@ -18,9 +18,9 @@ export class ApiManager {
 
     async getLatestHeight(lastKnownHeight: number = 0): Promise<number> {
         //console.log("Getting enpoints to fetch latest height")
-        let endpoints = this.manager.getEndpoints();
+        let rpcs = this.manager.getRpcs();
 
-        let results = await Promise.allSettled(endpoints.map(async rpc => {
+        let results = await Promise.allSettled(rpcs.map(async rpc => {
             try {
                 let url = `${rpc}/status`
                 let result = await axios.get(url, { timeout: 2000 });
@@ -39,7 +39,7 @@ export class ApiManager {
         let result = Math.max(...success, lastKnownHeight);
 
         if (result === 0) {
-            throw new CantGetLatestHeightErr(this.manager.network, endpoints);
+            throw new CantGetLatestHeightErr(this.manager.network, rpcs);
         }
 
         return result;
@@ -47,9 +47,9 @@ export class ApiManager {
 
     async getBlockHeader(height: number): Promise<BlockHeader> {
         //console.log("Getting enpoints to fetch block header " + height)
-        let endpoints = this.manager.getEndpoints();
+        let rpcs = this.manager.getRpcs();
 
-        for (const rpc of endpoints) {
+        for (const rpc of [...rpcs, ...rpcs]) {
             try {
                 let url = `${rpc}/block?height=${height}`
                 let { data } = await axios({
@@ -74,18 +74,21 @@ export class ApiManager {
                     this.manager.reportStats(rpc, false);
 
                 let msg = `Error fetching height in ${this.manager.network} rpc ${rpc} error : ${err?.message}`;
-                //console.log(new Error(msg));
+
+                //temporary optimization
+                await new Promise((res) => setTimeout(res, 60000));
+                console.log(new Error(msg));
             }
         }
 
-        throw new CantGetBlockHeaderErr(this.manager.network, height, endpoints);
+        throw new CantGetBlockHeaderErr(this.manager.network, height, rpcs);
     }
 
     async getTxsInBlock(height: number): Promise<RawTx[]> {
         //console.log("Getting enpoints to fetch txs in block " + height)
-        let endpoints = this.manager.getEndpoints();
+        let rpcs = this.manager.getRpcs();
 
-        for (const rpc of endpoints) {
+        for (const rpc of [...rpcs, ...rpcs]) {
             try {
                 let allTxs: RawTx[] = [];
                 let totalTxs: number;
@@ -114,6 +117,12 @@ export class ApiManager {
             } catch (err: any) {
                 if (err instanceof AxiosError)
                     this.manager.reportStats(rpc, false);
+
+                let msg = `Error fetching txs in ${this.manager.network} rpc ${rpc} error : ${err?.message}`;
+
+                //temporary optimization
+                await new Promise((res) => setTimeout(res, 60000));
+                console.log(new Error(msg));
             }
         }
 

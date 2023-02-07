@@ -72,13 +72,8 @@ export class NetworkManager {
         for (let url of registryUrls) {
             try {
                 let response = await axios.get<Chain>(
-                    `${url}/${chain}/chain.json`,
-                    {
-                        timeout: 10000,
-                        // headers: {
-                        //     "authority": "registry.ping.pub"
-                        // }
-                    })
+                    `${url}/${chain}/chain.json`, { timeout: 10000 }
+                )
 
                 return response.data;
             }
@@ -96,7 +91,7 @@ export class NetworkManager {
         this.rpcRank.set(url, result ? { ...el, ok: ++el.ok } : { ...el, fail: ++el.fail });
     }
 
-    getEndpoints(): string[] {
+    getRpcs(): string[] {
         let endpointSet = this.rpcRank;
         let result = [...endpointSet.entries()]
             .map(([_, value]) => value)
