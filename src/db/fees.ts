@@ -14,3 +14,18 @@ export const getLastCollectedFeesHeight = async (): Promise<{ zone: String, heig
     let data = ((await response.json()) as any).data;
     return data.map((x: { zone: string, height: number }) => ({ zone: x.zone, height: x.height }));
 }
+
+export const isFeeTxExist = async (zone: string, sequence: number) => {
+    let response = await client.query({
+        query: `
+            select count(*) as matched
+            from Stride.zones_fees_collected
+            where zone = '${zone}' and sequence = ${sequence}
+        `,
+        clickhouse_settings: {
+            wait_end_of_query: 1,
+        },
+    });
+    let data = ((await response.json()) as any).data;
+    return Number(data[0].matched) > 0;
+}

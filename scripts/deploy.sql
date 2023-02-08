@@ -146,6 +146,7 @@ CREATE TABLE Stride.zones_fees_collected (
     fee Tuple (String, UInt256),
     zone String,
     feeAccount String,
+    sequence UInt32,
     fromAddress String,
     amount Array(Tuple (String, UInt256))
 ) ENGINE = MergeTree() PRIMARY KEY (txhash);

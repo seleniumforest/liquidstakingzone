@@ -8,9 +8,8 @@ import { insertMsgRecvPacket } from "../messages/msgRecvPacket";
 import moment from "moment";
 import write from 'write';
 import { fetchZoneInfo, HostZoneConfig } from "../externalServices/strideApi";
-import { universalRegistry } from "../constants";
 
-const earliestPossibleBlocks = [
+const archiveRpcs = [
     {
         zone: "cosmos",
         rpc: "https://cosmosarchive-rpc.quickapi.com:443"
@@ -32,14 +31,14 @@ const earliestPossibleBlocks = [
 
 const run = async () => {
     let zoneAddresses = await fetchZoneInfo();
-    let lastBlocks = earliestPossibleBlocks;
 
+    //todo make parallel
     for (const zone of zoneAddresses) {
         console.log("Updating " + zone.prefix)
-        let earliestBlock = lastBlocks.find(x => x.zone === zone.prefix)!;
-        if (!earliestBlock) continue;
+        let rpc = archiveRpcs.find(x => x.zone === zone.prefix)!;
+        if (!rpc) continue;
 
-        let txs: any = await fetchAllTxs(zone, earliestBlock.rpc);
+        let txs: any = await fetchAllTxs(zone, rpc.rpc);
         //await write(`./data/fees_collected_${zone.prefix}_${moment().format("DDMMYYYY")}.json`, JSON.stringify(txs));
         console.log(`Zone ${zone.prefix} found ${txs.length} txs`);
 
