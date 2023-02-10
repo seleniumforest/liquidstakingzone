@@ -150,3 +150,11 @@ CREATE TABLE Stride.zones_fees_collected (
     fromAddress String,
     amount Array(Tuple (String, UInt256))
 ) ENGINE = MergeTree() PRIMARY KEY (txhash);
+/* Acccount balances, used for  */
+CREATE TABLE Stride.account_balances_history (
+    id UUID,
+    zone String,
+    address String,
+    date UInt64,
+    assets Array(Tuple (String, UInt256))
+) ENGINE = MergeTree() PRIMARY KEY (id);

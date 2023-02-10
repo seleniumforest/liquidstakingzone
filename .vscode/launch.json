@@ -43,6 +43,16 @@
             ],
             "program": "${workspaceFolder}/src/jobs/populateDb.ts",
             "runtimeExecutable": "ts-node"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Insert Account Balance Data Job",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/src/jobs//externalAccountsCheckerJob.ts",
+            "runtimeExecutable": "ts-node"
         }
     ]
 }

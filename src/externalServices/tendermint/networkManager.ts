@@ -9,9 +9,11 @@ export class NetworkManager {
     readonly minSuccessRate: number = 0.85;
     readonly network: string = "";
     rpcRank: Map<string, Stats> = new Map();
+    rest: string[] = [];
 
-    private constructor(network: string, rpcEndpoints: Stats[]) {
+    private constructor(network: string, rpcEndpoints: Stats[], restEndpoints: string[] = []) {
         this.network = network;
+        this.rest = restEndpoints;
         rpcEndpoints.forEach((rpc) => this.rpcRank.set(rpc.endpoint, rpc));
 
         console.log(`NetworkManager: Found RPCs: ${rpcEndpoints.map(x => x.endpoint).join(", ")} for network ${JSON.stringify(network)}`)
@@ -21,7 +23,10 @@ export class NetworkManager {
         let chainData = await this.fetchChainsData(registryUrls, network.name);
 
         let registryRpcUrls = chainData?.apis?.rpc?.map(x => x.address)!;
+        let registryRestUrls = chainData?.apis?.rest?.map(x => x.address)!;
         let customRpcUrls = network.rpcUrls || [];
+        let syncedRestUrls = registryRestUrls;//await this.filterRestOutOfSync(registryRestUrls);
+
         if (network.fromBlock) {
             registryRpcUrls = await this.filterRpcsWithoutHistory(registryRpcUrls, network.fromBlock);
             customRpcUrls = await this.filterRpcsWithoutHistory(customRpcUrls, network.fromBlock)
@@ -30,7 +35,35 @@ export class NetworkManager {
         let registryRpcs = this.toStats(registryRpcUrls, false);
         let customRpcs = this.toStats(network.rpcUrls, true);
 
-        return new NetworkManager(network.name, registryRpcs.concat(customRpcs));
+        return new NetworkManager(network.name, registryRpcs.concat(customRpcs), syncedRestUrls);
+    }
+
+    static async filterRestOutOfSync(urls: string[]): Promise<string[]> {
+        let result = await Promise.allSettled(urls.map(async (url) => {
+            let response;
+            try {
+                response = await axios({
+                    method: "GET",
+                    url: `${url}/cosmos/base/tendermint/v1beta1/blocks/latest`,
+                    timeout: 2000
+                });
+            } catch (_) { return Promise.reject(`${url} is dead`); }
+
+            if (!response || response.status !== 200)
+                return Promise.reject(`${url} returned ${response.status} code`);
+
+            let nodeLastestBlock = Number(response?.data?.block?.header?.height);
+
+            return Promise.resolve({
+                rest: url,
+                lastestBlock: nodeLastestBlock
+            });
+        }));
+
+        //filter rpcs that are outdated more than on 20 blocks
+        let fulfilled = result.filter(isFulfilled);
+        let lastestBlock = Math.max(...fulfilled.map(x => x.value.lastestBlock));
+        return fulfilled.filter(x => x.value.lastestBlock > lastestBlock - 20).map(x => x.value.rest);
     }
 
     static async filterRpcsWithoutHistory(urls: string[], fromBlock: number): Promise<string[]> {
@@ -89,6 +122,10 @@ export class NetworkManager {
         let el = this.rpcRank.get(url)!;
 
         this.rpcRank.set(url, result ? { ...el, ok: ++el.ok } : { ...el, fail: ++el.fail });
+    }
+
+    getRest() : string[] {
+        return this.rest;
     }
 
     getRpcs(): string[] {
