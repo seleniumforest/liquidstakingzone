@@ -127,6 +127,7 @@ CREATE TABLE Stride.price_history (
     coin String,
     date UInt64,
     price Float32,
+    vsCurrency String
 ) ENGINE = MergeTree() PRIMARY KEY (id);
 /* Cached zones data */
 -- CREATE TABLE Stride.zones_accounts (

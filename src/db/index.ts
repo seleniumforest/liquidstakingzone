@@ -13,6 +13,9 @@ process.once('SIGINT', () => client.close());
 process.once('SIGTERM', () => client.close());
 
 export const insertData = async (table: string, data: any): Promise<void> => {
+    if (Array.isArray(data) && data.length === 0)
+        return;
+        
     await client.insert({
         table: table,
         values: Array.isArray(data) ? data : [data],

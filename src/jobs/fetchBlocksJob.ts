@@ -1,5 +1,4 @@
 import * as dotenv from 'dotenv';
-import { Registry, universalRegistry } from '../constants';
 import { insertBlock, prepareDbToWrite } from '../db/';
 import { decodeTxs } from '../decoder';
 import { Block, Watcher } from '../externalServices/tendermint';

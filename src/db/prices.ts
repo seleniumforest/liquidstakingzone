@@ -1,10 +1,12 @@
 import { client, insertData } from "./";
 
-export const getPrices = async (): Promise<{ coin: string, latestDate: number }[]> => {
+//todo fix this shitty flag parameter
+export const getPrices = async (vsStTokens: boolean): Promise<{ coin: string, latestDate: number }[]> => {
     let response = await client.query({
         query: `
             SELECT coin, MAX(date) as latestDate
             FROM Stride.price_history
+            WHERE vsCurrency ${vsStTokens ? `!=` : `=`} 'usd'
             GROUP BY coin
         `,
         clickhouse_settings: {
@@ -25,4 +27,5 @@ export interface Price {
     coin: string,
     date: number,
     price: number,
+    vsCurrency: string
 }

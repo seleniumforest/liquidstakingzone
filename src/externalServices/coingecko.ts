@@ -27,7 +27,8 @@ export const fetchTokenPriceHistory = async (token: string, from?: number) => {
                     id: randomUUID(),
                     coin: token,
                     date: date,
-                    price
+                    price, 
+                    vsCurrency: "usd"
                 })
             });
         } catch (e: any) { console.log(`fetchTokenPriceHistory: Error fetching prices ${e?.message}`); }
