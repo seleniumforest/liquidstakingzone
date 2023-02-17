@@ -49,7 +49,7 @@ export const universalRegistry = new CosmjsRegistry([
 ]);
 
 export type Registry = CosmjsRegistry | StrideRegistry
-//export type Zone = "atom" | "stars" | "osmo" | "juno" | "luna";
+export type Zone = "atom" | "stars" | "osmo" | "juno" | "luna" | "evmos";
 
 export const earliestPossibleBlocks = [
     { zone: "cosmos", height: 11925500 },

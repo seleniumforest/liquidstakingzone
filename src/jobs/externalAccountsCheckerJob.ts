@@ -1,13 +1,12 @@
-import axios from "axios";
-import { CoinTuple } from "../decoder";
 import { fetchZoneInfo } from "../externalServices/strideApi";
 import { NetworkManager } from "../externalServices/tendermint";
 import { timeSpans } from "../constants";
-import { Coin } from "@cosmjs/amino";
 import { Balance, insertAccountBalance } from "../db/balances";
 import { randomUUID } from "../helpers";
 import Big from "big.js";
-import { StargateClient } from "@cosmjs/stargate";
+import { QueryClient, setupStakingExtension, StargateClient } from "@cosmjs/stargate";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import { UnbondingDelegation } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 
 export const externalAccountsCheckerJob = async () => {
     console.log(`externalAccountsCheckerJob: ${new Date()}`);
@@ -20,13 +19,15 @@ export const externalAccountsCheckerJob = async () => {
 
         let staked = await getBalanceStaked(zone.delegationAcc, zoneEnpoints.getRpcs());
         let balance = await getBalanceOnAccount(zone.delegationAcc, staked?.denom!, zoneEnpoints.getRpcs())
+        let undelegated = await getUndelegatedBalance(zone.delegationAcc, zoneEnpoints.getRpcs());
+        let sum = Big(staked?.amount!).plus(Big(balance?.amount!)).plus(undelegated || Big(0)).toString();
 
         let balanceData: Balance = {
             id: randomUUID(),
             zone: zone.zone,
             address: zone.delegationAcc,
-            date: Date.now(),
-            assets: [[staked?.denom!, Big(staked?.amount!).plus(Big(balance?.amount!)).toFixed()]]
+            date: Date.now() - timeSpans.day,
+            assets: [[staked?.denom!, sum]]
         };
 
         console.log(`externalAccountsCheckerJob: inserting data ${JSON.stringify(balanceData)}`);
@@ -36,13 +37,34 @@ export const externalAccountsCheckerJob = async () => {
     console.log(`Finished update host zones transactions job: ${new Date()}`)
 };
 
+//todo pass latestKnownBalance
+//todo pagination
+const getUndelegatedBalance = async (address: string, endpoints: string[]) => {
+    for (const endp of endpoints) {
+        try {
+            let result: UnbondingDelegation[] = [];
+            let nextKey: Uint8Array | undefined = Uint8Array.from([]);
+
+            do {
+                let client = QueryClient.withExtensions(await Tendermint34Client.connect(endp), setupStakingExtension);
+                let data = await client.staking.delegatorUnbondingDelegations(address);
+                nextKey = data.pagination?.nextKey;
+                result.push(...data.unbondingResponses)
+            } while ((nextKey?.length || 0) > 0);
+
+            return result.flatMap(x => x.entries).map(x => x.balance).reduce((prev,cur) => prev.add(Big(cur)), Big(0));
+        } catch (e: any) { console.log(e?.message) }
+    }
+}
+
+
 const getBalanceStaked = async (address: string, endpoints: string[]) => {
     for (const endp of endpoints) {
         try {
             let client = await StargateClient.connect(endp);
             let data = await client.getBalanceStaked(address);
             return data;
-        } catch (e: any) { console.log(e?.message)  }
+        } catch (e: any) { console.log(e?.message) }
     }
 }
 
@@ -52,7 +74,7 @@ const getBalanceOnAccount = async (address: string, denom: string, endpoints: st
             let client = await StargateClient.connect(endp);
             let data = await client.getBalance(address, denom);
             return data;
-        } catch (e: any) { console.log(e?.message)  }
+        } catch (e: any) { console.log(e?.message) }
     }
 }
 
