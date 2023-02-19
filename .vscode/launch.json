@@ -47,7 +47,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Insert Account Balance Data Job",
+            "name": "externalAccountsCheckerJob",
             "skipFiles": [
                 "<node_internals>/**"
             ],
