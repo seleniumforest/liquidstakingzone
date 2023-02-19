@@ -22,7 +22,7 @@ export const getStAssetsPriceHistory = async (): Promise<Price[]> => {
         result.push(...data.map(x => ({
             id: randomUUID(),
             coin: zone.coingeckoId,
-            date: x.time,
+            date: Number(x.time) * 1000,
             price: x.open,
             vsCurrency: `st${zone.zone}`
         })));
