@@ -26,7 +26,7 @@ export const externalAccountsCheckerJob = async () => {
             id: randomUUID(),
             zone: zone.zone,
             address: zone.delegationAcc,
-            date: Date.now() - timeSpans.day,
+            date: Date.now(),
             assets: [[staked?.denom!, sum]]
         };
 
