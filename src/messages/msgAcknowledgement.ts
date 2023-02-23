@@ -4,7 +4,7 @@ import { insertData, isFeeTxExist } from '../db/';
 import { DecodedTx } from "../decoder";
 import { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { getFeeFromEvents, getZoneFromAddress } from '../helpers';
-import { fetchZoneInfo } from '../externalServices/strideApi';
+import { fetchZonesInfo } from '../externalServices/strideApi';
 import { universalRegistry } from '../constants';
 
 export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise<void> => {
@@ -16,7 +16,7 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
     if (!msgPacket)
         return;
 
-    let hostZonesConfig = await fetchZoneInfo();
+    let hostZonesConfig = await fetchZonesInfo();
     let decodedMsgPacket = fromBase64(msgPacket);
     let decodedBody = TxBody.decode(decodedMsgPacket);
     let sendMsgs = decodedBody

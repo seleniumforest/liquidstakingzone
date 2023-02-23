@@ -1,4 +1,4 @@
-import { fetchZoneInfo } from "../externalServices/strideApi";
+import { fetchZonesInfo } from "../externalServices/strideApi";
 import { NetworkManager } from "../externalServices/tendermint";
 import { timeSpans } from "../constants";
 import { Balance, insertAccountBalance } from "../db/balances";
@@ -10,7 +10,7 @@ import { UnbondingDelegation } from "cosmjs-types/cosmos/staking/v1beta1/staking
 
 export const externalAccountsCheckerJob = async () => {
     console.log(`externalAccountsCheckerJob: ${new Date()}`);
-    let zoneInfo = await fetchZoneInfo();
+    let zoneInfo = await fetchZonesInfo();
 
     for (const zone of zoneInfo) {
         let zoneEnpoints = await NetworkManager.create({
