@@ -15,12 +15,12 @@ export const getLastCollectedFeesHeight = async (): Promise<{ zone: String, heig
     return data.map((x: { zone: string, height: number }) => ({ zone: x.zone, height: x.height }));
 }
 
-export const isFeeTxExist = async (zone: string, sequence: number) => {
+export const isFeeTxExist = async (zone: string, sequence: number, type: string) => {
     let response = await client.query({
         query: `
             select count(*) as matched
             from Stride.zones_restakes
-            where zone = '${zone}' and sequence = ${sequence}
+            where zone = '${zone}' and sequence = ${sequence} and type = '${type}'
         `,
         clickhouse_settings: {
             wait_end_of_query: 1,

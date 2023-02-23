@@ -58,5 +58,12 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
     if (!isRestakeRewardsTx)
         return;
 
-    await insertData("zones_restakes", sendMsgs);
+    for (const sendMsg of sendMsgs) {
+        //there's multiple versions of same tx on blockchains, from different relayers
+        let isExists = await isFeeTxExist(sendMsg.zone, sendMsg.sequence, sendMsg.type);
+        if (isExists)
+            continue;
+
+        await insertData("zones_restakes", sendMsg);
+    }
 }
