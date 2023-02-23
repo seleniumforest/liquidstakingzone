@@ -9,7 +9,7 @@ import { universalRegistry } from '../constants';
 
 export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise<void> => {
     //icacontroller-cosmoshub-4.WITHDRAWAL
-    if (msg.packet.sourcePort.split(".")[1] !== "WITHDRAWAL")
+    if (msg.packet.sourcePort != "icacontroller-cosmoshub-4.WITHDRAWAL")
         return;
 
     let msgPacket = JSON.parse(new TextDecoder().decode(msg.packet.data))?.data;
@@ -24,30 +24,39 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
         .filter(x => x.typeUrl === "/cosmos.bank.v1beta1.MsgSend")
         .map(x => universalRegistry.decode({ typeUrl: x.typeUrl, value: x.value }))
         .map(decoded => {
+            let zone = getZoneFromAddress(decoded.toAddress);
+            let zoneConfig = hostZonesConfig.find(x => x.zone === zone);
+            let type = "";
+
+            if (decoded.toAddress === zoneConfig?.delegationAcc)
+                type = "delegation";
+            else if (decoded.toAddress === zoneConfig?.feeAcc)
+                type = "fee";
+
             return {
                 txhash: tx.hash,
                 height: tx.height,
                 sender: tx.sender,
                 code: tx.tx_result.code,
                 fee: getFeeFromEvents(tx.tx_result.events),
-                zone: getZoneFromAddress(decoded.toAddress),
+                zone: zone,
                 fromAddress: decoded.fromAddress,
                 sequence: Number(msg.packet.sequence.toString()),
-                feeAccount: decoded.toAddress,
-                amount: decoded.amount.map((x: Coin) => ([x.denom, x.amount]))
+                toAddress: decoded.toAddress,
+                amount: decoded.amount.map((x: Coin) => ([x.denom, x.amount])),
+                type
             }
-        })
-        .filter(x => x.feeAccount === hostZonesConfig.find(y => y.zone === x.zone)!.feeAcc);
+        });
 
-    for (const sendMsg of sendMsgs) {
-        let isExists = await isFeeTxExist(sendMsg.zone, sendMsg.sequence);
-        if (isExists)
-            continue;
-        await insertData("zones_fees_collected", sendMsg);
+    let currentZoneFeeAcc = hostZonesConfig.find(x => x.zone === sendMsgs[1].zone)?.feeAcc;
+    let currentZoneDelegationAcc = hostZonesConfig.find(x => x.zone === sendMsgs[1].zone)?.delegationAcc;
 
-        try {
-            let acknowledgementPacketLength = fromBase64(JSON.parse(new TextDecoder().decode(msg?.acknowledgement))?.result)?.length;
-            console.log(`acknowledgementPacketLength = ${acknowledgementPacketLength}, txhash = ${tx.hash}`)
-        } catch { }
-    }
+    let isRestakeRewardsTx = sendMsgs.length == 2 &&
+        ((sendMsgs[0].toAddress === currentZoneFeeAcc && sendMsgs[1].toAddress === currentZoneDelegationAcc) ||
+            (sendMsgs[1].toAddress === currentZoneFeeAcc && sendMsgs[0].toAddress === currentZoneDelegationAcc))
+
+    if (!isRestakeRewardsTx)
+        return;
+
+    await insertData("zones_restakes", sendMsgs);
 }

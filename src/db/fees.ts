@@ -4,7 +4,7 @@ export const getLastCollectedFeesHeight = async (): Promise<{ zone: String, heig
     let response = await client.query({
         query: `
             SELECT distinct zone, MAX(height) as height
-            FROM Stride.zones_fees_collected
+            FROM Stride.zones_restakes
             GROUP BY zone
         `,
         clickhouse_settings: {
@@ -19,7 +19,7 @@ export const isFeeTxExist = async (zone: string, sequence: number) => {
     let response = await client.query({
         query: `
             select count(*) as matched
-            from Stride.zones_fees_collected
+            from Stride.zones_restakes
             where zone = '${zone}' and sequence = ${sequence}
         `,
         clickhouse_settings: {

@@ -139,14 +139,15 @@ CREATE TABLE Stride.price_history (
 --     withdrawalAcc String
 -- ) ENGINE = MergeTree() PRIMARY KEY (zone);
 /* Txs on Cosmoshub/Juno/Osmo/Stars on fees account */
-CREATE TABLE Stride.zones_fees_collected (
+CREATE TABLE Stride.zones_restakes (
     txhash String,
     height UInt64,
     sender String,
     code UInt8,
     fee Tuple (String, UInt256),
     zone String,
-    feeAccount String,
+    type String,
+    toAddress String,
     sequence UInt32,
     fromAddress String,
     amount Array(Tuple (String, UInt256))

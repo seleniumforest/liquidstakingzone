@@ -15,7 +15,7 @@ const processBlock = async (block: Block) => {
 
     await Watcher
         .create()
-        .addNetwork({ name: "stride", fromBlock: startBlock, rpcUrls:["https://stride-rpc.quantnode.tech/"] })
+        .addNetwork({ name: "stride", fromBlock: 2496459, rpcUrls:["https://stride-rpc.quantnode.tech/"] })
         .useBatchFetching(3)
         .recieve(async (block) => await processBlock(block))
         .run()
