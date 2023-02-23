@@ -2,27 +2,40 @@ import { Block } from "./externalServices/tendermint/index";
 import { decodePubkey, decodeTxRaw } from "@cosmjs/proto-signing";
 import { apiToSmallInt, tryParseJson } from './helpers';
 import { AuthInfo, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { fromBase64 } from "@cosmjs/encoding";
+import { fromBase64, fromBech32 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
 import { stride041Registry, stride050Registry, strideMixedRegistry, universalRegistry } from "./constants";
+import Big from "big.js";
 
 //<KEKW>
 const decodeMsg = (msg: any) => {
-    try {
-        return universalRegistry.decode(msg)
-    } catch {}
+    for (const reg of [stride050Registry, universalRegistry, stride041Registry, stride050Registry, strideMixedRegistry]) {
+        try {
+            let decoded = reg.decode(msg);
+            if (decoded && validateMsg(msg.typeUrl, decoded))
+                return decoded;
+        } catch { }
+    }
+}
 
-    try {
-        return stride041Registry.decode(msg)
-    } catch {}
+//add all types and use runtime validation lib
+const validateMsg = (type: string, msg: any) => {
+    switch (type) {
+        case "/Stridelabs.stride.stakeibc.MsgLiquidStake":
+        case "/stride.stakeibc.MsgLiquidStake":
+            if (fromBech32(msg.creator).data.length === 20 &&
+                Big(msg.amount.toString()).gt(Big(0)))
+                return true;
+            return false;
+        case "/stride.stakeibc.MsgRedeemStake":
+        case "/Stridelabs.stride.stakeibc.MsgRedeemStake":
+            if (fromBech32(msg.creator).data.length === 20 &&
+                Big(msg.amount.toString()).gt(Big(0)))
+                return true;
+            return false;
+    }
 
-    try {
-        return stride050Registry.decode(msg)
-    } catch {}
-
-    try {
-        return strideMixedRegistry.decode(msg)
-    } catch {}
+    return true;
 }
 //</KEKW>
 
@@ -35,7 +48,7 @@ export const decodeTxs = (block: Block, prefix: string = "stride"): DecodedBlock
             let decodedMsg = decodeMsg(msg);
             if (!decodedMsg)
                 console.warn(`Cannot decode msgType ${msg.typeUrl} in block ${block.height}`)
-            
+
             return {
                 typeUrl: msg.typeUrl,
                 value: {
