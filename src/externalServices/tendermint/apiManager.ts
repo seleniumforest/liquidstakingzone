@@ -3,10 +3,11 @@ import { NetworkManager } from "./networkManager";
 import { defaultRegistryUrls, isFulfilled } from "./constants";
 import { CantGetBlockHeaderErr, CantGetLatestHeightErr } from "./errors";
 import moment from "moment";
-import { Network } from "./watcher";
+import { Network } from "./blocksWatcher";
 
 export class ApiManager {
     readonly manager: NetworkManager;
+    readonly fetchAttempts = 2;
 
     private constructor(manager: NetworkManager) {
         this.manager = manager;
@@ -17,7 +18,6 @@ export class ApiManager {
     }
 
     async getLatestHeight(lastKnownHeight: number = 0): Promise<number> {
-        //console.log("Getting enpoints to fetch latest height")
         let rpcs = this.manager.getRpcs();
 
         let results = await Promise.allSettled(rpcs.map(async rpc => {
@@ -46,10 +46,9 @@ export class ApiManager {
     }
 
     async getBlockHeader(height: number): Promise<BlockHeader> {
-        //console.log("Getting enpoints to fetch block header " + height)
-        let rpcs = this.manager.getRpcs();
+        let rpcs = this.getRpcs();
 
-        for (const rpc of [...rpcs, ...rpcs]) {
+        for (const rpc of rpcs) {
             try {
                 let url = `${rpc}/block?height=${height}`
                 let { data } = await axios({
@@ -86,9 +85,9 @@ export class ApiManager {
 
     async getTxsInBlock(height: number): Promise<RawTx[]> {
         //console.log("Getting enpoints to fetch txs in block " + height)
-        let rpcs = this.manager.getRpcs();
+        let rpcs = this.getRpcs();
 
-        for (const rpc of [...rpcs, ...rpcs]) {
+        for (const rpc of rpcs) {
             try {
                 let allTxs: RawTx[] = [];
                 let totalTxs: number;
@@ -126,10 +125,12 @@ export class ApiManager {
             }
         }
 
-        //probably, that's empty block
         return [];
+    }
 
-        //throw new CantGetTxsInBlockErr(this.manager.network, height, endpoints);
+    private getRpcs() {
+        let rpcs = this.manager.getRpcs();
+        return [].concat(...Array(this.fetchAttempts).fill(rpcs));
     }
 }
 

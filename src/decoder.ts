@@ -9,7 +9,7 @@ import Big from "big.js";
 
 //<KEKW>
 const decodeMsg = (msg: any) => {
-    for (const reg of [stride050Registry, universalRegistry, stride041Registry, stride050Registry, strideMixedRegistry]) {
+    for (const reg of [stride050Registry, universalRegistry, stride041Registry, strideMixedRegistry]) {
         try {
             let decoded = reg.decode(msg);
             if (decoded && validateMsg(msg.typeUrl, decoded))

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Chain } from "@chain-registry/types";
-import { Network } from "./watcher";
+import { Network } from "./blocksWatcher";
 import { defaultRegistryUrls, isFulfilled } from "./constants";
 import { chains } from "chain-registry";
 

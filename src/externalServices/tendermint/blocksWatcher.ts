@@ -7,12 +7,12 @@ export interface Network {
     rpcUrls?: string[]
 }
 
-export class Watcher {
+export class BlocksWatcher {
     chains: Network[] = [];
     //depolyed chain-registry urls
     registryUrls: string[] = [];
     networks: Map<string, ApiManager> = new Map();
-    callback: (block: Block) => Promise<void> = () => Promise.reject("No callback provided");
+    onRecieveCallback: (block: Block) => Promise<void> = () => Promise.reject("No onRecieve callback provided");
     maxBlocksInBatch: number = 1;
 
     //Builder section
@@ -21,8 +21,8 @@ export class Watcher {
         this.registryUrls = registryUrls;
     }
 
-    static create(registryUrls: string[] = defaultRegistryUrls): Watcher {
-        let ind = new Watcher(registryUrls);
+    static create(registryUrls: string[] = defaultRegistryUrls): BlocksWatcher {
+        let ind = new BlocksWatcher(registryUrls);
         return ind;
     }
 
@@ -36,8 +36,8 @@ export class Watcher {
         return this;
     }
 
-    recieve(handler: (block: Block) => Promise<void>) {
-        this.callback = handler;
+    onRecieve(handler: (block: Block) => Promise<void>) {
+        this.onRecieveCallback = handler;
 
         return this;
     }
@@ -103,7 +103,7 @@ export class Watcher {
 
             for (let block of blocks) {
                 try {
-                    await this.callback(block);
+                    await this.onRecieveCallback(block);
                 } catch (e: any) { console.log("Error executing callback " + e?.message + "\n" + e?.stack) }
             }
 

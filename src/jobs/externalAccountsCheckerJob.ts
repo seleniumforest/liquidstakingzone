@@ -13,13 +13,13 @@ export const externalAccountsCheckerJob = async () => {
     let zoneInfo = await fetchZonesInfo();
 
     for (const zone of zoneInfo) {
-        let zoneEnpoints = await NetworkManager.create({
+        let zoneEndpoints = await NetworkManager.create({
             name: prefixToRegistryName(zone.prefix)
         });
 
-        let staked = await getBalanceStaked(zone.delegationAcc, zoneEnpoints.getRpcs());
-        let balance = await getBalanceOnAccount(zone.delegationAcc, staked?.denom!, zoneEnpoints.getRpcs())
-        let undelegated = await getUndelegatedBalance(zone.delegationAcc, zoneEnpoints.getRpcs());
+        let staked = await getBalanceStaked(zone.delegationAcc, zoneEndpoints.getRpcs());
+        let balance = await getBalanceOnAccount(zone.delegationAcc, staked?.denom!, zoneEndpoints.getRpcs())
+        let undelegated = await getUndelegatedBalance(zone.delegationAcc, zoneEndpoints.getRpcs());
         let sum = Big(staked?.amount!).plus(Big(balance?.amount!)).plus(undelegated || Big(0)).toFixed();
 
         let balanceData: Balance = {

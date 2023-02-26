@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Fetch Blocks Job",
+            "name": "fetchBlocksJob",
             "skipFiles": [
                 "<node_internals>/**"
             ],
@@ -17,33 +17,13 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Host Zone Watcher Job",
+            "name": "hostZoneWatcherJob",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/src/jobs/hostZoneWatcherJob.ts",
             "runtimeExecutable": "ts-node"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Price Update Job",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/src/jobs/priceUpdateJob.ts",
-            "runtimeExecutable": "ts-node"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Populate DB Job",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/src/jobs/populateDb.ts",
-            "runtimeExecutable": "ts-node"
-        },
+        }
         {
             "type": "node",
             "request": "launch",

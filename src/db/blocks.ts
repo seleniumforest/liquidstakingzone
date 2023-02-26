@@ -72,7 +72,8 @@ export const getLastBlock = async (): Promise<{ height: number, hashes: string[]
 }
 
 //In the case of indexer crashes on block n, we need to clean this block data to aviod inconsistency
-export const prepareDbToWrite = async () => {
+//returns block height to conwinue process with.
+export const prepareDbToWrite = async () : Promise<number> => {
     let lastBlock = await getLastBlock();
     if (lastBlock.height === 0)
         return 0;
