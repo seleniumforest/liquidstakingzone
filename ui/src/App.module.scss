@@ -1,0 +1,12 @@
+@import "./index.scss";
+
+body {
+    background-color: $bg-color;
+
+    .app {
+        .content {
+            width: 80%; //todo 1280px;
+            margin: auto;
+        }
+    }
+}

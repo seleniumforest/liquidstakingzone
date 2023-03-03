@@ -1,0 +1,57 @@
+@import "../../index.scss";
+
+.headerStake {
+    border-radius: 4px;
+    margin-top: 30px;
+    background-color: $block-color;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+
+    .headerStakeContent {
+        margin-top: 20px;
+        margin-bottom: 20px;
+
+        .helpQuantNodeLabel {
+            font-family: "Space Grotesk";
+            font-style: normal;
+            font-weight: 700;
+            font-size: 16px;
+            line-height: 20px;
+        }
+
+        .validatorStats {
+            display: block;
+            border-radius: 6px;
+            border: 4px solid black;
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+
+            th, td {
+                font-family: 'Space Grotesk';
+                font-weight: 400;
+                font-size: 12px;
+                line-height: 15px;
+            }
+
+            &Header {
+                background: white;
+                border-bottom: 4px solid black;
+                height: 23px;   
+
+                th {
+                    padding: 0px;
+                }
+            }
+
+            &Content {
+                background: white;
+                height: 43px;
+
+                td {
+                    padding: 0px;
+                }
+            }
+        }
+    }
+}
+
