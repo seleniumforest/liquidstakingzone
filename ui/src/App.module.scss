@@ -1,6 +1,11 @@
 @import "./index.scss";
 
+$appPink: #E91179;
+
 body {
+    margin: 0;
+    padding: 0;
+    
     background-color: $bg-color;
 
     .app {
@@ -8,5 +13,17 @@ body {
             width: 80%; //todo 1280px;
             margin: auto;
         }
+    }
+
+    .appButton, .appButton:hover {
+        font-family: 'Space Grotesk';
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 15px;
+
+        background-color: $appPink;
+        color: white;
+        box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+        border: 4px solid black;
     }
 }

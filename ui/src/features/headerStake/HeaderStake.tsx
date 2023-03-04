@@ -1,6 +1,8 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React from 'react';
+
 import styles from './headerStake.module.scss';
+import appStyles from "../../App.module.scss";
 
 export function HeaderStake() {
     return (
@@ -21,11 +23,27 @@ export function HeaderStake() {
                             </TableHead>
                             <TableBody className={styles.validatorStatsContent}>
                                 <TableRow>
-                                    <TableCell>Validator</TableCell>
-                                    <TableCell>Voting Power</TableCell>
-                                    <TableCell>24H Changes</TableCell>
-                                    <TableCell>Comission</TableCell>
-                                    <TableCell></TableCell>
+                                    <TableCell>
+                                        <div className={styles.validatorCellContent}>
+                                            <div className={styles.validatorCellContentLogo}>
+                                            </div>
+                                            <div className={styles.validatorCellContentInfo}>
+                                                <label>QuantNode</label>
+                                                <br></br>
+                                                <a href='https://quantnode.tech/'>https://quantnode.tech/</a>
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        206,800 STRD
+                                        <br></br>
+                                        0.17%
+                                    </TableCell>
+                                    <TableCell>0.1%</TableCell>
+                                    <TableCell>10%</TableCell>
+                                    <TableCell>
+                                        <Button className={appStyles.appButton}>Delegate</Button>
+                                    </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>

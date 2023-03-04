@@ -4,13 +4,19 @@
     border-radius: 4px;
     margin-top: 30px;
     background-color: $block-color;
-    display: flex;
-    width: 100%;
-    justify-content: center;
 
     .headerStakeContent {
         margin-top: 20px;
         margin-bottom: 20px;
+        padding: 20px 25% 20px 25%;
+
+        @media screen and (max-width: 1280px) {
+            padding: 20px 10% 20px 10%;
+        }
+
+        @media screen and (max-width: 880px) {
+            padding: 20px 5% 20px 5%;
+        }
 
         .helpQuantNodeLabel {
             font-family: "Space Grotesk";
@@ -21,25 +27,27 @@
         }
 
         .validatorStats {
-            display: block;
             border-radius: 6px;
             border: 4px solid black;
-            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
 
-            th, td {
+            th,
+            td {
                 font-family: 'Space Grotesk';
                 font-weight: 400;
                 font-size: 12px;
                 line-height: 15px;
+
+                padding: 5px 5px 5px 15px;
             }
 
             &Header {
                 background: white;
                 border-bottom: 4px solid black;
-                height: 23px;   
+                height: 23px;
 
                 th {
-                    padding: 0px;
+                    text-transform: uppercase
                 }
             }
 
@@ -47,11 +55,20 @@
                 background: white;
                 height: 43px;
 
-                td {
-                    padding: 0px;
+                .validatorCellContent {
+                    display: flex;
+
+                    &Logo {
+                        background-image: url("../../../public/img/stride-avatar-icon.png");
+                        background-size: contain;
+                        width: 34px;
+                        height: 34px;
+                        border-radius: 50%;
+
+                        margin-right: 5px;
+                    }
                 }
             }
         }
     }
 }
-
