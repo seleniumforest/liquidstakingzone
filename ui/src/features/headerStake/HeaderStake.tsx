@@ -1,4 +1,3 @@
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React from 'react';
 
 import styles from './headerStake.module.scss';
@@ -10,44 +9,44 @@ export function HeaderStake() {
             <div className={styles.headerStakeContent}>
                 <div className={styles.helpQuantNodeLabel}>❤️ Helping QuantNode By Staking ❤️</div>
                 <div className={styles.validatorStats}>
-                    <TableContainer>
-                        <Table>
-                            <TableHead className={styles.validatorStatsHeader}>
-                                <TableRow>
-                                    <TableCell>Validator</TableCell>
-                                    <TableCell>Voting Power</TableCell>
-                                    <TableCell>24H Changes</TableCell>
-                                    <TableCell>Comission</TableCell>
-                                    <TableCell></TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody className={styles.validatorStatsContent}>
-                                <TableRow>
-                                    <TableCell>
-                                        <div className={styles.validatorCellContent}>
-                                            <div className={styles.validatorCellContentLogo}>
-                                            </div>
-                                            <div className={styles.validatorCellContentInfo}>
-                                                <label>QuantNode</label>
-                                                <br></br>
-                                                <a href='https://quantnode.tech/'>https://quantnode.tech/</a>
-                                            </div>
+                    <table>
+                        <thead className={styles.validatorStatsHeader}>
+                            <tr>
+                                <th scope="col">Validator</th>
+                                <th scope="col">Voting Power</th>
+                                <th scope="col">24H Changes</th>
+                                <th scope="col">Comission</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody className={styles.validatorStatsContent}>
+                            <tr>
+                                <td>
+                                    <div className={styles.validatorCellContent}>
+                                        <div className={styles.validatorCellContentLogo}>
                                         </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        206,800 STRD
-                                        <br></br>
-                                        0.17%
-                                    </TableCell>
-                                    <TableCell>0.1%</TableCell>
-                                    <TableCell>10%</TableCell>
-                                    <TableCell>
-                                        <Button className={appStyles.appButton}>Delegate</Button>
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                                        <div>
+                                            <label>QuantNode</label>
+                                            <br></br>
+                                            <a href="https://quantnode.tech/">https://quantnode.tech/</a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    206,800 STRD
+                                    <br></br>
+                                    0.17%
+                                </td>
+                                <td>0.1%</td>
+                                <td>10%</td>
+                                <td>
+                                    <button className={appStyles.appButton}>
+                                        Delegate
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

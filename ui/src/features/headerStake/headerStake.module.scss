@@ -30,24 +30,31 @@
             border-radius: 6px;
             border: 4px solid black;
             box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+            background-color: white;
 
-            th,
-            td {
-                font-family: 'Space Grotesk';
-                font-weight: 400;
-                font-size: 12px;
-                line-height: 15px;
+            table {
+                border-collapse: collapse;
+                width: 100%;
 
-                padding: 5px 5px 5px 15px;
+                th,
+                td {
+                    font-family: 'Space Grotesk';
+                    font-weight: 400;
+                    font-size: 12px;
+                    line-height: 15px;
+
+                    padding: 5px 5px 5px 15px;
+                }
             }
 
             &Header {
                 background: white;
-                border-bottom: 4px solid black;
                 height: 23px;
+                border-bottom: 4px solid black;
 
                 th {
-                    text-transform: uppercase
+                    text-transform: uppercase;
+                    text-align: left;
                 }
             }
 
