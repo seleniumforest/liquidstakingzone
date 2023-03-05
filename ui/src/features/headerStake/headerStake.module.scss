@@ -1,10 +1,6 @@
 @import "../../index.scss";
 
 .headerStake {
-    border-radius: 4px;
-    margin-top: 30px;
-    background-color: $block-color;
-
     .headerStakeContent {
         margin-top: 20px;
         margin-bottom: 20px;
@@ -19,8 +15,6 @@
         }
 
         .helpQuantNodeLabel {
-            font-family: "Space Grotesk";
-            font-style: normal;
             font-weight: 700;
             font-size: 16px;
             line-height: 20px;
@@ -38,7 +32,6 @@
 
                 th,
                 td {
-                    font-family: 'Space Grotesk';
                     font-weight: 400;
                     font-size: 12px;
                     line-height: 15px;

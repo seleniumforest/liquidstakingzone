@@ -1,0 +1,13 @@
+@import "../../index.scss";
+
+.appButton, .appButton:hover {
+    @include shadowedBox();
+
+    font-family: 'Space Grotesk';
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+
+    background-color: $appPink;
+    color: white;
+}
