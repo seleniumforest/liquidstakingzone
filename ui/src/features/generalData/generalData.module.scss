@@ -3,6 +3,7 @@
 //2nd line with 2 blue boxes after header
 .blocksLine {
     display: flex;
+    flex-wrap: wrap;
     gap: 20px;
 
     .generalData {
@@ -79,12 +80,21 @@
 
     .priceChart {
         width: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
+
+        .strdPriceTimespanSelector {
+            margin-right: 15px;
+        }
     }
 }
 
 .stakeNow {
     padding: 0px 35px;
     display: flex;
+    min-height: 250px;
 
     .aboutData {
         display: flex;

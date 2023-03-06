@@ -1,11 +1,51 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
+import Highcharts, { Options } from 'highcharts'
 import styles from './generalData.module.scss';
 import appStyles from "../../App.module.scss";
 import { TimeSpanSelector } from '../../reusable/timeSpanSelector/TimeSpanSelector';
 import { AppButton } from '../../reusable/appButton/AppButton';
+import HighchartsReact from 'highcharts-react-official'
 
 export function GeneralData() {
+    const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
+
+    const chartData = {
+        chart: {
+            backgroundColor: 'transparent',
+            type: 'area',
+            borderColor: 'transparent',
+            height: "50%"
+        },
+        yAxis: {
+            visible: false,
+        },
+        plotOptions: {
+
+        },
+        legend: { enabled: false },
+
+        title: false,
+        subtitle: false,
+        credits: {
+            enabled: false
+        },
+        series: [{
+            marker: {
+                enabled: false,
+            },
+            color: "#18C7FF",
+            data: [0.4, 0.41, 0.45, 0.42, 0.43, 0.5, 0.2, 0.3],
+            fillColor: {
+                linearGradient: [0, 0, 0, 300],
+                stops: [
+                    [0, "#18C7FF"],
+                    [1, "#ffffff"]
+                ]
+            }
+        }]
+    };
+
     return (
         <div className={styles.blocksLine}>
             <div className={styles.generalData + " " + appStyles.appBlock}>
@@ -36,7 +76,12 @@ export function GeneralData() {
                     </div>
                 </div>
                 <div className={styles.priceChart}>
-                    <TimeSpanSelector />
+                    <TimeSpanSelector className={styles.strdPriceTimespanSelector} />
+                    <HighchartsReact
+                        highcharts={Highcharts}
+                        options={chartData}
+                        ref={chartComponentRef}
+                    />
                 </div>
             </div>
             <div className={styles.stakeNow + " " + appStyles.appBlock}>
