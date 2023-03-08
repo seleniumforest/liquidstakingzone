@@ -4,7 +4,7 @@
     display: grid;
     grid-template-columns: 1.5fr 1fr;
     grid-template-rows: 1fr;
-    gap: 10px 10px;
+    gap: 20px 20px;
     grid-template-areas:
         ". .";
 
@@ -14,19 +14,48 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 10px 10px;
+    gap: 20px 20px;
     grid-template-areas:
         ". ."
         ". .";
 }
 
 .chartCard {
-    &Header {}
+    >* {
+        margin-bottom: 10px;
+    }
+
+    &Header {
+        margin-bottom: 20px;;
+        >* {
+            display: inline;
+        }
+
+        h3 {
+            margin-right: 7px;
+        }
+
+        .tooltipQuestionMark {
+            position: relative;
+            bottom: 10px
+        }
+
+        a {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            text-align: center;
+            border: 1px solid black;
+            border-radius: 50%;
+            background-color: transparent;
+        }
+    }
 
     &Options {
         display: flex;
         justify-content: flex-end;
         gap: 10px;
+
         :first-child {
             margin-right: auto;
         }
