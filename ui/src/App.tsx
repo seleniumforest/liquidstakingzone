@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './App.module.scss';
+import { Assets } from './features/assets/Assets';
 import { GeneralData } from './features/generalData/GeneralData';
 import { HeaderStake } from './features/headerStake/HeaderStake';
 
@@ -10,6 +11,7 @@ function App() {
                 <div className={styles.blocks}>
                     <HeaderStake />
                     <GeneralData />
+                    <Assets />
                 </div>
             </div>
         </div>

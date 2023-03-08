@@ -1,0 +1,1 @@
+export const joinClasses = (...classes: (string | undefined)[]) => classes.join(" ");

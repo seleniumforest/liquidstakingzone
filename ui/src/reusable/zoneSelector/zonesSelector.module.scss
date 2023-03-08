@@ -1,0 +1,10 @@
+@import "../../index.scss";
+
+.appSelect {
+    width: fit-content;
+    display: inline-block;
+
+    .placeholder {
+        color: black;
+    }
+}

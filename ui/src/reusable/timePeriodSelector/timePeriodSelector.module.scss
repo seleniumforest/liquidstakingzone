@@ -1,0 +1,29 @@
+@import "../../index.scss";
+
+.timeSpanSelector {
+    border: 2px solid black;
+    border-radius: 4px;
+    padding: 4px 6px 4px 6px;
+    display: flex;
+    gap: 10px;
+    width: fit-content;
+    
+    button {
+        width: 35px;
+        height: 16px;
+        padding: 0px;
+        background-color: white;
+        font-family: 'Space Grotesk';
+        color: black;
+        border: 1px solid $appPink;
+        border-radius: 2px;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 15px;
+        text-align: center;
+    }
+
+    button:hover {
+        background-color: $appPink;
+    }
+}

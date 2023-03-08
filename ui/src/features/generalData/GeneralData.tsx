@@ -6,6 +6,8 @@ import appStyles from "../../App.module.scss";
 import { TimeSpanSelector } from '../../reusable/timeSpanSelector/TimeSpanSelector';
 import { AppButton } from '../../reusable/appButton/AppButton';
 import HighchartsReact from 'highcharts-react-official'
+import { joinClasses } from '../../app/helpers';
+import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
 
 export function GeneralData() {
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
@@ -48,7 +50,7 @@ export function GeneralData() {
 
     return (
         <div className={styles.blocksLine}>
-            <div className={styles.generalData + " " + appStyles.appBlock}>
+            <div className={joinClasses(styles.generalData, appStyles.appBlock)}>
                 <div className={styles.stats}>
                     <div className={styles.strideLogo}></div>
                     <div className={styles.supportedZonesLabel}>Supported zones</div>
@@ -76,7 +78,7 @@ export function GeneralData() {
                     </div>
                 </div>
                 <div className={styles.priceChart}>
-                    <TimeSpanSelector className={styles.strdPriceTimespanSelector} />
+                    <TimePeriodSelector className={styles.strdPriceTimespanSelector} />
                     <HighchartsReact
                         highcharts={Highcharts}
                         options={chartData}
@@ -84,7 +86,7 @@ export function GeneralData() {
                     />
                 </div>
             </div>
-            <div className={styles.stakeNow + " " + appStyles.appBlock}>
+            <div className={joinClasses(styles.stakeNow, appStyles.appBlock)}>
                 <div className={styles.aboutData}>
                     <div className={styles.stride}>Stride</div>
                     <div className={styles.strideDesc}>

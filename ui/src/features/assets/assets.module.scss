@@ -1,0 +1,39 @@
+@import "../../index.scss";
+
+.assetsDeposited {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 10px 10px;
+    grid-template-areas:
+        ". .";
+
+}
+
+.otherCharts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px 10px;
+    grid-template-areas:
+        ". ."
+        ". .";
+}
+
+.chartCard {
+    &Header {}
+
+    &Options {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        :first-child {
+            margin-right: auto;
+        }
+    }
+
+    &CumulativeSwitch {
+        display: flex;
+        justify-content: end;
+    }
+}

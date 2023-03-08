@@ -1,11 +1,11 @@
 import React from 'react';
 
-import styles from './timeSpanSelector.module.scss';
+import styles from './timePeriodSelector.module.scss';
 import appStyles from "../../App.module.scss";
 import { joinClasses } from '../../app/helpers';
 
-export function TimeSpanSelector({ className } : { className?: string }) {
-    let defaultButtons = ["D", "W", "M"]
+export function TimePeriodSelector({ className } : { className?: string }) {
+    let defaultButtons = ["7D", "30D", "90D", "180D", "365D", "MAX"]
 
     return (
         <div className={joinClasses(appStyles.timeSpanSelector, className)}>
