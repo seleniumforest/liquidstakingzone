@@ -3,6 +3,7 @@ import styles from './App.module.scss';
 import { Assets } from './features/assets/Assets';
 import { GeneralData } from './features/generalData/GeneralData';
 import { HeaderStake } from './features/headerStake/HeaderStake';
+import { Users } from './features/users/Users';
 
 function App() {
     return (
@@ -12,6 +13,7 @@ function App() {
                     <HeaderStake />
                     <GeneralData />
                     <Assets />
+                    <Users />
                 </div>
             </div>
         </div>
