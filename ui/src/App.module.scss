@@ -14,11 +14,35 @@ body {
         }
     }
 
+    $marginBetweenBlueBlocks: 20px;
+    $blueBlockBorderRadius: 5px;
+
     .appBlock {
         background-color: $block-color;
-        border-radius: 4px;
-        margin-top: 10px;
+        border-radius: $blueBlockBorderRadius;
+        margin-top: $marginBetweenBlueBlocks;
         padding: 20px 35px 20px 35px;
+
+        &Label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Space Grotesk';
+            font-style: normal;
+            font-weight: 700;
+            font-size: 30px;
+            line-height: 38px;
+            height: 100%;
+
+            &Container {
+                width: 180px;
+                height: 50px;
+                background-color: rgba(233, 252, 255, 0.92);
+                position: relative;
+                top: $marginBetweenBlueBlocks + $blueBlockBorderRadius;
+                border-radius: $blueBlockBorderRadius;
+            }
+        }
     }
 
     .appSwitch {

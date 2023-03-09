@@ -3,10 +3,11 @@ import React from 'react';
 import styles from './headerStake.module.scss';
 import appStyles from "../../App.module.scss";
 import { AppButton } from '../../reusable/appButton/AppButton';
+import { joinClasses } from '../../app/helpers';
 
 export function HeaderStake() {
     return (
-        <div className={styles.headerStake + " " + appStyles.appBlock}>
+        <div className={joinClasses(appStyles.appBlock, styles.headerStake)}>
             <div className={styles.headerStakeContent}>
                 <div className={styles.helpQuantNodeLabel}>❤️ Helping QuantNode By Staking ❤️</div>
                 <div className={styles.validatorStats}>

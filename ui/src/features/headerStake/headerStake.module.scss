@@ -2,16 +2,14 @@
 
 .headerStake {
     .headerStakeContent {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        padding: 20px 25% 20px 25%;
+        padding: 0px 25% 0px 25%;
 
         @media screen and (max-width: 1280px) {
-            padding: 20px 10% 20px 10%;
+            padding: 0px 10% 0px 10%;
         }
 
         @media screen and (max-width: 880px) {
-            padding: 20px 5% 20px 5%;
+            padding: 0px 5% 0px 5%;
         }
 
         .helpQuantNodeLabel {

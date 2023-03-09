@@ -8,13 +8,17 @@ import HighchartsReact from 'highcharts-react-official'
 import { ToggleSwitch } from '../../reusable/toggleSwitch/ToggleSwitch';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
-import { makeStyles } from '@mui/styles';
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
-import { maxWidth } from '@mui/system';
 
 export function Assets() {
     return (
+        <>
+        <div className={appStyles.appBlockLabelContainer}>
+            <div className={appStyles.appBlockLabel}>
+            Assets
+            </div>
+        </div>
         <div className={appStyles.appBlock}>
             <div className={styles.assetsDeposited}>
                 <ChartCard {...headersData.exclInterest} />
@@ -27,6 +31,7 @@ export function Assets() {
                 <ChartCard {...headersData.redemptionRate} />
             </div>
         </div>
+        </>
     );
 }
 
@@ -53,24 +58,8 @@ const headersData = {
     }
 }
 
-const useStyles = makeStyles((theme) => ({
-    tooltip: {
-        backgroundColor: "white !important",
-        color: "black !important",
-        border: "3px solid black !important",
-        borderRadius: "6px !important",
-        fontFamily: 'Space Grotesk !important',
-        fontSize: "14px !important",
-        lineHeight: "18px !important",
-        textAlign: "center",
-        padding: "10px"
-    }
-}));
-
 function ChartCard(props: ChartCardProps) {
     let [checked, setChecked] = useState(false);
-    let st = useStyles();
-
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
     const chartData = {
