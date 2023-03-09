@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './App.module.scss';
 import { Assets } from './features/assets/Assets';
+import { Events } from './features/events/Events';
 import { GeneralData } from './features/generalData/GeneralData';
 import { HeaderStake } from './features/headerStake/HeaderStake';
 import { Users } from './features/users/Users';
@@ -14,6 +15,7 @@ function App() {
                     <GeneralData />
                     <Assets />
                     <Users />
+                    <Events />
                 </div>
             </div>
         </div>
