@@ -80,6 +80,7 @@ export function GeneralData() {
                 <div className={styles.priceChart}>
                     <TimePeriodSelector className={styles.strdPriceTimespanSelector} />
                     <HighchartsReact
+                        containerProps={{ style: { height: "100%", width: "100%" } }}
                         highcharts={Highcharts}
                         options={chartData}
                         ref={chartComponentRef}

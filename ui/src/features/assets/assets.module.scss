@@ -2,11 +2,64 @@
 
 .assetsDeposited {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr;
     gap: 20px 20px;
     grid-template-areas:
         ". .";
+
+    .whiteCardContainer {
+        .whiteCard {
+            @include shadowedBox();
+            background-color: white;
+            padding: 20px 35px 20px 35px;
+
+            .diffContainer {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr 1fr 1fr;
+                gap: 10px 10px;
+                grid-template-areas:
+                    ". ."
+                    ". ."
+                    ". .";
+
+                .depositDiff {
+                    font-weight: 400;
+                    font-size: 10px;
+                    line-height: 13px;
+                    width: fit-content;
+                    text-align: center;
+
+                    .today {
+                        font-weight: 700;
+                        font-size: 20px;
+                        line-height: 26px;
+                        display: flex;
+                        justify-content: center;
+
+                        img {
+                            margin-left: 10px;
+                            width: 27px;
+                            height: 27px;
+                        }
+                    }
+
+                    .diff {
+                        &.red {
+                            color: red
+                        }
+
+                        &.green {
+                            color: green;
+                        }
+                    }
+
+                    .yesterday {}
+                }
+            }
+        }
+    }
 
 }
 
@@ -26,7 +79,9 @@
     }
 
     &Header {
-        margin-bottom: 20px;;
+        margin-bottom: 20px;
+        ;
+
         >* {
             display: inline;
         }

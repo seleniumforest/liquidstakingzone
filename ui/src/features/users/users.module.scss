@@ -8,4 +8,34 @@
     grid-template-areas:
         ". ."
         ". .";
+
+
+    .yellowCardContainer {
+        display: flex;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        .yellowCard {
+            @include shadowedBox();
+            background-color: $appYellow;
+            align-self: center;
+            padding: 20px 35px 20px 35px;
+            max-width: 600px;
+
+            h4,
+            h2 {
+                text-transform: uppercase;
+            }
+
+            h2 {
+                margin-top: 0;
+            }
+
+            div {
+                font-weight: 400;
+                font-size: 16px;
+                line-height: 20px;
+            }
+        }
+    }
 }

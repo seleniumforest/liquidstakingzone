@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import Highcharts from 'highcharts'
 import styles from './chartCard.module.scss';
@@ -12,6 +12,13 @@ import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
 
 export function ChartCard(props: ChartCardProps) {
+    let windowSize = useWindowSize();
+
+    useEffect(() => {
+        let chart = chartComponentRef.current?.chart;
+        if (chart) chart.reflow();
+    }, [windowSize])
+
     let [checked, setChecked] = useState(false);
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
@@ -102,6 +109,27 @@ export function ChartCard(props: ChartCardProps) {
     )
 }
 
+
+function useWindowSize() {
+    const [windowSize, setWindowSize] = useState({
+        width: 0,
+        height: 0,
+    });
+
+    useEffect(() => {
+        function handleResize() {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+        }
+
+        window.addEventListener("resize", handleResize);
+        handleResize();
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+    return windowSize;
+}
 
 interface ChartCardProps {
     hideZonesSelector?: boolean,
