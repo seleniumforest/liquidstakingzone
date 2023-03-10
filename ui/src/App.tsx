@@ -16,6 +16,7 @@ function App() {
                     <Assets />
                     <Users />
                     <Events />
+                    <Footer />
                 </div>
             </div>
         </div>
@@ -23,3 +24,16 @@ function App() {
 }
 
 export default App;
+
+
+function Footer() {
+    return (
+        <div className={styles.footer}>
+            © 2023, ❤️ Proudly built by
+            <img src='/img/letscode-logo.png' alt={`Let's Code`} />
+            X
+            <img src='/img/quantnode-logo.png' alt={` `} />
+            QUANTNODE ❤️
+        </div>
+    );
+}

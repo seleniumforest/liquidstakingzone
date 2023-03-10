@@ -12,11 +12,43 @@
 
         table {
             width: 100%;
-            border-collapse:separate; 
+            border-collapse: separate;
             border-spacing: 0 1em;
 
             thead {
                 text-align: left;
+                font-weight: 700;
+                font-size: 20px;
+                line-height: 26px;
+            }
+
+            tbody {
+
+                tr td {
+                    font-weight: 600;
+                    font-size: 16px;
+                    line-height: 20px;
+                }
+
+                .assetIcons {
+                    img {
+                        width: 27px;
+                        height: 27px;
+
+                        &.secondImg {
+                            position: relative;
+                            right: 10px;
+                        }
+                    }
+                }
+
+                .deposit {
+                    color: green;
+                }
+
+                .redeem {
+                    color: red;
+                }
             }
         }
     }

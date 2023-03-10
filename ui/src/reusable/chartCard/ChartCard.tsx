@@ -73,6 +73,7 @@ export function ChartCard(props: ChartCardProps) {
                         <a
                             data-tooltip-id="my-tooltip"
                             data-tooltip-content={props.tooltipText}
+                            className={styles.tooltipQuestionMark}
                             data-tooltip-place="bottom"
                         >
                             ?
