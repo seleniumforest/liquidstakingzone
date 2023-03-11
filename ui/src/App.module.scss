@@ -9,7 +9,17 @@ body {
 
     .app {
         .content {
-            width: 80%; //todo 1280px;
+            width: 90% ;
+            @media screen and (min-width: 1920px) {
+                width: 60%;
+            }
+            @media screen and (min-width: 1440px) and (max-width: 1920px) {
+                width: 80%;
+            }
+
+            @media screen and (min-width: 1270px) and (max-width: 1440px) {
+                width: 95%;
+            }
             margin: auto;
         }
     }

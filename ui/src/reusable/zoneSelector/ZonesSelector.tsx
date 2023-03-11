@@ -14,35 +14,65 @@ export function ZonesSelector() {
         { value: "Evmos", label: "Evmos" }
     ];
 
+    const customStyles = (width = 100, height = 40) => {
+        return {
+            container: (base: any) => ({
+                ...base,
+                display: 'inline-block',
+                width: width,
+            }),
+            valueContainer: (base: any) => ({
+                ...base,
+                minHeight: height,
+            })
+        }
+    }
+
     return (
         <div className={styles.appSelect}>
             <ReactSelect
-                className="basic-single"
+                className="sectionTest"
                 options={zones}
                 onChange={() => { }}
                 controlShouldRenderValue={false}
-                placeholder={<div className={styles.placeholder}>{`${zones.length} Tokens`}</div>}
+                placeholder={<div className={styles.placeholder}>{`${zones.length} Zones`}</div>}
                 theme={(theme) => ({
                     ...theme,
                     colors: {
-                      ...theme.colors,
-                      primary25: '#E91179',
-                      primary: '#E91179',
+                        ...theme.colors,
+                        primary25: '#E91179',
+                        primary: '#E91179',
                     },
-                  })}
+                })}
                 styles={{
                     control: base => ({
                         ...base,
                         border: "0",
-                        boxShadow: 'none'
+                        boxShadow: 'none',
+                        minHeight: '24px',
+                        height: '24px',
                     }),
                     container: base => ({
                         ...base,
-                        border: "3px solid black",
-                        borderRadius: "6px"
+                        border: "2px solid black",
+                        borderRadius: "6px",
+                        minWidth: "100px"
                     }),
-                    option: base => ({
-                        ...base,
+                    valueContainer: (provided) => ({
+                        ...provided,
+                        height: '24px',
+                        padding: '0 6px'
+                    }),
+                    input: (provided) => ({
+                        ...provided,
+                        margin: '0px',
+                    }),
+                    indicatorSeparator: () => ({
+                        display: 'none',
+                    }),
+                    indicatorsContainer: (provided) => ({
+                        ...provided,
+                        height: '24px',
                     })
                 }}
                 components={{

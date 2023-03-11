@@ -17,12 +17,11 @@ export function ChartCard(props: ChartCardProps) {
     useEffect(() => {
         let chart = chartComponentRef.current?.chart;
         if (chart) chart.reflow();
-        console.log("reflow")
     }, [windowSize])
 
     let [checked, setChecked] = useState(false);
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
-    eval("window.qwe = chartComponentRef");
+
     const chartData = {
         chart: {
             backgroundColor: 'transparent',
@@ -102,7 +101,7 @@ export function ChartCard(props: ChartCardProps) {
                 </div>
             }
             <HighchartsReact 
-               //containerProps={{ style: { width: "100%" } }}
+                containerProps={{ style: { width: "100%" } }}  
                 highcharts={Highcharts}
                 options={chartData}
                 ref={chartComponentRef}
