@@ -2,26 +2,17 @@
 
 //2nd line with 2 blue boxes after header
 .blocksLine {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-
-    .generalData {
-        flex-grow: 2;
-    }
-
-    .stakeNow {
-        flex-grow: 1;
-        flex-basis: 33%;
-    }
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr;
+    grid-column-gap: 20px;
+    grid-row-gap: 0px;
 }
 
 .generalData {
     display: flex;
-
     .stats {
-        width: 50%;
-
+        flex-grow: 1;
         >div {
             margin-bottom: 10px;
         }
@@ -78,7 +69,8 @@
     }
 
     .priceChart {
-        width: 50%;
+        flex-grow: 1;
+        max-width: 50%;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;

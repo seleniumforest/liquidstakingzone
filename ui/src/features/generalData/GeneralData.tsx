@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import Highcharts, { Options } from 'highcharts'
 import styles from './generalData.module.scss';
@@ -8,9 +8,15 @@ import { AppButton } from '../../reusable/appButton/AppButton';
 import HighchartsReact from 'highcharts-react-official'
 import { joinClasses } from '../../app/helpers';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
+import { useWindowSize } from '../../reusable/chartCard/ChartCard';
 
 export function GeneralData() {
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
+    const windowSize = useWindowSize();
+    useEffect(() => {
+        let chart = chartComponentRef.current?.chart;
+        if (chart) chart.reflow();
+    }, [windowSize])
 
     const chartData = {
         chart: {
@@ -80,7 +86,7 @@ export function GeneralData() {
                 <div className={styles.priceChart}>
                     <TimePeriodSelector className={styles.strdPriceTimespanSelector} />
                     <HighchartsReact
-                        containerProps={{ style: { height: "100%", width: "100%" } }}
+                        containerProps={{ style: { width: "100%" } }}
                         highcharts={Highcharts}
                         options={chartData}
                         ref={chartComponentRef}

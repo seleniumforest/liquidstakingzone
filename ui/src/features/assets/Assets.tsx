@@ -2,8 +2,8 @@ import React, { ReactElement } from 'react';
 
 import styles from './assets.module.scss';
 import appStyles from "../../App.module.scss";
+
 import { ChartCard } from '../../reusable/chartCard/ChartCard';
-import { JsxElement } from 'typescript';
 import { joinClasses } from '../../app/helpers';
 
 export function Assets() {
@@ -21,7 +21,7 @@ export function Assets() {
                     Assets
                 </div>
             </div>
-            <div className={appStyles.appBlock}>
+            <div className={joinClasses(styles.assetsBlueBlock, appStyles.appBlock)}>
                 <div className={styles.assetsDeposited}>
                     <ChartCard {...headersData.exclInterest} />
                     <div className={styles.whiteCardContainer}>
