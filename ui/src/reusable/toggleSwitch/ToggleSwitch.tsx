@@ -17,7 +17,7 @@ export function ToggleSwitch({ checked, setChecked }: { checked: boolean, setChe
                 onColor="#E91179"
                 onHandleColor="#ffffff"
                 handleDiameter={0}
-                checkedIcon={false}
+                checkedIcon={false} 
                 uncheckedIcon={false}
                 borderRadius={6} />
 

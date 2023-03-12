@@ -15,16 +15,20 @@
             display: flex;
             height: fit-content;
             justify-content: center;
+            height: 100%;
+            align-items: center;
 
             .whiteCard {
                 @include shadowedBox();
                 background-color: white;
                 padding: 20px 35px 20px 35px;
                 width: fit-content;
+                height: fit-content;
                 display: flex;
                 flex-direction: column;
 
                 .diffContainer {
+                    justify-items: center;
                     display: grid;
                     grid-template-columns: 1fr 1fr;
                     grid-template-rows: 1fr 1fr 1fr;

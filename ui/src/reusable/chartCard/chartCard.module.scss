@@ -21,8 +21,9 @@
         }
 
         a {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
+            font-size: 12px;
             display: inline-block;
             text-align: center;
             border: 1px solid black;
@@ -33,11 +34,12 @@
 
     &Options {
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
         gap: 10px;
 
-        :first-child {
-            margin-right: auto;
+        .timeSelectorsContainer {
+            display: flex;
+            gap: 10px;
         }
     }
 

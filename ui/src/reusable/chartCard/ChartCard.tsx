@@ -89,9 +89,13 @@ export function ChartCard(props: ChartCardProps) {
                 }
             </div>
             <div className={styles.chartCardOptions}>
-                {!props.hideZonesSelector && <ZonesSelector />}
-                {!props.hideTimeSpanSelector && <TimeSpanSelector />}
-                {!props.hideTimePeriodSelector && <TimePeriodSelector />}
+                <div>
+                    {!props.hideZonesSelector && <ZonesSelector />}
+                </div>
+                <div className={styles.timeSelectorsContainer}>
+                    {!props.hideTimeSpanSelector && <TimeSpanSelector />}
+                    {!props.hideTimePeriodSelector && <TimePeriodSelector />}
+                </div>
             </div>
             {!props.hideIsCumulativeToggle &&
                 <div className={styles.chartCardCumulativeSwitch}>
@@ -100,8 +104,8 @@ export function ChartCard(props: ChartCardProps) {
                         setChecked={setChecked} />
                 </div>
             }
-            <HighchartsReact 
-                containerProps={{ style: { width: "100%" } }}  
+            <HighchartsReact
+                containerProps={{ style: { width: "100%" } }}
                 highcharts={Highcharts}
                 options={chartData}
                 ref={chartComponentRef}

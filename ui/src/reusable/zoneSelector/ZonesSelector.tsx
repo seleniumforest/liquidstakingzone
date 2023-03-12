@@ -28,6 +28,12 @@ export function ZonesSelector() {
         }
     }
 
+    let placeholder =
+        <div className={styles.placeholder}>
+            <div className={styles.placeholderNumber}>{zones.length}</div>
+            {` Zones`}
+        </div>;
+
     return (
         <div className={styles.appSelect}>
             <ReactSelect
@@ -35,7 +41,7 @@ export function ZonesSelector() {
                 options={zones}
                 onChange={() => { }}
                 controlShouldRenderValue={false}
-                placeholder={<div className={styles.placeholder}>{`${zones.length} Zones`}</div>}
+                placeholder={placeholder}
                 theme={(theme) => ({
                     ...theme,
                     colors: {

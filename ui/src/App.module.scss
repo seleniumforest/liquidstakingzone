@@ -65,13 +65,8 @@ body {
         }
 
         &Component {
+            border-radius: 6px !important;
             border: 3px solid black;
-
-            .react-switch-handle {
-                height: 16px;
-                width: 16px;
-                top: 2px;
-            }
         }
     }
 
