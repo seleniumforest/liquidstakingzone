@@ -1,5 +1,30 @@
 @import "../../index.scss";
 
 .appSelect {
+    width: fit-content;
+    display: inline-block;
+    min-width: 120px;
 
+    .placeholder {
+        color: black;
+        display: flex;
+
+        .placeholderNumber {
+            background-color: $appPink;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            text-align: center;
+            margin-right: 4px;
+        }
+    }
+}
+
+.zoneOption {
+    background-color: white;
+    
+    .zoneCheckbox {
+        accent-color: $appPink;
+    }
 }

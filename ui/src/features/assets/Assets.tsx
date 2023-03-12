@@ -41,7 +41,7 @@ export function Assets() {
                 <div className={styles.otherCharts}>
                     <ChartCard {...headersData.redeemedAssets} />
                     <ChartCard {...headersData.feesAndRevenue} />
-                    <ChartCard {...headersData.tvlByChains} />
+                    <ChartCard {...headersData.tvlByChains} multipleZones hideZonesSelector />
                     <ChartCard {...headersData.redemptionRate} />
                 </div>
             </div>

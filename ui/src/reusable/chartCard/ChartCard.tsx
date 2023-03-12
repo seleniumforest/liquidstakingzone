@@ -10,6 +10,7 @@ import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
+import { MultipleZonesSelector } from '../multipleZonesSelector/MultipleZonesSelector';
 
 export function ChartCard(props: ChartCardProps) {
     let windowSize = useWindowSize();
@@ -91,6 +92,7 @@ export function ChartCard(props: ChartCardProps) {
             <div className={styles.chartCardOptions}>
                 <div>
                     {!props.hideZonesSelector && <ZonesSelector />}
+                    {props.multipleZones && <MultipleZonesSelector />}
                 </div>
                 <div className={styles.timeSelectorsContainer}>
                     {!props.hideTimeSpanSelector && <TimeSpanSelector />}
@@ -142,6 +144,7 @@ interface ChartCardProps {
     hideTimeSpanSelector?: boolean,
     hideTimePeriodSelector?: boolean,
     hideIsCumulativeToggle?: boolean,
+    multipleZones?: boolean,
     headerText: string,
     tooltipText?: string
 }

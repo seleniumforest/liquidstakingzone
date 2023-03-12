@@ -3,6 +3,7 @@ import React, { } from 'react';
 import styles from './users.module.scss';
 import appStyles from "../../App.module.scss";
 import { ChartCard } from '../../reusable/chartCard/ChartCard';
+import { joinClasses } from '../../app/helpers';
 
 export function Users() {
     return (
@@ -12,7 +13,7 @@ export function Users() {
                     Users
                 </div>
             </div>
-            <div className={appStyles.appBlock}>
+            <div className={joinClasses(appStyles.appBlock, styles.usersBlueBlock)}>
                 <div className={styles.userCharts}>
                     <ChartCard {...headersData.activeUsers} hideTimeSpanSelector hideIsCumulativeToggle hideZonesSelector />
                     <ChartCard {...headersData.uniqueDeps} hideTimeSpanSelector hideIsCumulativeToggle hideZonesSelector />

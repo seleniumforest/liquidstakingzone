@@ -1,41 +1,46 @@
 @import "../../index.scss";
 
-.userCharts {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 20px 20px;
-    grid-template-areas:
-        ". ."
-        ". .";
+.usersBlueBlock {
+    padding: 40px 35px 40px 35px !important;
+    
+    .userCharts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 20px 20px;
+        grid-template-areas:
+            ". ."
+            ". .";
 
 
-    .yellowCardContainer {
-        display: flex;
-        justify-content: center;
-        height: 100%;
-        width: 100%;
-        .yellowCard {
-            @include shadowedBox();
-            background-color: $appYellow;
-            align-self: center;
-            padding: 40px 35px 40px 35px;
-            max-width: 600px;
+        .yellowCardContainer {
+            display: flex;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
 
-            h4 {
-                text-transform: uppercase;
-                margin-top: 0;
-            }
+            .yellowCard {
+                @include shadowedBox();
+                background-color: $appYellow;
+                align-self: center;
+                padding: 40px 35px 40px 35px;
+                max-width: 600px;
 
-            h2 {
-                text-transform: uppercase;
-                margin-top: 0;
-            }
+                h4 {
+                    text-transform: uppercase;
+                    margin-top: 0;
+                }
 
-            div {
-                font-weight: 400;
-                font-size: 16px;
-                line-height: 20px;
+                h2 {
+                    text-transform: uppercase;
+                    margin-top: 0;
+                }
+
+                div {
+                    font-weight: 400;
+                    font-size: 16px;
+                    line-height: 20px;
+                }
             }
         }
     }

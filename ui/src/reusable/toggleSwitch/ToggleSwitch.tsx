@@ -19,7 +19,7 @@ export function ToggleSwitch({ checked, setChecked }: { checked: boolean, setChe
                 handleDiameter={0}
                 checkedIcon={false} 
                 uncheckedIcon={false}
-                borderRadius={6} />
+                borderRadius={4} />
 
         </div>
     )
