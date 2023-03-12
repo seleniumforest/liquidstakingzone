@@ -12,10 +12,17 @@
             ". .";
 
         .whiteCardContainer {
+            display: flex;
+            height: fit-content;
+            justify-content: center;
+
             .whiteCard {
                 @include shadowedBox();
                 background-color: white;
                 padding: 20px 35px 20px 35px;
+                width: fit-content;
+                display: flex;
+                flex-direction: column;
 
                 .diffContainer {
                     display: grid;
@@ -29,15 +36,13 @@
 
                     .depositDiff {
                         font-weight: 400;
-                        font-size: 10px;
-                        line-height: 13px;
+                        font-size: 14px;
                         width: fit-content;
                         text-align: center;
 
                         .today {
                             font-weight: 700;
-                            font-size: 20px;
-                            line-height: 26px;
+                            font-size: 23px;
                             display: flex;
                             justify-content: center;
 

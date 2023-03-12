@@ -59,7 +59,7 @@ function DepositDiff(props: DepositDiffProps) {
                 {props.depostiedNow}
                 {props.icon}
             </div>
-            <div className={joinClasses(styles.diff, diffClass)}>{arrow} {props.diff}</div>
+            <div className={joinClasses(styles.diff, diffClass)}>{arrow} {props.diff}%</div>
             <div className={styles.yesterday}>{`Was ${props.depostiedYesterday} last day`}</div>
         </div>
     )
