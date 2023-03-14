@@ -67,10 +67,12 @@ export function GeneralData() {
                         <img alt='luna' src='/img/luna-logo.png' />
                         <img alt='evmos' src='/img/evmos-logo.svg' />
                     </div>
-                    <div className={styles.totalValueLockedLabel}>Total value locked</div>
-                    <div className={styles.totalValueLockedValueLabel}>$0.29m</div>
                     <div className={styles.mcapAndVolumeBox}>
                         <table>
+                        <tr>
+                                <td>Total value locked</td>
+                                <td>$0.29m</td>
+                            </tr>
                             <tr>
                                 <td>Market Cap</td>
                                 <td>$</td>
