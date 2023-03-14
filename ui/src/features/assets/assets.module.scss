@@ -11,6 +11,10 @@
         grid-template-areas:
             ". .";
 
+        @media screen and (max-width: 1300px) {
+            display: block;
+        }
+
         .whiteCardContainer {
             display: flex;
             height: fit-content;
@@ -84,10 +88,15 @@
     grid-template-areas:
         ". ."
         ". .";
+
+    @media screen and (max-width: 1300px) {
+        display: block;
+    }
 }
 
 .chartCard {
     width: 100%;
+
     >* {
         margin-bottom: 10px;
     }

@@ -2,7 +2,7 @@
 
 .usersBlueBlock {
     padding: 40px 35px 40px 35px !important;
-    
+
     .userCharts {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -11,6 +11,10 @@
         grid-template-areas:
             ". ."
             ". .";
+
+        @media screen and (max-width: 1300px) {
+            display: block;
+        }
 
 
         .yellowCardContainer {

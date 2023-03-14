@@ -9,17 +9,24 @@ body {
 
     .app {
         .content {
-            width: 90% ;
+            width: 90%;
+
             @media screen and (min-width: 1920px) {
-                width: 60%;
-            }
-            @media screen and (min-width: 1440px) and (max-width: 1920px) {
-                width: 80%;
+                width: 65%;
             }
 
-            @media screen and (min-width: 1270px) and (max-width: 1440px) {
+            @media screen and (min-width: 1440px) and (max-width: 1920px) {
+                width: 85%;
+            }
+
+            @media screen and (min-width: 1300px) and (max-width: 1440px) {
                 width: 95%;
             }
+
+            @media screen and (max-width: 1300px) {
+                width: 95%;
+            }
+
             margin: auto;
         }
     }
@@ -31,7 +38,7 @@ body {
         background-color: $block-color;
         border-radius: $blueBlockBorderRadius;
         margin-top: $marginBetweenBlueBlocks;
-        padding: 20px 35px 20px 35px;
+        padding: 15px 35px 15px 35px;
 
         &Label {
             display: flex;
@@ -109,6 +116,7 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
+
         img {
             border-radius: 50%;
             margin: 0px 10px 0px 10px;

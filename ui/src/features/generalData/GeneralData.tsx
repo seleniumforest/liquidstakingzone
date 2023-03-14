@@ -14,8 +14,7 @@ export function GeneralData() {
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
     const windowSize = useWindowSize();
     useEffect(() => {
-        let chart = chartComponentRef.current?.chart;
-        if (chart) chart.reflow();
+        chartComponentRef.current?.chart?.reflow();
     }, [windowSize])
 
     const chartData = {
@@ -23,7 +22,7 @@ export function GeneralData() {
             backgroundColor: 'transparent',
             type: 'area',
             borderColor: 'transparent',
-            height: "50%"
+            height: "270px"
         },
         yAxis: {
             visible: false,
@@ -86,11 +85,13 @@ export function GeneralData() {
                 <div className={styles.priceChart}>
                     <TimePeriodSelector className={styles.strdPriceTimespanSelector} />
                     <HighchartsReact
-                        containerProps={{ style: { width: "100%" } }}
+                        style={{ width: "100%" }}
                         highcharts={Highcharts}
                         options={chartData}
                         ref={chartComponentRef}
+                        allowChartUpdate
                     />
+
                 </div>
             </div>
             <div className={joinClasses(styles.stakeNow, appStyles.appBlock)}>
