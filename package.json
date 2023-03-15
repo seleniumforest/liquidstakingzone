@@ -9,6 +9,6 @@
         "packages/*"
     ],
     "scripts": {
-        "start": "yarn --cwd backend start && yarn --cwd ui start"
+        "start": "yarn --cwd backend start & yarn --cwd ui start"
     }
 }

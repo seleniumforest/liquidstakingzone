@@ -5,9 +5,16 @@
   "license": "MIT",
   "dependencies": {
     "@clickhouse/client": "^0.0.12",
-    "express": "^4.17.1"
+    "big.js": "^6.2.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "node-cache": "^5.1.2"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "ts-node index.ts"
+  },
+  "devDependencies": {
+    "@types/big.js": "^6.1.6",
+    "node-cache": "^5.1.2"
   }
 }
