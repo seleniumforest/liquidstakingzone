@@ -70,8 +70,8 @@ export function ChartCard(props: ChartCardProps) {
                     {props.multipleZones && <MultipleZonesSelector />}
                 </div>
                 <div className={styles.timeSelectorsContainer}>
-                    {!props.hideTimeSpanSelector && <TimeSpanSelector setTimeSpan={setTimeSpan} />}
-                    {!props.hideTimePeriodSelector && <TimePeriodSelector setTimePeriod={setTimePeriod} />}
+                    {!props.hideTimeSpanSelector && <TimeSpanSelector setTimeSpan={setTimeSpan} selectedValue={timeSpan} />}
+                    {!props.hideTimePeriodSelector && <TimePeriodSelector setTimePeriod={setTimePeriod} selectedValue={timePeriod} />}
                 </div>
             </div>
             {!props.hideIsCumulativeToggle &&
