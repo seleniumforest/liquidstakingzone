@@ -1,15 +1,17 @@
 {
+    "name": "vercel-typescript-express-api",
     "version": 2,
+    "public": true,
     "builds": [
-      {
-        "src": "./build/index.js",
-        "use": "@vercel/node"
-      }
+        {
+            "src": "index.ts",
+            "use": "@vercel/node"
+        }
     ],
     "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/"
-      }
+        {
+            "src": "/(.*)",
+            "dest": "index.ts"
+        }
     ]
-  }
+}
