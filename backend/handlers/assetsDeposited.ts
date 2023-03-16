@@ -10,7 +10,7 @@ export const assetsDeposited = async (req: Request, res: Response) => {
         query: `
             SELECT 
                 toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) * 1000 as date, 
-                SUM(am) as amount
+                floor(SUM(am) / pow(10, (select decimals from Stride.zones_info where zone = '${zone}')), 0) as amount
             FROM (
                 SELECT date, amount.2 as am
                 FROM Stride.msgs_MsgLiquidStake
@@ -22,7 +22,7 @@ export const assetsDeposited = async (req: Request, res: Response) => {
     });
 
     let response = (await query.json()) as ClickhouseResponse<{ date: string, amount: number }[]>;
-
+    
     cache.set('/assetsDeposited', response.data)
     res.json(response.data);
 }

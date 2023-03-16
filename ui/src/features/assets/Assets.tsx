@@ -1,10 +1,12 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 
 import styles from './assets.module.scss';
 import appStyles from "../../App.module.scss";
 
 import { ChartCard } from '../../reusable/chartCard/ChartCard';
 import { joinClasses } from '../../app/helpers';
+import { headersData } from './constants';
+import { AssetsExcludingInterest } from './AssetsExcludingInterest';
 
 export function Assets() {
     let data: DepositDiffProps = {
@@ -23,7 +25,7 @@ export function Assets() {
             </div>
             <div className={joinClasses(styles.assetsBlueBlock, appStyles.appBlock)}>
                 <div className={styles.assetsDeposited}>
-                    <ChartCard {...headersData.exclInterest} />
+                    <AssetsExcludingInterest />
                     <div className={styles.whiteCardContainer}>
                         <div className={styles.whiteCard}>
                             <h3>Total Assets Deposited Incl. Interest</h3>
@@ -70,27 +72,4 @@ interface DepositDiffProps {
     depostiedYesterday: number
     diff: number
     icon: ReactElement
-}
-
-const headersData = {
-    exclInterest: {
-        headerText: "Assets Deposited Excluding Interest",
-        tooltipText: "The amount of coins that have already been created, minus any coins that have been burned (removed from circulation). It is comparable to outstanding shares in the stock market."
-    },
-    redeemedAssets: {
-        headerText: "Redeemed assets",
-        tooltipText: "Tooltip for Redeemed assets"
-    },
-    feesAndRevenue: {
-        headerText: "Fees and Revenue",
-        tooltipText: "Tooltop for Fees and Revenue"
-    },
-    tvlByChains: {
-        headerText: "TVL by chains",
-        tooltipText: "Tooltip for TVL by chains"
-    },
-    redemptionRate: {
-        headerText: "Redemption Rate & stToken Prices",
-        tooltipText: "Tooltip for Redemption Rate & stToken Prices"
-    }
 }

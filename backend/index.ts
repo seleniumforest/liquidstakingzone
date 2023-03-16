@@ -1,8 +1,10 @@
 import express, { NextFunction, Request, Response } from "express";
 import { caching } from "./cache";
 import * as handlers from "./handlers";
+import cors from 'cors';
 
 const app = express();
+app.use(cors());
 
 const errHandle = async (handler: any, req: Request, res: Response, next: NextFunction) => {
     try {
@@ -11,6 +13,11 @@ const errHandle = async (handler: any, req: Request, res: Response, next: NextFu
         return res.status(500).json(e);
     }
 }
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+    console.log(`${new Date()} called ${req.originalUrl}`);
+    next();
+})
 
 app.get('/activeUsers', caching, (...args) => errHandle(handlers.activeUsers, ...args));
 app.get('/assetsDeposited', caching, (...args) => errHandle(handlers.assetsDeposited, ...args));

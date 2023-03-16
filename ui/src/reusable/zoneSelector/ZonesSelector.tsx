@@ -1,33 +1,19 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 import styles from './zonesSelector.module.scss';
 import { components } from "react-select";
 import { default as ReactSelect } from "react-select";
 
-export function ZonesSelector() {
-    let zones = [
-        { value: "Atom", label: "Atom" },
-        { value: "Osmo", label: "Osmo" },
-        { value: "Juno", label: "Juno" },
-        { value: "Stars", label: "Stars" },
-        { value: "Luna", label: "Luna" },
-        { value: "Evmos", label: "Evmos" }
-    ];
+const zones = [
+    { value: "atom", label: "Atom" },
+    { value: "osmo", label: "Osmo" },
+    { value: "juno", label: "Juno" },
+    { value: "stars", label: "Stars" },
+    { value: "luna", label: "Luna" },
+    { value: "evmos", label: "Evmos" }
+];
 
-    const customStyles = (width = 100, height = 40) => {
-        return {
-            container: (base: any) => ({
-                ...base,
-                display: 'inline-block',
-                width: width,
-            }),
-            valueContainer: (base: any) => ({
-                ...base,
-                minHeight: height,
-            })
-        }
-    }
-
+export function ZonesSelector({ setZone }: { setZone: Dispatch<SetStateAction<string>> }) {
     let placeholder =
         <div className={styles.placeholder}>
             <div className={styles.placeholderNumber}>{zones.length}</div>
@@ -39,7 +25,7 @@ export function ZonesSelector() {
             <ReactSelect
                 className="sectionTest"
                 options={zones}
-                onChange={() => { }}
+                onChange={(val) => setZone(val?.value ?? "")}
                 controlShouldRenderValue={false}
                 placeholder={placeholder}
                 theme={(theme) => ({

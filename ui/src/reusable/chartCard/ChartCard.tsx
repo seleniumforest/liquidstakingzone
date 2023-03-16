@@ -11,6 +11,9 @@ import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriod
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
 import { MultipleZonesSelector } from '../multipleZonesSelector/MultipleZonesSelector';
+import { baseChartOptions, TimePeriod, TimeSpan } from '../../app/constants';
+import moment from 'moment';
+import _ from "lodash";
 
 export function ChartCard(props: ChartCardProps) {
     let windowSize = useWindowSize();
@@ -20,43 +23,15 @@ export function ChartCard(props: ChartCardProps) {
         if (chart) chart.reflow();
     }, [windowSize])
 
-    let [checked, setChecked] = useState(false);
-    const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
+    let [isCumulative, setIsCumulative] = useState(false);
+    let [timeSpan, setTimeSpan] = useState<TimeSpan>("D");
+    let [timePeriod, setTimePeriod] = useState<TimePeriod>("MAX");
+    let chartComponentRef = useRef<HighchartsReact.RefObject>(null);
+    let chartOpts = { ...(props.chartOpts || baseChartOptions) };
 
-    const chartData = {
-        chart: {
-            backgroundColor: 'transparent',
-            type: 'column',
-            borderColor: 'transparent',
-            height: "50%"
-        },
-        yAxis: {
-            gridLineColor: 'transparent',
-            title: {
-                text: null
-            }
-        },
-        legend: { enabled: false },
-        title: false,
-        subtitle: false,
-        credits: {
-            enabled: false
-        },
-        series: [{
-            marker: {
-                enabled: false,
-            },
-            color: "#18C7FF",
-            data: [0.4, 0.41, 0.45, 0.42, 0.43, 0.5, 0.2, 0.3],
-            fillColor: {
-                linearGradient: [0, 0, 0, 300],
-                stops: [
-                    [0, "#18C7FF"],
-                    [1, "#ffffff"]
-                ]
-            }
-        }]
-    };
+    let composedData = composeData(timeSpan, timePeriod, isCumulative, props.chartData);
+
+    chartOpts.series[0].data = composedData;
 
     return (
         <div className={styles.chartCard}>
@@ -91,31 +66,86 @@ export function ChartCard(props: ChartCardProps) {
             </div>
             <div className={styles.chartCardOptions}>
                 <div>
-                    {!props.hideZonesSelector && <ZonesSelector />}
+                    {!props.hideZonesSelector && <ZonesSelector setZone={props.setZone} />}
                     {props.multipleZones && <MultipleZonesSelector />}
                 </div>
                 <div className={styles.timeSelectorsContainer}>
-                    {!props.hideTimeSpanSelector && <TimeSpanSelector />}
-                    {!props.hideTimePeriodSelector && <TimePeriodSelector />}
+                    {!props.hideTimeSpanSelector && <TimeSpanSelector setTimeSpan={setTimeSpan} />}
+                    {!props.hideTimePeriodSelector && <TimePeriodSelector setTimePeriod={setTimePeriod} />}
                 </div>
             </div>
             {!props.hideIsCumulativeToggle &&
                 <div className={styles.chartCardCumulativeSwitch}>
                     <ToggleSwitch
-                        checked={checked}
-                        setChecked={setChecked} />
+                        checked={isCumulative}
+                        setChecked={setIsCumulative} />
                 </div>
             }
             <HighchartsReact
                 containerProps={{ style: { width: "100%" } }}
                 highcharts={Highcharts}
-                options={chartData}
+                options={chartOpts}
                 ref={chartComponentRef}
             />
         </div>
     )
 }
+window.moment = moment;
 
+function composeData(timeSpan: TimeSpan, timePeriod: TimePeriod, isCumulative: boolean, series?: [date: number, value: number][]) {
+    if (!series)
+        return;
+
+    //organize by timePeriod
+    let filteredByPeriod = series.filter(el => {
+        if (timePeriod === "MAX")
+            return true;
+
+        let days = 0;
+        switch (timePeriod) {
+            case '7D': days = 7; break;
+            case '30D': days = 30; break;
+            case '90D': days = 90; break;
+            case '180D': days = 180; break;
+            case '365D': days = 365; break;
+        };
+        if (days === 0)
+            return true;
+
+        let result = moment(el[0]).diff(moment().subtract(days, 'days'), 'days');
+        return result >= 0;
+    });
+
+    //organize by timeSpan
+    let filteredByTimespan: [date: number, value: number][] = [];
+    let func = (x: [number, number]) => (moment(x[0]).dayOfYear() + " " + moment(x[0]).year());
+    switch (timeSpan) {
+        case 'W': func = (x: [number, number]) => (moment(x[0]).week() + " " + moment(x[0]).year()); break;
+        case 'M': func = (x: [number, number]) => (moment(x[0]).month() + " " + moment(x[0]).year()); break;
+    };
+    //group by day or week
+    filteredByTimespan = _.values(_.groupBy(filteredByPeriod, func)).map(x => {
+        //sum for end of period
+        let sum = x.reduce((prev, cur) => cur[1] + prev, 0);
+        //return last day and sum
+        return [x[x.length - 1][0], sum];
+    });
+
+    //organize by isCumulative
+    let result: [number, number][] = [];
+    let acc = 0;
+    filteredByTimespan?.forEach((x: [number, number]) => {
+        if (isCumulative) {
+            acc += x[1];
+            result.push([x[0], acc]);
+        }
+        else {
+            result.push(x);
+        }
+    });
+
+    return result;
+}
 
 export function useWindowSize() {
     const [windowSize, setWindowSize] = useState({
@@ -146,5 +176,8 @@ interface ChartCardProps {
     hideIsCumulativeToggle?: boolean,
     multipleZones?: boolean,
     headerText: string,
-    tooltipText?: string
+    tooltipText?: string,
+    chartOpts?: any,
+    chartData?: any,
+    setZone?: any
 }

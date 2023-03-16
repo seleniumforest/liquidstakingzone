@@ -4,18 +4,19 @@ import styles from './timeSpanSelector.module.scss';
 import appStyles from "../../App.module.scss";
 import { joinClasses } from '../../app/helpers';
 
-export function TimeSpanSelector({ className } : { className?: string }) {
-    let defaultButtons = ["D", "W", "M"]
+const buttons = ["D", "W", "M"];
 
+export function TimeSpanSelector(props: TimeSpanProps) {
     return (
-        <div className={joinClasses(appStyles.timeSpanSelector, className)}>
-            {defaultButtons.map(btn => TimeSpanButton({ label: btn}))}
+        <div className={joinClasses(appStyles.timeSpanSelector, props.className)}>
+            {buttons.map(btn => (
+                <button key={btn} onClick={() => props.setTimeSpan(btn)}>{btn}</button>
+            ))}
         </div>
     );
 }
 
-function TimeSpanButton({ label }: { label: string }) {
-    return (
-        <button>{label}</button>
-    )
+interface TimeSpanProps {
+    className?: string,
+    setTimeSpan?: any
 }
