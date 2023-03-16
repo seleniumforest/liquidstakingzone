@@ -29,6 +29,6 @@ app.get('/protocolRevenue', caching, (...args) => errHandle(handlers.protocolRev
 app.get('/redemptionRates', caching, (...args) => errHandle(handlers.redemptionRates, ...args));
 app.get('/tvlByChains', caching, (...args) => errHandle(handlers.tvlByChains, ...args));
 
-const server = app.listen(8081, function () {
+const server = app.listen(process.env.PORT || 8081, function () {
     console.log("Backend started at", server.address())
 })
