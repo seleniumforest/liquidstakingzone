@@ -11,7 +11,7 @@ import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriod
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
 import { MultipleZonesSelector } from '../multipleZonesSelector/MultipleZonesSelector';
-import { baseChartOptions, TimePeriod, TimeSpan } from '../../app/constants';
+import { baseChartOptions, TimePeriod, TimeSpan, Zone } from '../../app/constants';
 import moment from 'moment';
 import _ from "lodash";
 
@@ -24,14 +24,26 @@ export function ChartCard(props: ChartCardProps) {
     }, [windowSize])
 
     let [isCumulative, setIsCumulative] = useState(false);
-    let [timeSpan, setTimeSpan] = useState<TimeSpan>("D");
+    let [timeSpan, setTimeSpan] = useState<TimeSpan>("M");
     let [timePeriod, setTimePeriod] = useState<TimePeriod>("MAX");
     let chartComponentRef = useRef<HighchartsReact.RefObject>(null);
     let chartOpts = { ...(props.chartOpts || baseChartOptions) };
 
     let composedData = composeData(timeSpan, timePeriod, isCumulative, props.chartData);
+    chartOpts.series[0].data = timeSpan === "M" ? composedData?.map(x => x[1]) : composedData;
+    chartOpts.series[0].userOptions = {
+        zone: props.zone
+    }
+    chartComponentRef.current?.chart.xAxis[0].update({
+        type: timeSpan === "M" ? "category" : "datetime",
+        categories: timeSpan === "M" ? composedData?.map(x => {
+            let month = moment().month(moment(x[0]).month()).format("MMM");
+            let year = moment(x[0]).year();
+            return `${month} ${year}`
+        }) : undefined
+    });
 
-    chartOpts.series[0].data = composedData;
+
 
     return (
         <div className={styles.chartCard}>
@@ -83,6 +95,7 @@ export function ChartCard(props: ChartCardProps) {
             }
             <HighchartsReact
                 containerProps={{ style: { width: "100%" } }}
+                allowChartUpdate
                 highcharts={Highcharts}
                 options={chartOpts}
                 ref={chartComponentRef}
@@ -90,7 +103,6 @@ export function ChartCard(props: ChartCardProps) {
         </div>
     )
 }
-window.moment = moment;
 
 function composeData(timeSpan: TimeSpan, timePeriod: TimePeriod, isCumulative: boolean, series?: [date: number, value: number][]) {
     if (!series)
@@ -179,5 +191,6 @@ interface ChartCardProps {
     tooltipText?: string,
     chartOpts?: any,
     chartData?: any,
+    zone?: Zone,
     setZone?: any
 }
