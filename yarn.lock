@@ -8031,6 +8031,20 @@ react-is@^18.0.0, react-is@^18.2.0:
   resolved "https://registry.npmjs.org/react-is/-/react-is-18.2.0.tgz"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
+react-jsx-highcharts@5.0.0, react-jsx-highcharts@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/react-jsx-highcharts/-/react-jsx-highcharts-5.0.0.tgz#48d24965cdcca061c050f16557add583762cf8ec"
+  integrity sha512-a2TQof/F5+lpSsaFvx1uSXGww/Z+jhKKAlZu/1+YuNH1LChOtefH6yVX7EjcywC82P/MXaoc1CQZd+qTpU/AzQ==
+  dependencies:
+    uuid "^8.3.2"
+
+react-jsx-highstock@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/react-jsx-highstock/-/react-jsx-highstock-5.0.0.tgz#7d48f11717150ad0218d94735b18113de7fada72"
+  integrity sha512-WlBzPd2FmDk2jqCLBoFZcFKuqwVP/5i3T5GjF1T8gdKok888IGH84/NrKcWFf/aWIYBb/L+BFpRz5Boh0pq2ig==
+  dependencies:
+    react-jsx-highcharts "5.0.0"
+
 react-query@^3.39.3:
   version "3.39.3"
   resolved "https://registry.npmjs.org/react-query/-/react-query-3.39.3.tgz"

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import Highcharts from 'highcharts'
+import Highcharts, { isNumber, TooltipFormatterCallbackFunction, TooltipFormatterContextObject } from 'highcharts/highstock';
 import styles from './chartCard.module.scss';
 import appStyles from "../../App.module.scss";
 import { TimeSpanSelector } from '../../reusable/timeSpanSelector/TimeSpanSelector';
@@ -14,6 +14,19 @@ import { MultipleZonesSelector } from '../multipleZonesSelector/MultipleZonesSel
 import { baseChartOptions, TimePeriod, TimeSpan, Zone } from '../../app/constants';
 import moment from 'moment';
 import _ from "lodash";
+import {
+    HighchartsProvider, HighchartsChart, Chart, XAxis,
+    YAxis, Title, Subtitle, Legend, Tooltip as HSTooltip,
+    LineSeries, HighchartsStockChart, ColumnSeries, RangeSelector
+} from "react-jsx-highstock"
+
+
+function getChartColor(zone: Zone) {
+    switch (zone) {
+        case "atom": return "#008BF0";
+        default: return "#008BF0";
+    }
+}
 
 export function ChartCard(props: ChartCardProps) {
     let windowSize = useWindowSize();
@@ -30,21 +43,40 @@ export function ChartCard(props: ChartCardProps) {
     let chartOpts = { ...(props.chartOpts || baseChartOptions) };
 
     let composedData = composeData(timeSpan, timePeriod, isCumulative, props.chartData);
-    chartOpts.series[0].data = timeSpan === "M" ? composedData?.map(x => x[1]) : composedData;
-    chartOpts.series[0].userOptions = {
-        zone: props.zone
+    // chartOpts.series[0].data = timeSpan === "M" ? composedData?.map(x => x[1]) : composedData;
+    // chartOpts.series[0].userOptions = {
+    //     zone: props.zone
+    // }
+    // chartComponentRef.current?.chart.xAxis[0].update({
+    //     type: timeSpan === "M" ? "category" : "datetime",
+    //     categories: timeSpan === "M" ? composedData?.map(x => {
+    //         let month = moment().month(moment(x[0]).month()).format("MMM");
+    //         let year = moment(x[0]).year();
+    //         return `${month} ${year}`
+    //     }) : undefined
+    // });
+
+    let a: TooltipFormatterCallbackFunction = function () {
+        const that = this as any;
+        let displayDate = "";
+        console.log(that);
+
+        let displayZone = props.zone!.charAt(0).toUpperCase() + props.zone!.slice(1);
+
+        if (isNumber(that.x)) {
+            let date = moment(that.x).format("DD MMMM YYYY");
+            displayDate = date;
+        }
+        else {
+            displayDate = that.x;
+        }
+
+        return `            
+        <span style="text-align: center;">${displayDate}</span>
+        <br />
+        <span>${displayZone} ${new Intl.NumberFormat().format(that.y)}</span>
+    `;
     }
-    chartComponentRef.current?.chart.xAxis[0].update({
-        type: timeSpan === "M" ? "category" : "datetime",
-        categories: timeSpan === "M" ? composedData?.map(x => {
-            let month = moment().month(moment(x[0]).month()).format("MMM");
-            let year = moment(x[0]).year();
-            return `${month} ${year}`
-        }) : undefined
-    });
-
-
-
     return (
         <div className={styles.chartCard}>
             <div className={styles.chartCardHeader}>
@@ -93,14 +125,53 @@ export function ChartCard(props: ChartCardProps) {
                         setChecked={setIsCumulative} />
                 </div>
             }
-            <HighchartsReact
+            {/* <HighchartsReact
                 containerProps={{ style: { width: "100%" } }}
                 allowChartUpdate
                 highcharts={Highcharts}
                 options={chartOpts}
-                ref={chartComponentRef}
-            />
-        </div>
+                ref={chartComponentRef} */}
+            <HighchartsProvider Highcharts={Highcharts}>
+                <HighchartsStockChart plotOptions={{
+                    column: {
+                        borderRadius: 5,
+                        pointPadding: 0,
+                        borderWidth: 0
+                    }
+                }}>
+                    <Chart {...chartOpts.chart} />
+                    <XAxis {...chartOpts.xAxis} tickmarkPlacement={"on"} categories={
+                        timeSpan === "M" ? composedData?.map(x => {
+                            let month = moment().month(moment(x[0]).month()).format("MMM");
+                            let year = moment(x[0]).year();
+                            return `${month} ${year}`
+                        }) : undefined
+                    }>
+                    </XAxis>
+                    <YAxis {...chartOpts.yAxis} opposite={false}>
+                        <ColumnSeries
+                            data={timeSpan === "M" ? composedData?.map(x => x[1]) : composedData}
+                            color={getChartColor(props.zone || "atom")} 
+                            borderRadius={timeSpan === "M" ? 5 : (timeSpan === "W" ? 3 : 1)}
+                            stickyTracking
+                        />
+                    </YAxis>
+                    <HSTooltip
+                        useHTML
+                        formatter={a}
+                        backgroundColor={"rgba(255,255,255, 1)"}
+                        borderColor={"#000000"}
+                        borderWidth={1}
+                        borderRadius={15}
+                        shadow={false}
+                        style={{
+                            fontSize: "14px",
+                            fontFamily: "Space Grotesk"
+                        }}
+                    />
+                </HighchartsStockChart>
+            </HighchartsProvider>
+        </div >
     )
 }
 

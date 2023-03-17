@@ -16,18 +16,6 @@ export function AssetsExcludingInterest() {
 
     let chartOpts = { ...baseChartOptions } as any;
     let chartData = data?.map((x: any) => ([Number(x.date), Number(x.amount)]));
-    chartOpts.xAxis = {
-        type: "datetime",
-        crosshair: true,
-        lineColor: '#000000',
-        lineWidth: 2,
-        tickLength: 10,
-        tickWidth: 1,
-        tickColor: '#000000',
-        labels: {
-            format: '{value:%b %Y}'
-        }
-    };
     chartOpts.series[0].color = "#008BF0";
 
     return (

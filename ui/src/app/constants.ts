@@ -19,6 +19,18 @@ export const baseChartOptions = {
             text: null
         }
     },
+    xAxis: {
+        type: "datetime",
+        crosshair: true,
+        lineColor: '#000000',
+        lineWidth: 2,
+        tickLength: 10,
+        tickWidth: 1,
+        tickColor: '#000000',
+        labels: {
+            format: '{value:%b %Y}'
+        }
+    },
     tooltip: {
         formatter: function() : any {
             const that = this as any;
