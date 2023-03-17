@@ -24,7 +24,7 @@ export function ChartCard(props: ChartCardProps) {
     }, [windowSize])
 
     let [isCumulative, setIsCumulative] = useState(false);
-    let [timeSpan, setTimeSpan] = useState<TimeSpan>("M");
+    let [timeSpan, setTimeSpan] = useState<TimeSpan>("D");
     let [timePeriod, setTimePeriod] = useState<TimePeriod>("MAX");
     let chartComponentRef = useRef<HighchartsReact.RefObject>(null);
     let chartOpts = { ...(props.chartOpts || baseChartOptions) };
