@@ -32,27 +32,27 @@ export const baseChartOptions = {
         }
     },
     tooltip: {
-        formatter: function() : any {
-            const that = this as any;
-            let displayDate = "";
-            let zone = that.points[0].series.userOptions.userOptions.zone;
+        // formatter: function() : any {
+        //     const that = this as any;
+        //     let displayDate = "";
+        //     let zone = that.points[0].series.userOptions.userOptions.zone;
       
-            let displayZone = zone.charAt(0).toUpperCase() + zone.slice(1);
+        //     let displayZone = zone.charAt(0).toUpperCase() + zone.slice(1);
 
-            if (isNumber(that.x)) {
-                let date = moment(that.x).format("DD MMMM YYYY");
-                displayDate =  date;
-            }
-            else {
-                displayDate = that.x;
-            }
+        //     if (isNumber(that.x)) {
+        //         let date = moment(that.x).format("DD MMMM YYYY");
+        //         displayDate =  date;
+        //     }
+        //     else {
+        //         displayDate = that.x;
+        //     }
 
-            return `            
-                <span style="text-align: center;">${displayDate}</span>
-                <br />
-                <span>${displayZone} ${new Intl.NumberFormat().format(that.y)}</span>
-            `;
-        },
+        //     return `            
+        //         <span style="text-align: center;">${displayDate}</span>
+        //         <br />
+        //         <span>${displayZone} ${new Intl.NumberFormat().format(that.y)}</span>
+        //     `;
+        // },
         shared: true,
         useHTML: true,
         backgroundColor: "rgba(255,255,255, 1)",
@@ -67,7 +67,7 @@ export const baseChartOptions = {
     },
     plotOptions: {
         column: {
-            borderRadius: 5,
+            borderRadius: 0,
             pointPadding: 0,
             borderWidth: 0
         }
