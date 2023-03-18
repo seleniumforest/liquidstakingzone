@@ -31,10 +31,10 @@ function getChartColor(zone: Zone) {
 export function ChartCard(props: ChartCardProps) {
     let windowSize = useWindowSize();
 
-    useEffect(() => {
-        let chart = chartComponentRef.current?.chart;
-        if (chart) chart.reflow();
-    }, [windowSize])
+    // useEffect(() => {
+    //     let chart = chartComponentRef.current?.chart;
+    //     if (chart) chart.reflow();
+    // }, [windowSize])
 
     let [isCumulative, setIsCumulative] = useState(false);
     let [timeSpan, setTimeSpan] = useState<TimeSpan>("D");
@@ -56,27 +56,48 @@ export function ChartCard(props: ChartCardProps) {
     //     }) : undefined
     // });
 
-    let a: TooltipFormatterCallbackFunction = function () {
+    let formatter: TooltipFormatterCallbackFunction = function () {
         const that = this as any;
         let displayDate = "";
-        console.log(that);
-
         let displayZone = props.zone!.charAt(0).toUpperCase() + props.zone!.slice(1);
-
-        if (isNumber(that.x)) {
-            let date = moment(that.x).format("DD MMMM YYYY");
-            displayDate = date;
-        }
-        else {
-            displayDate = that.x;
-        }
+        let date = moment(that.x);
+        displayDate = timeSpan == "M" ? date.format("MMMM YYYY") : date.format("DD MMMM YYYY");
 
         return `            
         <span style="text-align: center;">${displayDate}</span>
         <br />
         <span>${displayZone} ${new Intl.NumberFormat().format(that.y)}</span>
     `;
-    }
+    };
+
+    // let categories = timeSpan === "M" ? composedData?.map(x => {
+    //     let month = moment().month(moment(x[0]).month()).format("MMM");
+    //     let year = moment(x[0]).year();
+    //     return `${month} ${year}`
+    // }) : undefined;
+
+    // let dt = timeSpan === "M" ? composedData?.map(x => x[1]) : composedData;
+
+    // console.log("categories", categories);
+    // console.log("dt", dt);
+    //console.log(composedData?.map(x => [x[0], moment(x[0]).toString(), x[1]]))
+
+
+    let grouping: [string, number[]] = [
+        'day',
+        [1]
+    ];
+    if (timeSpan === "W")
+        grouping = [
+            'week',
+            [1]
+        ];
+    if (timeSpan === "M")
+        grouping = [
+            'month',
+            [1]
+        ];
+
     return (
         <div className={styles.chartCard}>
             <div className={styles.chartCardHeader}>
@@ -140,25 +161,39 @@ export function ChartCard(props: ChartCardProps) {
                     }
                 }}>
                     <Chart {...chartOpts.chart} />
-                    <XAxis {...chartOpts.xAxis} tickmarkPlacement={"on"} categories={
-                        timeSpan === "M" ? composedData?.map(x => {
-                            let month = moment().month(moment(x[0]).month()).format("MMM");
-                            let year = moment(x[0]).year();
-                            return `${month} ${year}`
-                        }) : undefined
-                    }>
+                    <XAxis {...chartOpts.xAxis}
+                        labels={{
+                            // formatter: function () {
+                            //     console.log(this);
+                            //     return moment
+                            //         .unix((this.value as number) / 1000)
+                            //         .subtract(timeSpan === "M" ? 1 : 0, "month")
+                            //         .format("MMM YYYY")
+                            // }
+                        }}
+                        tickmarkPlacement={"between"}
+                        minTickInterval={30 * 24 * 3600 * 1000}
+                        tickAmount={5}>
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         <ColumnSeries
-                            data={timeSpan === "M" ? composedData?.map(x => x[1]) : composedData}
-                            color={getChartColor(props.zone || "atom")} 
+                            data={composedData}
+                            color={getChartColor(props.zone || "atom")}
                             borderRadius={timeSpan === "M" ? 5 : (timeSpan === "W" ? 3 : 1)}
                             stickyTracking
+                            cumulative={isCumulative}
+                            dataGrouping={{
+                                enabled: true,
+                                approximation: "sum",
+                                groupAll: true,
+                                forced: true,
+                                units: [grouping]
+                            }}
                         />
                     </YAxis>
                     <HSTooltip
                         useHTML
-                        formatter={a}
+                        formatter={formatter}
                         backgroundColor={"rgba(255,255,255, 1)"}
                         borderColor={"#000000"}
                         borderWidth={1}
@@ -199,35 +234,37 @@ function composeData(timeSpan: TimeSpan, timePeriod: TimePeriod, isCumulative: b
         return result >= 0;
     });
 
+    return filteredByPeriod;
+
     //organize by timeSpan
-    let filteredByTimespan: [date: number, value: number][] = [];
-    let func = (x: [number, number]) => (moment(x[0]).dayOfYear() + " " + moment(x[0]).year());
-    switch (timeSpan) {
-        case 'W': func = (x: [number, number]) => (moment(x[0]).week() + " " + moment(x[0]).year()); break;
-        case 'M': func = (x: [number, number]) => (moment(x[0]).month() + " " + moment(x[0]).year()); break;
-    };
-    //group by day or week
-    filteredByTimespan = _.values(_.groupBy(filteredByPeriod, func)).map(x => {
-        //sum for end of period
-        let sum = x.reduce((prev, cur) => cur[1] + prev, 0);
-        //return last day and sum
-        return [x[x.length - 1][0], sum];
-    });
+    // let filteredByTimespan: [date: number, value: number][] = [];
+    // let func = (x: [number, number]) => (moment(x[0]).dayOfYear() + " " + moment(x[0]).year());
+    // switch (timeSpan) {
+    //     case 'W': func = (x: [number, number]) => (moment(x[0]).week() + " " + moment(x[0]).year()); break;
+    //     case 'M': func = (x: [number, number]) => (moment(x[0]).month() + " " + moment(x[0]).year()); break;
+    // };
+    // //group by day or week
+    // filteredByTimespan = _.values(_.groupBy(filteredByPeriod, func)).map(x => {
+    //     //sum for end of period
+    //     let sum = x.reduce((prev, cur) => cur[1] + prev, 0);
+    //     //return last day and sum
+    //     return [x[x.length - 1][0], sum];
+    // });
 
     //organize by isCumulative
-    let result: [number, number][] = [];
-    let acc = 0;
-    filteredByTimespan?.forEach((x: [number, number]) => {
-        if (isCumulative) {
-            acc += x[1];
-            result.push([x[0], acc]);
-        }
-        else {
-            result.push(x);
-        }
-    });
+    // let result: [number, number][] = [];
+    // let acc = 0;
+    // filteredByTimespan?.forEach((x: [number, number]) => {
+    //     if (isCumulative) {
+    //         acc += x[1];
+    //         result.push([x[0], acc]);
+    //     }
+    //     else {
+    //         result.push(x);
+    //     }
+    // });
 
-    return result;
+    //return filteredByTimespan;
 }
 
 export function useWindowSize() {
