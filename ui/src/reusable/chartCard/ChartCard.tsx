@@ -20,41 +20,13 @@ import {
     LineSeries, HighchartsStockChart, ColumnSeries, RangeSelector
 } from "react-jsx-highstock"
 
-
-function getChartColor(zone: Zone) {
-    switch (zone) {
-        case "atom": return "#008BF0";
-        default: return "#008BF0";
-    }
-}
-
 export function ChartCard(props: ChartCardProps) {
-    let windowSize = useWindowSize();
-
-    // useEffect(() => {
-    //     let chart = chartComponentRef.current?.chart;
-    //     if (chart) chart.reflow();
-    // }, [windowSize])
-
     let [isCumulative, setIsCumulative] = useState(false);
     let [timeSpan, setTimeSpan] = useState<TimeSpan>("D");
     let [timePeriod, setTimePeriod] = useState<TimePeriod>("MAX");
-    let chartComponentRef = useRef<HighchartsReact.RefObject>(null);
     let chartOpts = { ...(props.chartOpts || baseChartOptions) };
 
-    let composedData = composeData(timeSpan, timePeriod, isCumulative, props.chartData);
-    // chartOpts.series[0].data = timeSpan === "M" ? composedData?.map(x => x[1]) : composedData;
-    // chartOpts.series[0].userOptions = {
-    //     zone: props.zone
-    // }
-    // chartComponentRef.current?.chart.xAxis[0].update({
-    //     type: timeSpan === "M" ? "category" : "datetime",
-    //     categories: timeSpan === "M" ? composedData?.map(x => {
-    //         let month = moment().month(moment(x[0]).month()).format("MMM");
-    //         let year = moment(x[0]).year();
-    //         return `${month} ${year}`
-    //     }) : undefined
-    // });
+    let composedData = props.chartData && cutData(timePeriod, props.chartData);
 
     let formatter: TooltipFormatterCallbackFunction = function () {
         const that = this as any;
@@ -64,39 +36,11 @@ export function ChartCard(props: ChartCardProps) {
         displayDate = timeSpan == "M" ? date.format("MMMM YYYY") : date.format("DD MMMM YYYY");
 
         return `            
-        <span style="text-align: center;">${displayDate}</span>
-        <br />
-        <span>${displayZone} ${new Intl.NumberFormat().format(that.y)}</span>
-    `;
+            <span style="text-align: center;">${displayDate}</span>
+            <br />
+            <span>${displayZone} ${new Intl.NumberFormat().format(that.y)}</span>
+        `;
     };
-
-    // let categories = timeSpan === "M" ? composedData?.map(x => {
-    //     let month = moment().month(moment(x[0]).month()).format("MMM");
-    //     let year = moment(x[0]).year();
-    //     return `${month} ${year}`
-    // }) : undefined;
-
-    // let dt = timeSpan === "M" ? composedData?.map(x => x[1]) : composedData;
-
-    // console.log("categories", categories);
-    // console.log("dt", dt);
-    //console.log(composedData?.map(x => [x[0], moment(x[0]).toString(), x[1]]))
-
-
-    let grouping: [string, number[]] = [
-        'day',
-        [1]
-    ];
-    if (timeSpan === "W")
-        grouping = [
-            'week',
-            [1]
-        ];
-    if (timeSpan === "M")
-        grouping = [
-            'month',
-            [1]
-        ];
 
     return (
         <div className={styles.chartCard}>
@@ -146,12 +90,6 @@ export function ChartCard(props: ChartCardProps) {
                         setChecked={setIsCumulative} />
                 </div>
             }
-            {/* <HighchartsReact
-                containerProps={{ style: { width: "100%" } }}
-                allowChartUpdate
-                highcharts={Highcharts}
-                options={chartOpts}
-                ref={chartComponentRef} */}
             <HighchartsProvider Highcharts={Highcharts}>
                 <HighchartsStockChart plotOptions={{
                     column: {
@@ -162,15 +100,6 @@ export function ChartCard(props: ChartCardProps) {
                 }}>
                     <Chart {...chartOpts.chart} />
                     <XAxis {...chartOpts.xAxis}
-                        labels={{
-                            // formatter: function () {
-                            //     console.log(this);
-                            //     return moment
-                            //         .unix((this.value as number) / 1000)
-                            //         .subtract(timeSpan === "M" ? 1 : 0, "month")
-                            //         .format("MMM YYYY")
-                            // }
-                        }}
                         tickmarkPlacement={"between"}
                         minTickInterval={30 * 24 * 3600 * 1000}
                         tickAmount={5}>
@@ -187,7 +116,7 @@ export function ChartCard(props: ChartCardProps) {
                                 approximation: "sum",
                                 groupAll: true,
                                 forced: true,
-                                units: [grouping]
+                                units: [getGroupingOptions(timeSpan)]
                             }}
                         />
                     </YAxis>
@@ -210,7 +139,17 @@ export function ChartCard(props: ChartCardProps) {
     )
 }
 
-function composeData(timeSpan: TimeSpan, timePeriod: TimePeriod, isCumulative: boolean, series?: [date: number, value: number][]) {
+function getGroupingOptions(timeSpan: TimeSpan): [string, number[]] {
+    if (timeSpan === "W")
+        return ['week', [1]];
+
+    if (timeSpan === "M")
+        return ['month', [1]];
+
+    return ['day', [1]];
+}
+
+function cutData(timePeriod: TimePeriod, series?: [date: number, value: number][]) {
     if (!series)
         return;
 
@@ -236,57 +175,19 @@ function composeData(timeSpan: TimeSpan, timePeriod: TimePeriod, isCumulative: b
 
     return filteredByPeriod;
 
-    //organize by timeSpan
-    // let filteredByTimespan: [date: number, value: number][] = [];
-    // let func = (x: [number, number]) => (moment(x[0]).dayOfYear() + " " + moment(x[0]).year());
-    // switch (timeSpan) {
-    //     case 'W': func = (x: [number, number]) => (moment(x[0]).week() + " " + moment(x[0]).year()); break;
-    //     case 'M': func = (x: [number, number]) => (moment(x[0]).month() + " " + moment(x[0]).year()); break;
-    // };
-    // //group by day or week
-    // filteredByTimespan = _.values(_.groupBy(filteredByPeriod, func)).map(x => {
-    //     //sum for end of period
-    //     let sum = x.reduce((prev, cur) => cur[1] + prev, 0);
-    //     //return last day and sum
-    //     return [x[x.length - 1][0], sum];
-    // });
-
-    //organize by isCumulative
-    // let result: [number, number][] = [];
-    // let acc = 0;
-    // filteredByTimespan?.forEach((x: [number, number]) => {
-    //     if (isCumulative) {
-    //         acc += x[1];
-    //         result.push([x[0], acc]);
-    //     }
-    //     else {
-    //         result.push(x);
-    //     }
-    // });
-
-    //return filteredByTimespan;
 }
 
-export function useWindowSize() {
-    const [windowSize, setWindowSize] = useState({
-        width: 0,
-        height: 0,
-    });
-
-    useEffect(() => {
-        function handleResize() {
-            setWindowSize({
-                width: window.innerWidth,
-                height: window.innerHeight,
-            });
-        }
-
-        window.addEventListener("resize", handleResize);
-        handleResize();
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    return windowSize;
+//todo move to parent component
+function getChartColor(zone: Zone) {
+    switch (zone) {
+        case "atom": return "#008BF0";
+        // case "osmo": return "#6BD9B8";
+        // case "juno": return "#60F6FF";
+        // case "stars": return "#5B3A9F";
+        // case "luna": return "#C0D8DC";
+        // case "evmos": return "#D96BCE";
+        default: return "#008BF0";
+    }
 }
 
 interface ChartCardProps {

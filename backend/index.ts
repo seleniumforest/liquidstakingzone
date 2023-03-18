@@ -10,6 +10,7 @@ const errHandle = async (handler: any, req: Request, res: Response, next: NextFu
     try {
         return await handler(req, res, next);
     } catch (e: any) {
+        console.log(e?.message);
         return res.status(500).json(e);
     }
 }

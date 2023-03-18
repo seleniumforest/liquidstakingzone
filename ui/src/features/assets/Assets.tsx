@@ -6,7 +6,7 @@ import appStyles from "../../App.module.scss";
 import { ChartCard } from '../../reusable/chartCard/ChartCard';
 import { joinClasses } from '../../app/helpers';
 import { headersData } from './constants';
-import { AssetsExcludingInterest } from './AssetsExcludingInterest';
+import { AssetsExcludingInterest, AssetsRedeemed, FeesAndRevenue } from './Charts';
 
 export function Assets() {
     let data: DepositDiffProps = {
@@ -41,8 +41,8 @@ export function Assets() {
                     </div>
                 </div>
                 <div className={styles.otherCharts}>
-                    <ChartCard {...headersData.redeemedAssets} />
-                    <ChartCard {...headersData.feesAndRevenue} />
+                    <AssetsRedeemed />
+                    <FeesAndRevenue />
                     <ChartCard {...headersData.tvlByChains} multipleZones hideZonesSelector />
                     <ChartCard {...headersData.redemptionRate} />
                 </div>

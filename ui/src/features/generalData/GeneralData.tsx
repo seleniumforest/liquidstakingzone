@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import Highcharts, { Options } from 'highcharts'
 import styles from './generalData.module.scss';
@@ -8,7 +8,28 @@ import { AppButton } from '../../reusable/appButton/AppButton';
 import HighchartsReact from 'highcharts-react-official'
 import { joinClasses } from '../../app/helpers';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
-import { useWindowSize } from '../../reusable/chartCard/ChartCard';
+
+function useWindowSize() {
+    const [windowSize, setWindowSize] = useState({
+        width: 0,
+        height: 0,
+    });
+
+    useEffect(() => {
+        function handleResize() {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+        }
+
+        window.addEventListener("resize", handleResize);
+        handleResize();
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return windowSize;
+}
 
 export function GeneralData() {
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
