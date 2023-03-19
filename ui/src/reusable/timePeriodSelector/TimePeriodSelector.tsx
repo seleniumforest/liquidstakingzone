@@ -1,17 +1,22 @@
 import React from 'react';
 
-import styles from './timePeriodSelector.module.scss';
 import appStyles from "../../App.module.scss";
 import { joinClasses } from '../../app/helpers';
-import { TimePeriod } from '../../app/constants';
+
+const defaultButtons: [string, number][] = [
+    ["7D", 7],
+    ["30D", 30],
+    ["90D", 90],
+    ["180D", 180],
+    ["365D", 365],
+    ["MAX", -1]
+];
 
 export function TimePeriodSelector(props: TimePeriodSelectorProps) {
-    let defaultButtons = ["7D", "30D", "90D", "180D", "365D", "MAX"]
-
     return (
         <div className={joinClasses(appStyles.timeSpanSelector, props.className)}>
-            {defaultButtons.map(btn => (
-                <button className={props.selectedValue === btn ? appStyles.btnSelected : ""} key={btn} onClick={() => props.setTimePeriod(btn)}>{btn}</button>
+            {defaultButtons.map(([label, val]) => (
+                <button className={props.selectedValue === val ? appStyles.btnSelected : ""} key={val} onClick={() => props.setTimePeriod(val)}>{label}</button>
             ))}
         </div>
     );
@@ -20,5 +25,5 @@ export function TimePeriodSelector(props: TimePeriodSelectorProps) {
 interface TimePeriodSelectorProps {
     className?: string,
     setTimePeriod?: any,
-    selectedValue?: TimePeriod
+    selectedValue?: number
 }

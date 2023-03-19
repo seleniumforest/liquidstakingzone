@@ -1,67 +1,30 @@
 import React from 'react';
-
 import styles from './multipleZonesSelector.module.scss';
-import appStyles from "../../App.module.scss";
-import { useState } from "react";
 import Select, { components } from "react-select";
-
-// export function MultipleZonesSelector() {
-//     const [zoneName, setPersonName] = React.useState<string[]>([]);
-
-//     const handleChange = (event: SelectChangeEvent<typeof zoneName>) => {
-//         const {
-//             target: { value },
-//         } = event;
-//         setPersonName(
-//             // On autofill we get a stringified value.
-//             typeof value === 'string' ? value.split(',') : value,
-//         );
-//     };
-//     let zones = ["Atom", "Osmo", "Juno", "Stars", "Luna", "Evmos"];
-
-//     return (
-//         <div className={styles.appSelect}>
-//             <FormControl sx={{ m: 1, width: 300 }}>
-//                 <Select
-//                     labelId="demo-multiple-checkbox-label"
-//                     id="demo-multiple-checkbox"
-//                     multiple
-//                     value={zoneName}
-//                     onChange={handleChange}
-//                     renderValue={(selected) => `${selected.length} Zones`}
-//                     MenuProps={MenuProps}
-//                 >
-//                     {zones.map((z) => (
-//                         <MenuItem key={z} value={z}>
-//                             <Checkbox checked={zoneName.indexOf(z) > -1} />
-//                             <ListItemText primary={z} />
-//                         </MenuItem>
-//                     ))}
-//                 </Select>
-//             </FormControl>
-//         </div>
-//     );
-// }
+import { supportedZones, Zone } from '../../app/constants';
+import { capitalize } from 'lodash';
+import { getChartColor } from '../../features/assets/helpers';
 
 const InputOption = (props: any) => {
     return (
-        <components.Option {...props} className={styles.zoneOption}>
-            <input type="checkbox" checked={props.isSelected} className={styles.zoneCheckbox} />
+        <components.Option {...props} key={props.value} className={styles.zoneOption}>
+            <input type="checkbox" onChange={() => { }} checked={props.isSelected} style={{ accentColor: getChartColor(props.value) }} />
             {props.children}
         </components.Option>
     );
 };
 
-const allOptions = [
-    { value: "option 1", label: "option 1" },
-    { value: "option 2", label: "option 2" },
-    { value: "option 3", label: "option 3" },
-    { value: "option 4", label: "option 4" }
-];
+const allOptions = supportedZones.map(x => ({
+    value: x,
+    label: capitalize(x)
+}));
 
-export function MultipleZonesSelector() {
-    const [selectedOptions, setSelectedOptions] = useState<{ value: string, label: string }[]>([]);
+interface multipleZonesSelectorProps {
+    selectedZones: Zone[],
+    setSelectedZones: any
+}
 
+export function MultipleZonesSelector({ selectedZones, setSelectedZones }: multipleZonesSelectorProps) {
     let placeholder =
         <div className={styles.placeholder}>
             <div className={styles.placeholderNumber}>{allOptions.length}</div>
@@ -73,12 +36,15 @@ export function MultipleZonesSelector() {
             <Select
                 className="sectionTest"
                 isClearable={false}
+                isOptionSelected={(option) => { return selectedZones.includes(option.value) }}
                 isMulti
                 closeMenuOnSelect={false}
+                defaultValue={allOptions}
                 hideSelectedOptions={false}
                 onChange={(options) => {
+                    console.log(options);
                     if (Array.isArray(options)) {
-                        setSelectedOptions(options.map((opt: any) => opt.value));
+                        setSelectedZones(options.map((opt: any) => opt.value));
                     }
                 }}
                 options={allOptions}

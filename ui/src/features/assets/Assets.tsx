@@ -3,10 +3,12 @@ import React, { ReactElement, useEffect } from 'react';
 import styles from './assets.module.scss';
 import appStyles from "../../App.module.scss";
 
-import { ChartCard } from '../../reusable/chartCard/ChartCard';
 import { joinClasses } from '../../app/helpers';
 import { headersData } from './constants';
-import { AssetsExcludingInterest, AssetsRedeemed, FeesAndRevenue } from './Charts';
+import { AssetsExcludingInterest } from './AssetsExcludingInterest';
+import { AssetsRedeemed } from './AssetsRedeemed';
+import { FeesAndRevenue } from './FeesAndRevenue';
+import { TvlByChains } from './TvlByChains';
 
 export function Assets() {
     let data: DepositDiffProps = {
@@ -43,8 +45,8 @@ export function Assets() {
                 <div className={styles.otherCharts}>
                     <AssetsRedeemed />
                     <FeesAndRevenue />
-                    <ChartCard {...headersData.tvlByChains} multipleZones hideZonesSelector />
-                    <ChartCard {...headersData.redemptionRate} />
+                    <TvlByChains />
+                    {/* <ChartCard {...headersData.redemptionRate} /> */}
                 </div>
             </div>
         </>

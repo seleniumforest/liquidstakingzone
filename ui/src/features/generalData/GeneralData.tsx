@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import Highcharts, { Options } from 'highcharts'
+import Highcharts from 'highcharts'
 import styles from './generalData.module.scss';
 import appStyles from "../../App.module.scss";
-import { TimeSpanSelector } from '../../reusable/timeSpanSelector/TimeSpanSelector';
 import { AppButton } from '../../reusable/appButton/AppButton';
 import HighchartsReact from 'highcharts-react-official'
 import { joinClasses } from '../../app/helpers';

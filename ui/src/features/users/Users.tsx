@@ -2,7 +2,6 @@ import React, { } from 'react';
 
 import styles from './users.module.scss';
 import appStyles from "../../App.module.scss";
-import { ChartCard } from '../../reusable/chartCard/ChartCard';
 import { joinClasses } from '../../app/helpers';
 
 export function Users() {
@@ -15,9 +14,9 @@ export function Users() {
             </div>
             <div className={joinClasses(appStyles.appBlock, styles.usersBlueBlock)}>
                 <div className={styles.userCharts}>
-                    <ChartCard {...headersData.activeUsers} hideTimeSpanSelector hideIsCumulativeToggle hideZonesSelector />
+                    {/* <ChartCard {...headersData.activeUsers} hideTimeSpanSelector hideIsCumulativeToggle hideZonesSelector />
                     <ChartCard {...headersData.uniqueDeps} hideTimeSpanSelector hideIsCumulativeToggle hideZonesSelector />
-                    <ChartCard {...headersData.depaTotalVolume} hideTimeSpanSelector hideIsCumulativeToggle hideTimePeriodSelector />
+                    <ChartCard {...headersData.depaTotalVolume} hideTimeSpanSelector hideIsCumulativeToggle hideTimePeriodSelector /> */}
                     <div className={styles.yellowCardContainer}>
                         <div className={styles.yellowCard}>
                             <h4>Community</h4>
@@ -31,17 +30,17 @@ export function Users() {
     );
 }
 
-const headersData = {
-    activeUsers: {
-        headerText: "Daily & Monthly Active users",
-        tooltipText: "The amount of coins that have already been created, minus any coins that have been burned (removed from circulation). It is comparable to outstanding shares in the stock market.",
-    },
-    uniqueDeps: {
-        headerText: "Unique depositors cumulative",
-        tooltipText: "Tooltip for Unique depositors cumulative"
-    },
-    depaTotalVolume: {
-        headerText: "Depositors total volume distribution",
-        tooltipText: "Tooltop for Depositors total volume distribution"
-    }
-}
+// const headersData = {
+//     activeUsers: {
+//         headerText: "Daily & Monthly Active users",
+//         tooltipText: "The amount of coins that have already been created, minus any coins that have been burned (removed from circulation). It is comparable to outstanding shares in the stock market.",
+//     },
+//     uniqueDeps: {
+//         headerText: "Unique depositors cumulative",
+//         tooltipText: "Tooltip for Unique depositors cumulative"
+//     },
+//     depaTotalVolume: {
+//         headerText: "Depositors total volume distribution",
+//         tooltipText: "Tooltop for Depositors total volume distribution"
+//     }
+// }

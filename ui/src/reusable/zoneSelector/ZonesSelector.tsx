@@ -3,6 +3,7 @@ import React, { Dispatch, SetStateAction } from 'react';
 import styles from './zonesSelector.module.scss';
 import { components } from "react-select";
 import { default as ReactSelect } from "react-select";
+import { Zone } from '../../app/constants';
 
 const zones = [
     { value: "atom", label: "Atom" },
@@ -13,7 +14,7 @@ const zones = [
     { value: "evmos", label: "Evmos" }
 ];
 
-export function ZonesSelector({ setZone }: { setZone: Dispatch<SetStateAction<string>> }) {
+export function ZonesSelector({ setZone }: { setZone: Dispatch<SetStateAction<Zone>> }) {
     let placeholder =
         <div className={styles.placeholder}>
             <div className={styles.placeholderNumber}>{zones.length}</div>
@@ -25,7 +26,7 @@ export function ZonesSelector({ setZone }: { setZone: Dispatch<SetStateAction<st
             <ReactSelect
                 className="sectionTest"
                 options={zones}
-                onChange={(val) => setZone(val?.value ?? "")}
+                onChange={(val) => setZone(val?.value as Zone)}
                 controlShouldRenderValue={false}
                 placeholder={placeholder}
                 theme={(theme) => ({
