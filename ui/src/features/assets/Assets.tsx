@@ -1,23 +1,28 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 
 import styles from './assets.module.scss';
 import appStyles from "../../App.module.scss";
 
-import { joinClasses } from '../../app/helpers';
-import { headersData } from './constants';
+import { fromBaseUnit, joinClasses } from '../../app/helpers';
 import { AssetsExcludingInterest } from './AssetsExcludingInterest';
 import { AssetsRedeemed } from './AssetsRedeemed';
 import { FeesAndRevenue } from './FeesAndRevenue';
 import { TvlByChains } from './TvlByChains';
 import { RedemptionRate } from './RedemptionRate';
+import { useQuery } from 'react-query';
 
 export function Assets() {
-    let data: DepositDiffProps = {
-        depostiedNow: 123456,
-        depostiedYesterday: 123456,
-        diff: 0.5,
-        icon: <img src='/img/statom-logo.png' />
-    }
+    const { isLoading, error, data } = useQuery(['assetsOnStakingWallets'], () =>
+        fetch(`${process.env.REACT_APP_API_BASEURL}/assetsOnStakingWallets`).then(res => res.json())
+    );
+
+    let cardData = data?.map((x: any) => ({
+        zone: x.zone,
+        depositedNow: Number(fromBaseUnit(x.latestAssets[0][1], x.zone, 0)),
+        depositedYesterday: Number(fromBaseUnit(x.pastDayAssets[0][1], x.zone, 0)),
+        icon: <img src={`/img/st${x.zone}-logo.png`} />
+    }));
+
 
     return (
         <>
@@ -33,12 +38,7 @@ export function Assets() {
                         <div className={styles.whiteCard}>
                             <h3>Total Assets Deposited Incl. Interest</h3>
                             <div className={styles.diffContainer}>
-                                <DepositDiff {...data} />
-                                <DepositDiff {...data} diff={-0.1} />
-                                <DepositDiff {...data} />
-                                <DepositDiff {...data} />
-                                <DepositDiff {...data} />
-                                <DepositDiff {...data} />
+                                {cardData?.map((cd: any) => <DepositDiff key={cd.zone} {...cd} />)}
                             </div>
                         </div>
                     </div>
@@ -55,24 +55,25 @@ export function Assets() {
 }
 
 function DepositDiff(props: DepositDiffProps) {
+    let diff = ((props.depositedNow/ props.depositedYesterday - 1) * 100).toFixed(2);
     let diffClass = props.diff > 0 ? styles.green : styles.red;
     let arrow = props.diff > 0 ? "↑" : "↓";
 
     return (
         <div className={styles.depositDiff}>
             <div className={styles.today}>
-                {props.depostiedNow}
+                {new Intl.NumberFormat().format(props.depositedNow)}
                 {props.icon}
             </div>
-            <div className={joinClasses(styles.diff, diffClass)}>{arrow} {props.diff}%</div>
-            <div className={styles.yesterday}>{`Was ${props.depostiedYesterday} last day`}</div>
+            <div className={joinClasses(styles.diff, diffClass)}>{arrow} {diff}%</div>
+            <div className={styles.yesterday}>{`Was ${new Intl.NumberFormat().format(props.depositedYesterday)} last day`}</div>
         </div>
     )
 }
 
 interface DepositDiffProps {
-    depostiedNow: number
-    depostiedYesterday: number
+    depositedNow: number
+    depositedYesterday: number
     diff: number
     icon: ReactElement
 }
