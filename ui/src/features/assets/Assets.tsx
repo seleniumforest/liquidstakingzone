@@ -9,6 +9,7 @@ import { AssetsExcludingInterest } from './AssetsExcludingInterest';
 import { AssetsRedeemed } from './AssetsRedeemed';
 import { FeesAndRevenue } from './FeesAndRevenue';
 import { TvlByChains } from './TvlByChains';
+import { RedemptionRate } from './RedemptionRate';
 
 export function Assets() {
     let data: DepositDiffProps = {
@@ -46,7 +47,7 @@ export function Assets() {
                     <AssetsRedeemed />
                     <FeesAndRevenue />
                     <TvlByChains />
-                    {/* <ChartCard {...headersData.redemptionRate} /> */}
+                    <RedemptionRate />
                 </div>
             </div>
         </>

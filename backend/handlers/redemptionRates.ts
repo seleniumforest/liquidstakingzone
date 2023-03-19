@@ -15,7 +15,7 @@ export const redemptionRates = async (req: Request, res: Response) => {
     let prices = await getPriceData(zone, false);
 
     let merged = rates.map(r => ({
-        date: r.date,
+        date: Number(r.date),
         rate: r.rate,
         price: prices.find(p => p.date === r.date)?.price || 1
     }));
@@ -28,7 +28,7 @@ const getRedemptionRatesData = async (zone: string): Promise<RedemptionRateDataR
     let query = await client.query({
         query: `
             SELECT 
-                dt, 
+                dt as date, 
                 AVG(rate) as rate
             FROM (
                 SELECT  
