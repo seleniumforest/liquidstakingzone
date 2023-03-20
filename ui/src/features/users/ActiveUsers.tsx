@@ -32,12 +32,11 @@ export function ActiveUsers() {
     let chartData = data?.map((x: any) => ([Number(x.date), Number(x.users)]));
 
     let ma = isLoading ? [] : caculateMovingAverage(chartData?.map((x: any) => x[1]), 30);
-    let maData = chartData.map((x: any, i: number) => ([x[0], ma[i]]));
+    let maData = chartData?.map((x: any, i: number) => ([x[0], ma[i]]));
 
     let cuttedUsersData = cutData(timePeriod, chartData);
     let cuttedMaData = cutData(timePeriod, maData);
 
-    console.log(cuttedMaData)
     let {
         headerText,
         tooltipText
@@ -104,7 +103,7 @@ export function ActiveUsers() {
                         useHTML
                         formatter={function (this: TooltipFormatterContextObject) {
                             const that = this as any;
-                            console.log(that);
+                            
                             let daily = that.points[0].y;
                             let monthly = Math.ceil(that.points[1].y);
 

@@ -29,6 +29,7 @@ app.get('/latestEvents', caching, (...args) => errHandle(handlers.latestEvents, 
 app.get('/protocolRevenue', caching, (...args) => errHandle(handlers.protocolRevenue, ...args));
 app.get('/redemptionRates', caching, (...args) => errHandle(handlers.redemptionRates, ...args));
 app.get('/tvlByChains', caching, (...args) => errHandle(handlers.tvlByChains, ...args));
+app.get('/uniqueDepositors', caching, (...args) => errHandle(handlers.uniqueDepositors, ...args));
 
 const server = app.listen(process.env.PORT || 8081, function () {
     console.log("Backend started at", server.address())

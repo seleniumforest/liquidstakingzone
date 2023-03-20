@@ -4,6 +4,7 @@ import styles from './users.module.scss';
 import appStyles from "../../App.module.scss";
 import { joinClasses } from '../../app/helpers';
 import { ActiveUsers } from './ActiveUsers';
+import { UniqueDepositors } from './UniqueDepositors';
 
 export function Users() {
     return (
@@ -16,6 +17,7 @@ export function Users() {
             <div className={joinClasses(appStyles.appBlock, styles.usersBlueBlock)}>
                 <div className={styles.userCharts}>
                     <ActiveUsers />
+                    <UniqueDepositors />
                     {/* <ChartCard {...headersData.activeUsers} hideTimeSpanSelector hideIsCumulativeToggle hideZonesSelector />
                     <ChartCard {...headersData.uniqueDeps} hideTimeSpanSelector hideIsCumulativeToggle hideZonesSelector />
                     <ChartCard {...headersData.depaTotalVolume} hideTimeSpanSelector hideIsCumulativeToggle hideTimePeriodSelector /> */}

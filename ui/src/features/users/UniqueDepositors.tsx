@@ -1,43 +1,43 @@
 import React, { useState } from 'react';
 import Highcharts, { TooltipFormatterContextObject } from 'highcharts/highstock';
-import styles from './chartCard.module.scss';
+import styles from './../assets/chartCard.module.scss';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
-import { baseChartOptions, Zone } from '../../app/constants';
+import { baseChartOptions } from '../../app/constants';
+import _ from "lodash";
 import {
     HighchartsProvider, Chart, XAxis,
     YAxis, Tooltip as HSTooltip,
-    HighchartsStockChart, LineSeries
+    HighchartsStockChart, ColumnSeries, LineSeries, AreaSeries
 } from "react-jsx-highstock"
 
-import { headersData } from './constants';
-import { capitalize, cutData } from './helpers';
+import { cutData } from '../assets/helpers';
 import { useQuery } from 'react-query';
+import { headersData } from './constants';
 import moment from 'moment';
-import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 
-export function RedemptionRate() {
-    let [zone, setZone] = useState<Zone>("atom");
+export function UniqueDepositors() {
     let [timePeriod, setTimePeriod] = useState<number>(-1);
-    const { isLoading, error, data } = useQuery(['redemptionRates', zone], () =>
-        fetch(`${process.env.REACT_APP_API_BASEURL}/redemptionRates?zone=${zone}`)
-            .then(res => res.json())
+    let chartColor = "#ACD6FD";
+
+    const { isLoading, error, data } = useQuery(['uniqueDepositors'], () =>
+        fetch(`${process.env.REACT_APP_API_BASEURL}/uniqueDepositors`).then(res => res.json())
     );
 
+    //if (isLoading) return <>'Loading...'</>;
     if (error) return <>'Error...'</>;
 
     let chartOpts = { ...baseChartOptions } as any;
+    let chartData = data?.map((x: any) => ([Number(x.date), Number(x.deps)]));
 
-    let cuttedData = cutData(timePeriod, data, (el: any) => el.date);
-
-    let rateSeries = cuttedData?.map((x: any) => ([x.date, x.rate]));
-    let priceSeries = cuttedData?.map((x: any) => ([x.date, x.price]));
+    let cuttedData = cutData(timePeriod, chartData);
 
     let {
         headerText,
         tooltipText
-    } = headersData.redemptionRate;
+    } = headersData.uniqueDeps;
+
 
     return (
         <div className={styles.chartCard}>
@@ -68,7 +68,6 @@ export function RedemptionRate() {
             </div>
             <div className={styles.chartCardOptions}>
                 <div>
-                    <ZonesSelector setZone={setZone} />
                 </div>
                 <div className={styles.timeSelectorsContainer}>
                     <TimePeriodSelector setTimePeriod={setTimePeriod} selectedValue={timePeriod} />
@@ -82,33 +81,28 @@ export function RedemptionRate() {
                     <XAxis {...chartOpts.xAxis}
                         tickmarkPlacement={"between"}
                         minTickInterval={30 * 24 * 3600 * 1000}
-                        tickAmount={5}>
+                        tickAmount={5}
+                        crosshair>
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
-                        <LineSeries
-                            data={rateSeries}
-                        />
-                        <LineSeries
-                            data={priceSeries}
+                        <AreaSeries
+                            data={isLoading ? [] : cuttedData}
+                            color={chartColor}
+                            borderRadius={5}
+                            stickyTracking
                         />
                     </YAxis>
                     <HSTooltip
                         useHTML
-                        formatter={
-                            function (this: TooltipFormatterContextObject) {
-                                let that = this as any;
-                         
-                                let rate = that.points[0].y.toFixed(4);
-                                let price = that.points[1].y.toFixed(4);
+                        formatter={function (this: TooltipFormatterContextObject) {
+                            const that = this as any;
 
-                                return `
-                                    <span style="text-align: center;">${moment(this.x).format("DD MMMM YYYY")}</span>
-                                    <br>
-                                    <span>Redemption rate: ${rate}</span>
-                                    <br>
-                                    <span>${capitalize(zone)} osmosis price: ${price}</span>
-                                `;   
-                            }}
+                            return `            
+                                <span style="text-align: center;">${moment(that.x).format("DD MMMM YYYY")}</span>
+                                <br />
+                                <span>Depositors: ${that.points[0].y}</span>
+                            `;
+                        }}
                         backgroundColor={"rgba(255,255,255, 1)"}
                         borderColor={"#000000"}
                         borderWidth={1}
