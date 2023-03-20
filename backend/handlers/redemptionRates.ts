@@ -47,7 +47,7 @@ const getRedemptionRatesData = async (zone: string): Promise<RedemptionRateDataR
     return response.data;
 };
 
-type PriceData = {
+export type PriceData = {
     date: number,
     price: number
 }

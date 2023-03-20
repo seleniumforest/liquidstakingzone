@@ -13,6 +13,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "kill": "kill -9 $(lsof -t -i:8081)",
     "startTs": "ts-node index.ts",
     "startJs": "node build/index.js"
   },
