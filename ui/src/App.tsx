@@ -11,7 +11,7 @@ function App() {
         <div className={styles.app}>
             <div className={styles.content}>
                 <div className={styles.blocks}>
-                    <HeaderStake />
+                    {/* <HeaderStake /> */}
                     <GeneralData />
                     <Assets />
                     <Users />
