@@ -8,3 +8,5 @@ export * from "./protocolRevenue";
 export * from "./redemptionRates";
 export * from "./tvlByChains";
 export * from "./uniqueDepositors";
+export * from "./generalData";
+

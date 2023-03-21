@@ -42,7 +42,6 @@ export function MultipleZonesSelector({ selectedZones, setSelectedZones }: multi
                 defaultValue={allOptions}
                 hideSelectedOptions={false}
                 onChange={(options) => {
-                    console.log(options);
                     if (Array.isArray(options)) {
                         setSelectedZones(options.map((opt: any) => opt.value));
                     }

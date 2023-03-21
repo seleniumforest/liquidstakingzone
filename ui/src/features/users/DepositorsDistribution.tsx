@@ -25,7 +25,6 @@ export function DepositorsDistribution() {
     if (error) return <>'Error...'</>;
 
     let chartOpts = { ...baseChartOptions } as any;
-    console.log(data)
 
     let {
         headerText,

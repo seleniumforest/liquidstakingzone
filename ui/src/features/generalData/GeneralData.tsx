@@ -1,77 +1,32 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import Highcharts from 'highcharts'
+import Highcharts, { TooltipFormatterContextObject } from 'highcharts'
 import styles from './generalData.module.scss';
 import appStyles from "../../App.module.scss";
 import { AppButton } from '../../reusable/appButton/AppButton';
 import HighchartsReact from 'highcharts-react-official'
 import { joinClasses } from '../../app/helpers';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
-
-function useWindowSize() {
-    const [windowSize, setWindowSize] = useState({
-        width: 0,
-        height: 0,
-    });
-
-    useEffect(() => {
-        function handleResize() {
-            setWindowSize({
-                width: window.innerWidth,
-                height: window.innerHeight,
-            });
-        }
-
-        window.addEventListener("resize", handleResize);
-        handleResize();
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    return windowSize;
-}
+import {
+    HighchartsProvider, Chart, XAxis,
+    YAxis, Tooltip as HSTooltip,
+    HighchartsStockChart, ColumnSeries, AreaSeries, HighchartsChart
+} from "react-jsx-highstock"
+import { baseChartOptions } from '../../app/constants';
+import moment from 'moment';
+import { useQuery } from 'react-query';
+import { cutData } from '../assets/helpers';
 
 export function GeneralData() {
-    const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
-    const windowSize = useWindowSize();
-    useEffect(() => {
-        chartComponentRef.current?.chart?.reflow();
-    }, [windowSize])
+    let chartOpts = { ...baseChartOptions };
 
-    const chartData = {
-        chart: {
-            backgroundColor: 'transparent',
-            type: 'area',
-            borderColor: 'transparent',
-            height: "270px"
-        },
-        yAxis: {
-            visible: false,
-        },
-        plotOptions: {
+    const { isLoading, error, data } = useQuery(['generalData'], () =>
+        fetch(`${process.env.REACT_APP_API_BASEURL}/generalData`).then(res => res.json())
+    );
 
-        },
-        legend: { enabled: false },
+    let [timePeriod, setTimePeriod] = useState<number>(-1);
 
-        title: false,
-        subtitle: false,
-        credits: {
-            enabled: false
-        },
-        series: [{
-            marker: {
-                enabled: false,
-            },
-            color: "#18C7FF",
-            data: [0.4, 0.41, 0.45, 0.42, 0.43, 0.5, 0.2, 0.3],
-            fillColor: {
-                linearGradient: [0, 0, 0, 300],
-                stops: [
-                    [0, "#18C7FF"],
-                    [1, "#ffffff"]
-                ]
-            }
-        }]
-    };
+    let cuttedData = isLoading ? [] : cutData(timePeriod, [...data?.prices]);
 
     return (
         <div className={styles.blocksLine}>
@@ -87,33 +42,65 @@ export function GeneralData() {
                         <img alt='luna' src='/img/luna-logo.png' />
                         <img alt='evmos' src='/img/evmos-logo.svg' />
                     </div>
-                    <div className={styles.mcapAndVolumeBox}>
-                        <table>
-                        <tr>
-                                <td>Total value locked</td>
-                                <td>$0.29m</td>
-                            </tr>
-                            <tr>
-                                <td>Market Cap</td>
-                                <td>$</td>
-                            </tr>
-                            <tr>
-                                <td>24h Vol</td>
-                                <td>$28 623</td>
-                            </tr>
-                        </table>
-                    </div>
+                    {!isLoading &&
+                        <div className={styles.mcapAndVolumeBox}>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <td>Total value locked</td>
+                                        <td>{`$${(data.tvl / 1e6).toFixed(2)}M`}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Market Cap</td>
+                                        <td>{`$${new Intl.NumberFormat().format(data.marketCap)}`}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>24h Vol</td>
+                                        <td>{`$${new Intl.NumberFormat().format(data.vol)}`}</td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    }
                 </div>
                 <div className={styles.priceChart}>
-                    <TimePeriodSelector className={styles.strdPriceTimespanSelector} />
-                    <HighchartsReact
-                        style={{ width: "100%" }}
-                        highcharts={Highcharts}
-                        options={chartData}
-                        ref={chartComponentRef}
-                        allowChartUpdate
-                    />
+                    <TimePeriodSelector className={styles.strdPriceTimespanSelector} setTimePeriod={setTimePeriod} selectedValue={timePeriod} />
+                    <HighchartsProvider Highcharts={Highcharts}>
+                        <HighchartsChart>
+                            <Chart {...chartOpts.chart} />
+                            <XAxis {...baseChartOptions.xAxis} type='datetime' />
+                            <YAxis visible={false}>
+                                <AreaSeries
+                                    data={isLoading ? [] : cuttedData}
+                                    color={"#18C7FF"}
+                                    stickyTracking
+                                />
+                            </YAxis>
+                            <HSTooltip
+                                useHTML
+                                formatter={function (this: TooltipFormatterContextObject) {
+                                    let displayDate = "";
+                                    let date = moment(this.x);
+                                    displayDate = date.format("DD MMMM YYYY");
 
+                                    return `            
+                                        <span style="text-align: center;">${displayDate}</span>
+                                        <br />
+                                        <span>Price ${this.y?.toFixed(2)}</span>
+                                    `;
+                                }}
+                                backgroundColor={"rgba(255,255,255, 1)"}
+                                borderColor={"#000000"}
+                                borderWidth={1}
+                                borderRadius={15}
+                                shadow={false}
+                                style={{
+                                    fontSize: "14px",
+                                    fontFamily: "Space Grotesk"
+                                }}
+                            />
+                        </HighchartsChart>
+                    </HighchartsProvider>
                 </div>
             </div>
             <div className={joinClasses(styles.stakeNow, appStyles.appBlock)}>

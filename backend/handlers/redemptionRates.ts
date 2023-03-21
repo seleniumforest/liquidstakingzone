@@ -20,6 +20,10 @@ export const redemptionRates = async (req: Request, res: Response) => {
         price: prices.find(p => p.date === r.date)?.price || 1
     }));
 
+    //do not show last element if price still not indexed
+    if (merged[merged.length-1].price === 1)
+        merged = merged.slice(0, merged.length - 1);
+
     cache.set('/redemptionRates', merged)
     res.json(merged);
 }

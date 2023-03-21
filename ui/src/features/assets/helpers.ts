@@ -49,7 +49,7 @@ export function cutData(timePeriod: number, series: any[], dateSelector: any = (
         return result >= 0;
     });
 
-    return filteredByPeriod;
+    return [...filteredByPeriod];
 
 }
 

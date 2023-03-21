@@ -28,7 +28,7 @@ export const tvlByChains = async (req: Request, res: Response) => {
     res.json(sorted);
 }
 
-const getTvlData = async (zone: Zone): Promise<TVLDataRecord[]> => {
+export const getTvlData = async (zone: Zone): Promise<TVLDataRecord[]> => {
     let query = await client.query({
         query: `
             WITH zones as (
