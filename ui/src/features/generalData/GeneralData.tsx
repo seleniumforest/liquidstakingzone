@@ -1,16 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 import Highcharts, { TooltipFormatterContextObject } from 'highcharts'
 import styles from './generalData.module.scss';
 import appStyles from "../../App.module.scss";
 import { AppButton } from '../../reusable/appButton/AppButton';
-import HighchartsReact from 'highcharts-react-official'
 import { joinClasses } from '../../app/helpers';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
 import {
     HighchartsProvider, Chart, XAxis,
     YAxis, Tooltip as HSTooltip,
-    HighchartsStockChart, ColumnSeries, AreaSeries, HighchartsChart
+    AreaSeries, HighchartsChart
 } from "react-jsx-highstock"
 import { baseChartOptions } from '../../app/constants';
 import moment from 'moment';
@@ -64,43 +63,48 @@ export function GeneralData() {
                     }
                 </div>
                 <div className={styles.priceChart}>
+                    <div className={styles.strdPriceLabel}>  
+                        STRD Price
+                    </div>
                     <TimePeriodSelector className={styles.strdPriceTimespanSelector} setTimePeriod={setTimePeriod} selectedValue={timePeriod} />
-                    <HighchartsProvider Highcharts={Highcharts}>
-                        <HighchartsChart>
-                            <Chart {...chartOpts.chart} />
-                            <XAxis {...baseChartOptions.xAxis} type='datetime' />
-                            <YAxis visible={false}>
-                                <AreaSeries
-                                    data={isLoading ? [] : cuttedData}
-                                    color={"#18C7FF"}
-                                    stickyTracking
-                                />
-                            </YAxis>
-                            <HSTooltip
-                                useHTML
-                                formatter={function (this: TooltipFormatterContextObject) {
-                                    let displayDate = "";
-                                    let date = moment(this.x);
-                                    displayDate = date.format("DD MMMM YYYY");
+                    <div style={{width:"100%"}}>
+                        <HighchartsProvider Highcharts={Highcharts}>
+                            <HighchartsChart {...baseChartOptions.chart}>
+                                <Chart {...chartOpts.chart} />
+                                <XAxis {...baseChartOptions.xAxis} type='datetime' />
+                                <YAxis visible={false}>
+                                    <AreaSeries
+                                        data={isLoading ? [] : cuttedData}
+                                        color={"#18C7FF"}
+                                        stickyTracking
+                                    />
+                                </YAxis>
+                                <HSTooltip
+                                    useHTML
+                                    formatter={function (this: TooltipFormatterContextObject) {
+                                        let displayDate = "";
+                                        let date = moment(this.x);
+                                        displayDate = date.format("DD MMMM YYYY");
 
-                                    return `            
+                                        return `            
                                         <span style="text-align: center;">${displayDate}</span>
                                         <br />
                                         <span>Price ${this.y?.toFixed(2)}</span>
                                     `;
-                                }}
-                                backgroundColor={"rgba(255,255,255, 1)"}
-                                borderColor={"#000000"}
-                                borderWidth={1}
-                                borderRadius={15}
-                                shadow={false}
-                                style={{
-                                    fontSize: "14px",
-                                    fontFamily: "Space Grotesk"
-                                }}
-                            />
-                        </HighchartsChart>
-                    </HighchartsProvider>
+                                    }}
+                                    backgroundColor={"rgba(255,255,255, 1)"}
+                                    borderColor={"#000000"}
+                                    borderWidth={1}
+                                    borderRadius={15}
+                                    shadow={false}
+                                    style={{
+                                        fontSize: "14px",
+                                        fontFamily: "Space Grotesk"
+                                    }}
+                                />
+                            </HighchartsChart>
+                        </HighchartsProvider>
+                    </div>
                 </div>
             </div>
             <div className={joinClasses(styles.stakeNow, appStyles.appBlock)}>
