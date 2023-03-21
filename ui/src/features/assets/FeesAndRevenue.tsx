@@ -18,6 +18,7 @@ import { headersData } from './constants';
 import { cutData, getGroupingOptions } from './helpers';
 import { useQuery } from 'react-query';
 import moment from 'moment';
+import { formatNum } from '../../app/helpers';
 
 export function FeesAndRevenue() {
     let [isCumulative, setIsCumulative] = useState(false);
@@ -44,7 +45,7 @@ export function FeesAndRevenue() {
     let {
         headerText,
         tooltipText
-    } = headersData.redeemedAssets;
+    } = headersData.feesAndRevenue;
 
     return (
         <div className={styles.chartCard}>
@@ -131,10 +132,8 @@ export function FeesAndRevenue() {
                             function (this: TooltipFormatterContextObject) {
                                 const that = this as any;
 
-                                let restakeSum = new Intl.NumberFormat()
-                                    .format(that.points[0].y);
-                                let feeSum = new Intl.NumberFormat()
-                                    .format(that.points[1].y);
+                                let restakeSum = formatNum(Math.ceil(isCumulative ? that.points[0].point.cumulativeSum : that.points[0].y));
+                                let feeSum = formatNum(Math.ceil(isCumulative ? that.points[1].point.cumulativeSum : that.points[1].y));
 
                                 let displayDate = "";
                                 let date = moment(that.x);
@@ -143,7 +142,9 @@ export function FeesAndRevenue() {
                                 return `  
                                     <span style="text-align: center;">${displayDate}</span>
                                     <br />
-                                    <span>Fees: $${restakeSum}</span>
+                                    <span>Fees: $${isCumulative ?
+                                        formatNum(Math.ceil(that.points[0].point.cumulativeSum - that.points[1].point.cumulativeSum)) :
+                                        restakeSum}</span>
                                     <br />
                                     <span>Revenue: $${feeSum}</span>
                                 `;

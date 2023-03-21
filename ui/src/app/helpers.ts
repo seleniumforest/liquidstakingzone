@@ -8,3 +8,5 @@ export const fromBaseUnit = (amount: string | number, zone: string, dp: number  
         
     return typeof amount === "string" ? demicrofied.toString() : demicrofied;
 }
+
+export const formatNum = (num: any) =>  new Intl.NumberFormat().format(num);
