@@ -125,4 +125,26 @@ body {
             height: 75px;
         }
     }
+
+    .appButtonLink {
+        width: fit-content;
+        height: fit-content;
+    }
+
+    .appButton {
+        @include shadowedBox();
+
+        font-family: 'Space Grotesk';
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 15px;
+
+        background-color: $appPink;
+        color: white;
+    }
+
+    .appButton:hover {
+        transform: translate3d(4px, 4px, 0px);
+        box-shadow: none;
+    }
 }

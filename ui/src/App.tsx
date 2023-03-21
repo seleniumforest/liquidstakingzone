@@ -30,9 +30,13 @@ function Footer() {
     return (
         <div className={styles.footer}>
             © 2023, ❤️ Proudly built by
-            <img src='/img/letscode-logo.png' alt={`Let's Code`} />
+            <a href="https://twitter.com/LetsCodeWeb3" target="_blank">
+                <img src='/img/letscode-logo.png' alt={`Let's Code`} />
+            </a>
             X
-            <img src='/img/quantnode-logo.png' alt={` `} />
+            <a href="https://quantnode.tech/" target="_blank">
+                <img src='/img/quantnode-logo.png' alt={` `} />
+            </a>
             QUANTNODE ❤️
         </div>
     );

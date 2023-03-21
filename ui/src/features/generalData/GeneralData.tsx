@@ -34,12 +34,24 @@ export function GeneralData() {
                     <div className={styles.strideLogo}></div>
                     <div className={styles.supportedZonesLabel}>Supported zones</div>
                     <div className={styles.supportedZonesIcons}>
-                        <img alt='cosmos' src='/img/cosmos-logo.svg' />
-                        <img alt='juno' src='/img/juno-logo.png' />
-                        <img alt='osmo' src='/img/osmo-logo.svg' />
-                        <img alt='stars' src='/img/stargaze-logo.png' />
-                        <img alt='luna' src='/img/luna-logo.png' />
-                        <img alt='evmos' src='/img/evmos-logo.svg' />
+                        <a href="https://cosmos.network/" target="_blank">
+                            <img alt='website' src='/img/atom-logo.png' />
+                        </a>
+                        <a href="https://www.junonetwork.io/" target="_blank">
+                            <img alt='website' src='/img/juno-logo.png' />
+                        </a>
+                        <a href="https://osmosis.zone/" target="_blank">
+                            <img alt='website' src='/img/osmo-logo.png' />
+                        </a>
+                        <a href="https://www.stargaze.zone/" target="_blank">
+                            <img alt='website' src='/img/stars-logo.png' />
+                        </a>
+                        <a href="https://www.terra.money/" target="_blank">
+                            <img alt='website' src='/img/luna-logo.png' />
+                        </a>
+                        <a href="https://evmos.org/" target="_blank">
+                            <img alt='website' src='/img/evmos-logo.png' />
+                        </a>
                     </div>
                     {!isLoading &&
                         <div className={styles.mcapAndVolumeBox}>
@@ -63,11 +75,11 @@ export function GeneralData() {
                     }
                 </div>
                 <div className={styles.priceChart}>
-                    <div className={styles.strdPriceLabel}>  
+                    <div className={styles.strdPriceLabel}>
                         STRD Price
                     </div>
                     <TimePeriodSelector className={styles.strdPriceTimespanSelector} setTimePeriod={setTimePeriod} selectedValue={timePeriod} />
-                    <div style={{width:"100%"}}>
+                    <div style={{ width: "100%" }}>
                         <HighchartsProvider Highcharts={Highcharts}>
                             <HighchartsChart {...baseChartOptions.chart}>
                                 <Chart {...chartOpts.chart} />
@@ -113,16 +125,43 @@ export function GeneralData() {
                     <div className={styles.strideDesc}>
                         Stride is a liquid staking protocol that unlocks the liquidity for staked assets in the IBC ecosystem.
                     </div>
-                    <AppButton text="Stake Now" />
+                    <a href="https://app.stride.zone/" target="_blank" className={appStyles.appButtonLink}>
+                        <button className={appStyles.appButton}>Stake Now</button>
+                    </a>
                     <div className={styles.social}>
-                        <img alt='website' src='/img/chrome-icon-black.png' />
-                        <img alt='twitter' src='/img/twitter-icon-pink.png' />
-                        <img alt='discord' src='/img/discord-icon-black.png' />
-                        <img alt='github' src='/img/github-icon-black.png' />
-                        <img alt='medium' src='/img/medium-icon-black.png' />
+                        <a href="https://stride.zone/" target="_blank">
+                            <img alt='website'
+                                onMouseOver={(el: any) => el.target.src = '/img/chrome-logo-pink.png'}
+                                onMouseOut={(el: any) => el.target.src = '/img/chrome-logo-black.png'}
+                                src='/img/chrome-logo-black.png' />
+                        </a>
+                        <a href="https://twitter.com/stride_zone" target="_blank">
+                            <img alt='twitter'
+                                onMouseOver={(el: any) => el.target.src = '/img/twitter-logo-pink.png'}
+                                onMouseOut={(el: any) => el.target.src = '/img/twitter-logo-black.png'}
+                                src='/img/twitter-logo-black.png' />
+                        </a>
+                        <a href="https://discord.gg/stride-988945059783278602" target="_blank">
+                            <img alt='discord'
+                                onMouseOver={(el: any) => el.target.src = '/img/discord-logo-pink.png'}
+                                onMouseOut={(el: any) => el.target.src = '/img/discord-logo-black.png'}
+                                src='/img/discord-logo-black.png' />
+                        </a>
+                        <a href="https://github.com/Stride-Labs/stride/" target="_blank">
+                            <img alt='github'
+                                onMouseOver={(el: any) => el.target.src = '/img/github-logo-pink.png'}
+                                onMouseOut={(el: any) => el.target.src = '/img/github-logo-black.png'}
+                                src='/img/github-logo-black.png' />
+                        </a>
+                        <a href="https://stride.zone/blog" target="_blank">
+                            <img alt='medium'
+                                onMouseOver={(el: any) => el.target.src = '/img/medium-logo-pink.png'}
+                                onMouseOut={(el: any) => el.target.src = '/img/medium-logo-black.png'}
+                                src='/img/medium-logo-black.png' />
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

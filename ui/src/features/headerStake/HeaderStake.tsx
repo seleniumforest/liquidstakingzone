@@ -42,7 +42,11 @@ export function HeaderStake() {
                                 <td>0.1%</td>
                                 <td>10%</td>
                                 <td>
-                                    <AppButton text={"Delegate"} />
+                                    <a href="https://wallet.keplr.app/chains/stride?modal=validator&chain=stride-1&validator_address=stridevaloper1dtqsnk3mlqrcxgfvu39lm0jm3pyd0mkrmgkwec"
+                                        target="_blank"
+                                        className={appStyles.appButtonLink}>
+                                        <button className={appStyles.appButton}>Delegate</button>
+                                    </a>
                                 </td>
                             </tr>
                         </tbody>
