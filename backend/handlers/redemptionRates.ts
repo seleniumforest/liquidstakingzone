@@ -9,19 +9,30 @@ type RedemptionRateDataRecord = {
     price: number
 }
 
+//temporary solution
+const astroLunaPoolDataUrl = "https://api.coinhall.org/api/v1/charts/terra1re0yj0j6e9v2szg7kp02ut6u8jjea586t6pnpq6628wl36fphtpqwt6l7p?bars=329&from=1665251079&interval=1h&quoteAsset=uluna&to=1679463879";
+
+const findClosestDate = (data: { date: number, price: number }[], target: number) => {
+    let sorted = data.sort((a, b) => Math.abs(a.date - target) > Math.abs(b.date - target) ? 1 : -1);
+
+    return sorted[0];
+}
+
 export const redemptionRates = async (req: Request, res: Response) => {
     let zone = req.query.zone as Zone;
     let rates = await getRedemptionRatesData(zone);
-    let prices = await getPriceData(zone, false);
+    let prices = zone === "luna" ?
+        (await (await fetch(astroLunaPoolDataUrl)).json() as any[]).map((x: any) => ({ date: x.time, price: x.open })) :
+        await getPriceData(zone, false);
 
     let merged = rates.map(r => ({
         date: Number(r.date),
         rate: r.rate,
-        price: prices.find(p => p.date === r.date)?.price || 1
+        price: findClosestDate(prices, r.date)?.price || 1
     }));
 
     //do not show last element if price still not indexed
-    if (merged[merged.length-1].price === 1)
+    if (merged[merged.length - 1].price === 1)
         merged = merged.slice(0, merged.length - 1);
 
     cache.set('/redemptionRates', merged)
