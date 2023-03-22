@@ -17,13 +17,13 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "hostZoneWatcherJob",
+            "name": "priceUpdateJob",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/jobs/hostZoneWatcherJob.ts",
+            "program": "${workspaceFolder}/src/jobs/priceUpdateJob.ts",
             "runtimeExecutable": "ts-node"
-        }
+        },
         {
             "type": "node",
             "request": "launch",
