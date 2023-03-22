@@ -23,7 +23,7 @@ import { formatNum } from '../../app/helpers';
 export function FeesAndRevenue() {
     let [isCumulative, setIsCumulative] = useState(false);
     let [timeSpan, setTimeSpan] = useState<TimeSpan>("D");
-    let [timePeriod, setTimePeriod] = useState<number>(-1);
+    let [timePeriod, setTimePeriod] = useState<number>(90);
     const { isLoading, error, data } = useQuery(['protocolRevenue'], () =>
         fetch(`${process.env.REACT_APP_API_BASEURL}/protocolRevenue`).then(res => res.json())
     );

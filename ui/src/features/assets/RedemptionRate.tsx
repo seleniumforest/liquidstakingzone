@@ -12,14 +12,14 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { capitalize, cutData } from './helpers';
+import { capitalize, cutData, getChartColor } from './helpers';
 import { useQuery } from 'react-query';
 import moment from 'moment';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 
 export function RedemptionRate() {
     let [zone, setZone] = useState<Zone>("atom");
-    let [timePeriod, setTimePeriod] = useState<number>(-1);
+    let [timePeriod, setTimePeriod] = useState<number>(90);
     const { isLoading, error, data } = useQuery(['redemptionRates', zone], () =>
         fetch(`${process.env.REACT_APP_API_BASEURL}/redemptionRates?zone=${zone}`)
             .then(res => res.json())
@@ -87,9 +87,11 @@ export function RedemptionRate() {
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         <LineSeries
                             data={rateSeries}
+                            color={getChartColor(zone)}
                         />
                         <LineSeries
                             data={priceSeries}
+                            color={"black"}
                         />
                     </YAxis>
                     <HSTooltip
@@ -106,7 +108,7 @@ export function RedemptionRate() {
                                     <br>
                                     <span>Redemption rate: ${rate}</span>
                                     <br>
-                                    <span>${capitalize(zone)} osmosis price: ${price}</span>
+                                    <span>${capitalize(zone)}/st${capitalize(zone)} market price: ${price}</span>
                                 `;   
                             }}
                         backgroundColor={"rgba(255,255,255, 1)"}

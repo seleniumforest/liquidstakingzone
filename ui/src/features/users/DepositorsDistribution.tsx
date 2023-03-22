@@ -13,6 +13,7 @@ import {
 import { useQuery } from 'react-query';
 import { headersData } from './constants';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
+import { getChartColor } from '../assets/helpers';
 
 export function DepositorsDistribution() {
     let chartColor = "#D96BCE";
@@ -74,7 +75,7 @@ export function DepositorsDistribution() {
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         <ColumnSeries
-                            color={chartColor}
+                            color={getChartColor(zone)}
                             stickyTracking
                             data={isLoading ? [] : data.map((x: any) => +x.count)}
                         />

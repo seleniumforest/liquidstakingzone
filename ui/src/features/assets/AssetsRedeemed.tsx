@@ -22,7 +22,7 @@ import { useQuery } from 'react-query';
 export function AssetsRedeemed() {
     let [isCumulative, setIsCumulative] = useState(false);
     let [timeSpan, setTimeSpan] = useState<TimeSpan>("D");
-    let [timePeriod, setTimePeriod] = useState<number>(-1);
+    let [timePeriod, setTimePeriod] = useState<number>(90);
     let [zone, setZone] = useState<Zone>("atom");
     const { isLoading, error, data } = useQuery(['assetsRedeemed', zone], () =>
         fetch(`${process.env.REACT_APP_API_BASEURL}/assetsRedeemed?zone=${zone}`).then(res => res.json())

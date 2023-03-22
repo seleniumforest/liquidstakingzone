@@ -28,7 +28,7 @@ type TVLDataRecord = {
 }
 
 export function TvlByChains() {
-    let [timePeriod, setTimePeriod] = useState<number>(-1);
+    let [timePeriod, setTimePeriod] = useState<number>(90);
     let [selectedZones, setSelectedZones] = useState<Zone[]>([...supportedZones]);
     const { isLoading, error, data } = useQuery<TVLData[]>(['tvlByChains'], () =>
         fetch(`${process.env.REACT_APP_API_BASEURL}/tvlByChains`)
@@ -105,7 +105,7 @@ export function TvlByChains() {
                         tickAmount={5}>
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
-                        {timeData?.map(dt => (
+                        {timeData?.sort((a,b) => a.data.at(-1).tvl > b.data.at(-1).tvl ? 1 : -1).map(dt => (
                             <AreaSeries
                                 stacking={"normal"}
                                 color={getChartColor(dt.zone)}

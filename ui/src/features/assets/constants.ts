@@ -12,7 +12,7 @@ export const headersData = {
         tooltipText: "Tooltop for Fees and Revenue"
     },
     tvlByChains: {
-        headerText: "TVL by chains",
+        headerText: "TVL by zones",
         tooltipText: "Tooltip for TVL by chains"
     },
     redemptionRate: {

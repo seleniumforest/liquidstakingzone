@@ -18,7 +18,7 @@ import { headersData } from './constants';
 import moment from 'moment';
 
 export function ActiveUsers() {
-    let [timePeriod, setTimePeriod] = useState<number>(-1);
+    let [timePeriod, setTimePeriod] = useState<number>(90);
     let chartColor = "#27AE60";
 
     const { isLoading, error, data } = useQuery(['activeUsers'], () =>

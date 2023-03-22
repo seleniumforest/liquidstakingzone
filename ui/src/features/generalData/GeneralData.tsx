@@ -23,7 +23,7 @@ export function GeneralData() {
         fetch(`${process.env.REACT_APP_API_BASEURL}/generalData`).then(res => res.json())
     );
 
-    let [timePeriod, setTimePeriod] = useState<number>(-1);
+    let [timePeriod, setTimePeriod] = useState<number>(90);
 
     let cuttedData = isLoading ? [] : cutData(timePeriod, [...data?.prices]);
 
@@ -41,7 +41,7 @@ export function GeneralData() {
                             <img alt='website' src='/img/juno-logo.png' />
                         </a>
                         <a href="https://osmosis.zone/" target="_blank">
-                            <img alt='website' src='/img/osmo-logo.png' />
+                            <img alt='website' src='/img/osmo-logo.svg' />
                         </a>
                         <a href="https://www.stargaze.zone/" target="_blank">
                             <img alt='website' src='/img/stars-logo.png' />
@@ -59,7 +59,7 @@ export function GeneralData() {
                                 <thead>
                                     <tr>
                                         <td>Total value locked</td>
-                                        <td>{`$${(data.tvl / 1e6).toFixed(2)}M`}</td>
+                                        <td>{`$${new Intl.NumberFormat().format(Math.ceil(data.tvl))}`}</td>
                                     </tr>
                                     <tr>
                                         <td>Market Cap</td>

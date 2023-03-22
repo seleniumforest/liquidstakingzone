@@ -20,7 +20,7 @@ export const latestEvents = async (_: Request, res: Response) => {
     let query = await client.query({
         query: `
         SELECT * FROM (
-            SELECT top 15 
+            SELECT top 10 
                 date, 
                 txhash,
                 creator,
@@ -35,7 +35,7 @@ export const latestEvents = async (_: Request, res: Response) => {
         
             UNION ALL
         
-            SELECT top 15 
+            SELECT top 10
                 date, 
                 txhash,
                 creator,
