@@ -15,7 +15,7 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { cutData, getGroupingOptions } from './helpers';
+import { cutData, getBorderRadius, getGroupingOptions } from './helpers';
 import { useQuery } from 'react-query';
 import moment from 'moment';
 import { formatNum } from '../../app/helpers';
@@ -98,7 +98,7 @@ export function FeesAndRevenue() {
                         <ColumnSeries
                             data={isLoading ? [] : restakeSeries}
                             color={"#FFE446"}
-                            borderRadius={timeSpan === "M" ? 5 : (timeSpan === "W" ? 3 : 1)}
+                            borderRadius={getBorderRadius(timeSpan, timePeriod)}
                             stickyTracking
                             cumulative={isCumulative}
                             stacking={"normal"}

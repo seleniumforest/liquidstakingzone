@@ -38,7 +38,7 @@ function Footer() {
             <a href="https://quantnode.tech/" target="_blank">
                 <img src='/img/quantnode-logo.png' alt={` `} />
             </a>
-            QUANTNODE ❤️
+            <span style={{ fontFamily: `Futura, Futura-Medium, "Futura Medium", "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", sans-serif` }}>QUANTNODE ❤️</span>
             <div style={{ flexGrow: 5 }} />
         </div>
     );

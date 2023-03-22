@@ -16,7 +16,7 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { cutData, getChartColor, getGroupingOptions, getTooltipFormatter } from './helpers';
+import { cutData, getBorderRadius, getChartColor, getGroupingOptions, getTooltipFormatter } from './helpers';
 import { useQuery } from 'react-query';
 
 export function AssetsRedeemed() {
@@ -94,7 +94,7 @@ export function AssetsRedeemed() {
                         <ColumnSeries
                             data={isLoading ? [] : cuttedData}
                             color={getChartColor(zone)}
-                            borderRadius={timeSpan === "M" ? 5 : (timeSpan === "W" ? 3 : 1)}
+                            borderRadius={getBorderRadius(timeSpan, timePeriod)}
                             stickyTracking
                             cumulative={isCumulative}
                             dataGrouping={{

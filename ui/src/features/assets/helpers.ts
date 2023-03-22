@@ -64,3 +64,29 @@ export function getChartColor(zone: Zone) {
         default: return "#008BF0";
     }
 }
+
+export function getBorderRadius(ts: TimeSpan, tp: number) {
+    if (ts === "D") {
+        if (tp === 7)
+            return 5;
+        if (tp == 30)
+            return 3;
+
+        return 1;
+    }
+    if (ts === "W") {
+        if (tp === 7)
+            return 7;
+        if (tp == 30)
+            return 5;
+        return 3;
+    }
+    if (ts === "M") {
+        if (tp === 7 || tp == 30)
+            return 7;
+        if (tp === 90)
+            return 5;
+
+        return 3;
+    }
+}
