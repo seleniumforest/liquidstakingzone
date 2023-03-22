@@ -92,7 +92,7 @@ export function ActiveUsers() {
                         <ColumnSeries
                             data={isLoading ? [] : cuttedUsersData}
                             color={chartColor}
-                            borderRadius={5}
+                            borderRadius={timePeriod > 90 ? 0 : (timePeriod > 30 ? 2 : 5)}
                             stickyTracking
                         />
                         <LineSeries

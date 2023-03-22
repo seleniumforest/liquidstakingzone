@@ -55,9 +55,9 @@ export function Assets() {
 }
 
 function DepositDiff(props: DepositDiffProps) {
-    let diff = ((props.depositedNow/ props.depositedYesterday - 1) * 100).toFixed(2);
-    let diffClass = props.diff > 0 ? styles.green : styles.red;
-    let arrow = props.diff > 0 ? "↑" : "↓";
+    let diff = (props.depositedNow / props.depositedYesterday - 1) * 100;
+    let diffClass = diff > 0 ? styles.green : styles.red;
+    let arrow = diff > 0 ? "↑" : "↓";
 
     return (
         <div className={styles.depositDiff}>
@@ -65,7 +65,7 @@ function DepositDiff(props: DepositDiffProps) {
                 {new Intl.NumberFormat().format(props.depositedNow)}
                 {props.icon}
             </div>
-            <div className={joinClasses(styles.diff, diffClass)}>{arrow} {diff}%</div>
+            <div className={joinClasses(styles.diff, diffClass)}>{arrow} {diff.toFixed(2)}%</div>
             <div className={styles.yesterday}>{`Was ${new Intl.NumberFormat().format(props.depositedYesterday)} last day`}</div>
         </div>
     )

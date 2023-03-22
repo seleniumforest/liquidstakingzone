@@ -78,6 +78,7 @@ export function DepositorsDistribution() {
                             color={getChartColor(zone)}
                             stickyTracking
                             data={isLoading ? [] : data.map((x: any) => +x.count)}
+                            borderRadius={5}
                         />
                     </YAxis>
                     <HSTooltip

@@ -29,15 +29,17 @@ export default App;
 function Footer() {
     return (
         <div className={styles.footer}>
+            <div style={{ flexGrow: 4 }} />
             © 2023, ❤️ Proudly built by
             <a href="https://twitter.com/LetsCodeWeb3" target="_blank">
                 <img src='/img/letscode-logo.png' alt={`Let's Code`} />
             </a>
-            X
+            <span>X</span>
             <a href="https://quantnode.tech/" target="_blank">
                 <img src='/img/quantnode-logo.png' alt={` `} />
             </a>
             QUANTNODE ❤️
+            <div style={{ flexGrow: 5 }} />
         </div>
     );
 }
