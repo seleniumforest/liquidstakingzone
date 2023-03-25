@@ -45,6 +45,6 @@ export const priceUpdateJob = async () => {
 };
 
 (async () => {
-    setInterval(priceUpdateJob, timeSpans.day);
+    setInterval(priceUpdateJob, timeSpans.hour);
     await priceUpdateJob();
 })();
