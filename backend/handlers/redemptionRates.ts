@@ -67,6 +67,11 @@ export type PriceData = {
     price: number
 }
 export const getPriceData = async (zone: Zone, vsUsd: boolean = true): Promise<PriceData[]> => {
+    let coingeckoId = zones.find(x => x.zone === zone)?.coingeckoId!;
+    return getPriceDataById(coingeckoId, vsUsd);
+}
+
+export const getPriceDataById = async (coingeckoId: string, vsUsd: boolean = true): Promise<PriceData[]> => {
     let query = await client.query({
         query: `
             SELECT 
@@ -77,7 +82,7 @@ export const getPriceData = async (zone: Zone, vsUsd: boolean = true): Promise<P
                     avg(price) as price, 
                     toStartOfDay(toDateTime64(date/1000, 3, 'Etc/UTC')) as startOfDay
                 FROM Stride.price_history
-                WHERE coin = '${zones.find(x => x.zone === zone)?.coingeckoId}' AND vsCurrency ${vsUsd ? '=' : '!='} 'usd'
+                WHERE coin = '${coingeckoId}' AND vsCurrency ${vsUsd ? '=' : '!='} 'usd'
                 GROUP BY startOfDay, date
                 ORDER BY date DESC
             ) 

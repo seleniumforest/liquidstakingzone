@@ -25,7 +25,7 @@ export function GeneralData() {
 
     let [timePeriod, setTimePeriod] = useState<number>(90);
 
-    let cuttedData = isLoading ? [] : cutData(timePeriod, [...data?.prices]);
+    let cuttedData = isLoading ? [] : cutData(timePeriod, data?.prices ? [...data?.prices] : []);
 
     return (
         <div className={styles.blocksLine}>
@@ -101,7 +101,7 @@ export function GeneralData() {
                                         return `            
                                         <span style="text-align: center;">${displayDate}</span>
                                         <br />
-                                        <span>Price ${this.y?.toFixed(2)}</span>
+                                        <span>STRD Price ${this.y?.toFixed(2)}</span>
                                     `;
                                     }}
                                     backgroundColor={"rgba(255,255,255, 1)"}
