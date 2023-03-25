@@ -78,7 +78,7 @@ const getBalanceOnAccount = async (address: string, denom: string, endpoints: st
 }
 
 (async () => {
-    setInterval(externalAccountsCheckerJob, timeSpans.hour * 6)
+    setInterval(externalAccountsCheckerJob, timeSpans.hour)
     await externalAccountsCheckerJob();
 })();
 
