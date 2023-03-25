@@ -6,8 +6,8 @@ import { getStAssetsPriceHistory } from "../externalServices/osmosisImperatorApi
 export const updateGeckoPrices = async () => {
     let latestPrices = await getPrices(false);
 
-    let tokens = zones
-        .map(x => x.coingeckoId)
+    let tokens = ["stride", ...zones
+        .map(x => x.coingeckoId)]
         .map(x => ({
             coin: x,
             latestDate: latestPrices.find(p => p.coin === x)?.latestDate
