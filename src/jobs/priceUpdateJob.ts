@@ -16,8 +16,8 @@ export const updateGeckoPrices = async () => {
     for (let token of tokens) {
         let prices = await fetchTokenPriceHistory(token.coin, token.latestDate);
         await insertPrices(prices);
-        //to prevent spamming
-        await new Promise((res) => setTimeout(res, 1000));
+        //to prevent spamming and getting 429 errors
+        await new Promise((res) => setTimeout(res, 60000));
     }
 };
 
