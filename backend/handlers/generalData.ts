@@ -26,7 +26,7 @@ export const generalData = async (req: Request, res: Response) => {
 
         lastMarketCap = data.data.market_data.market_cap.usd;
         lastTotalVolume = data.data.market_data.total_volume.usd;
-    } catch { }
+    } catch (e: any) { console.log(e?.message) }
 
     let response = {
         tvl: tvlData,

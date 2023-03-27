@@ -13,7 +13,7 @@ type TVLDataRecord = {
     tvl: number;
 }
 
-export const tvlByChains = async (req: Request, res: Response) => {
+export const tvlByChains = async (_: Request, res: Response) => {
     let result: TVLData[] = [];
 
     await Promise.allSettled(
@@ -31,11 +31,7 @@ export const tvlByChains = async (req: Request, res: Response) => {
 export const getTvlData = async (zone: Zone): Promise<TVLDataRecord[]> => {
     let query = await client.query({
         query: `
-            WITH zones as (
-                ${zones.map(zone => `SELECT '${zone.zone}' as zone, '${zone.coingeckoId}' as coin, ${zone.decimals} as decimals`)
-                        .join(" UNION ALL ")}
-            ),
-            deposited as (
+            WITH deposited as (
                 SELECT 
                     toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) * 1000 as date, 
                     SUM(am) as amount
@@ -92,7 +88,7 @@ export const getTvlData = async (zone: Zone): Promise<TVLDataRecord[]> => {
                         avg(price) as price, 
                         toStartOfDay(toDateTime64(date/1000, 3, 'Etc/UTC')) as startOfDay
                     FROM Stride.price_history
-                    WHERE coin = (select coin from zones where zone = '${zone}') AND vsCurrency = 'usd'
+                    WHERE coin = (select coingeckoId from Stride.zones_info where zone = '${zone}') AND vsCurrency = 'usd'
                     GROUP BY startOfDay, date
                     ORDER BY date DESC
                 ) 
@@ -105,7 +101,7 @@ export const getTvlData = async (zone: Zone): Promise<TVLDataRecord[]> => {
             FROM (
                 SELECT  
                     toStartOfDay(toDateTime64(pd.date/1000, 3, 'Etc/UTC')) as dt,
-                    (select decimals from zones where zone = '${zone}') as decimals,
+                    (select decimals from Stride.zones_info where zone = '${zone}') as decimals,
                     ((d.amount / pow(10, decimals)) - (r.amount / (pow(10, decimals)) * r.redemptionRate)) * pd.price as change
                 FROM priceData pd
                 LEFT JOIN deposited d on pd.date = d.date

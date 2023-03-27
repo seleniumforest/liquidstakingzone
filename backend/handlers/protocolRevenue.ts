@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { cache } from "../cache";
-import { Zone, zones } from "../constants";
 import { ClickhouseResponse, client } from "../db";
 
 type ProtocolRevenueDataRecord = {
@@ -11,11 +10,7 @@ type ProtocolRevenueDataRecord = {
 
 export const protocolRevenue = async (_: Request, res: Response) => {
     let sql = `
-            WITH zones as (
-                ${zones.map(zone => `SELECT '${zone.zone}' as zone, '${zone.coingeckoId}' as coin, ${zone.decimals} as decimals`)
-            .join(" UNION ALL ")}
-            ),
-            prices as (
+            WITH prices as (
                 SELECT coin,
                     toUnixTimestamp(startOfDay) * 1000 as date,  
                     avg(price) AS price 
@@ -66,7 +61,7 @@ export const protocolRevenue = async (_: Request, res: Response) => {
                     r.amount / pow(10, z.decimals) * p.price as restake
                 FROM prices p 
                 join fees f on p.date = f.dt
-                join zones z on f.zone = z.zone and p.coin = z.coin
+                join Stride.zones_info z on f.zone = z.zone and p.coin = z.coingeckoId
                 join restake r on r.dt = f.dt and r.zone = z.zone
                 ORDER BY p.coin, p.date
             )
