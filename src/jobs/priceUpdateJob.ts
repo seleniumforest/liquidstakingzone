@@ -1,9 +1,10 @@
 import { timeSpans, zones } from "../constants";
 import { getPrices, insertPrices } from "../db/";
-import { fetchTokenPriceHistory } from "../externalServices/coingecko";
+import { insertGeneralData } from "../db/generalData";
+import { fetchGeneralData, fetchTokenPriceHistory } from "../externalServices/coingecko";
 import { getStAssetsPriceHistory } from "../externalServices/osmosisImperatorApi";
 
-export const updateGeckoPrices = async () => {
+export const updateTokenPrices = async () => {
     let latestPrices = await getPrices(false);
 
     let tokens = ["stride", ...zones
@@ -37,10 +38,17 @@ const updateStAssetsPrices = async () => {
     await insertPrices(newPrices);
 }
 
+const updateGeneralData = async () => {
+    let data = await fetchGeneralData();
+    if (data)
+        insertGeneralData([data]);
+}
+
 export const priceUpdateJob = async () => {
     console.log("Running price update job");
+    await updateGeneralData();
     await updateStAssetsPrices();
-    await updateGeckoPrices();
+    await updateTokenPrices();
     console.log("Finished price update job");
 };
 

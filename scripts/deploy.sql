@@ -171,3 +171,10 @@ CREATE TABLE Stride.account_balances_history (
     date UInt64,
     assets Array(Tuple (String, UInt256))
 ) ENGINE = MergeTree() PRIMARY KEY (id);
+/* General data snapshots */
+CREATE TABLE Stride.general_data (
+    id UUID,
+    date UInt64,
+    mcap UInt64,
+    vol UInt64
+) ENGINE = MergeTree() PRIMARY KEY (id);

@@ -1,5 +1,6 @@
 import CoinGecko from "coingecko-api";
 import { Price } from "../db";
+import { GeneralData } from "../db/generalData";
 import { randomUUID } from "../helpers";
 
 const client = new CoinGecko();
@@ -12,7 +13,7 @@ export const fetchTokenPriceHistory = async (coingeckoId: string, from?: number)
     from = from || firstStrideBlockTimestamp;
     let to = Date.now();
     console.log(`Updating prices for ${coingeckoId} from timestamp ${from}`)
-    
+
     //90 days is the maximum timespan to get hourly price ranges
     for (let period = from; period < to; period += $90daysInMs) {
         try {
@@ -27,7 +28,7 @@ export const fetchTokenPriceHistory = async (coingeckoId: string, from?: number)
                     id: randomUUID(),
                     coin: coingeckoId,
                     date: date,
-                    price, 
+                    price,
                     vsCurrency: "usd"
                 })
             });
@@ -35,4 +36,18 @@ export const fetchTokenPriceHistory = async (coingeckoId: string, from?: number)
     }
 
     return prices;
+}
+
+export const fetchGeneralData = async (): Promise<GeneralData | undefined> => {
+    try {
+        let data = await client.coins.fetch("stride", {
+            market_data: true,
+            community_data: true
+        });
+
+        let mcap = data.data.market_data.market_cap.usd;
+        let vol = data.data.market_data.total_volume.usd;
+
+        return { mcap, vol, id: randomUUID(), date: Date.now() };
+    } catch (e: any) { console.log(e?.message) }
 }
