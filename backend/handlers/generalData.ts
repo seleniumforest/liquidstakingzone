@@ -1,12 +1,9 @@
 import { Request, Response } from "express";
 import { supportedZones } from "../constants";
 import { getTvlData } from "./tvlByChains";
-import CoinGecko from "coingecko-api";
 import { cache } from "../cache";
-import { getPriceData, getPriceDataById, PriceData } from "./redemptionRates";
-
-let lastMarketCap = 0;
-let lastTotalVolume = 0;
+import { getPriceDataById } from "./redemptionRates";
+import { ClickhouseResponse, client } from "../db";
 
 export const generalData = async (req: Request, res: Response) => {
     let tvlData = 0;
@@ -15,27 +12,30 @@ export const generalData = async (req: Request, res: Response) => {
         tvlData += (await getTvlData(zone))?.at(-1)?.tvl || 0
     }
 
-    const client = new CoinGecko();
     let prices = await getPriceDataById("stride", true);
-
-    try {
-        let data = await client.coins.fetch("stride", {
-            market_data: true,
-            community_data: true
-        });
-
-        lastMarketCap = data.data.market_data.market_cap.usd;
-        lastTotalVolume = data.data.market_data.total_volume.usd;
-    } catch (e: any) { console.log(e?.message) }
-
+    let { mcap, vol } = await getGeneralDataFromDb();
+    console.log(mcap, vol)
     let response = {
         tvl: tvlData,
-        marketCap: lastMarketCap,
-        vol: lastTotalVolume,
+        marketCap: +mcap,
+        vol: +vol,
         prices: prices.map(x => [Number(x.date), x.price])
     };
 
-    if (lastMarketCap > 0 && lastTotalVolume > 0)
-        cache.set('/generalData', response)
+    cache.set('/generalData', response);
     res.json(response);
+}
+
+async function getGeneralDataFromDb() {
+    let query = await client.query({
+        query: `
+            SELECT TOP 1 * 
+            FROM Stride.general_data
+            ORDER BY date desc
+        `
+    });
+
+    let response = (await query.json()) as ClickhouseResponse<{mcap: number, vol: number}[]>;
+
+    return response.data[0];
 }
