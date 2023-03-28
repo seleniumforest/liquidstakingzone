@@ -23,7 +23,16 @@ export const tvlByChains = async (_: Request, res: Response) => {
         }))
     );
 
-    let sorted = result.sort((a, b) => a.zone > b.zone ? 1 : -1);
+    //cut data if there's no price for actual day (unreliable coingecko api)
+    let maxDate = Math.min(...result.map(r => r.data.at(-1)?.date!));
+    let sorted = result
+        .map(r => ({
+            ...r,
+            data: r.data.filter(d => d.date <= maxDate)
+        }))
+        .sort((a, b) => a.zone > b.zone ? 1 : -1);
+    //
+    
     cache.set('/tvlByChains', sorted)
     res.json(sorted);
 }
