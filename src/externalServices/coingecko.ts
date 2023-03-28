@@ -39,6 +39,7 @@ export const fetchTokenPriceHistory = async (coingeckoId: string, from?: number)
 }
 
 export const fetchGeneralData = async (): Promise<GeneralData | undefined> => {
+    console.log
     try {
         let data = await client.coins.fetch("stride", {
             market_data: true,
@@ -47,7 +48,8 @@ export const fetchGeneralData = async (): Promise<GeneralData | undefined> => {
 
         let mcap = data.data.market_data.market_cap.usd;
         let vol = data.data.market_data.total_volume.usd;
-
+        console.log(`fetchGeneralData: Got new data:`, mcap, vol, Date.now());
+        
         return { mcap, vol, id: randomUUID(), date: Date.now() };
-    } catch (e: any) { console.log(e?.message) }
+    } catch (e: any) { console.log(`fetchGeneralData: Error fetching data ${e?.message}`); }
 }
