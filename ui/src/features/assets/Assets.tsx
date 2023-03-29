@@ -10,6 +10,7 @@ import { FeesAndRevenue } from './FeesAndRevenue';
 import { TvlByChains } from './TvlByChains';
 import { RedemptionRate } from './RedemptionRate';
 import { useQuery } from 'react-query';
+import { Zone } from '../../app/constants';
 
 export function Assets() {
     const { isLoading, error, data } = useQuery(['assetsOnStakingWallets'], () =>
@@ -21,8 +22,7 @@ export function Assets() {
         depositedNow: Number(fromBaseUnit(x.latestAssets[0][1], x.zone, 0)),
         depositedYesterday: Number(fromBaseUnit(x.pastDayAssets[0][1], x.zone, 0)),
         icon: <img src={`/img/st${x.zone}-logo.png`} />
-    }));
-
+    })).sort((a: any, b: any) => getZoneOrder(a.zone) > getZoneOrder(b.zone) ? 1 : -1);
 
     return (
         <>
@@ -52,6 +52,17 @@ export function Assets() {
             </div>
         </>
     );
+}
+
+function getZoneOrder(zone: Zone) {
+    switch(zone){
+        case "atom" : return 1;
+        case "osmo": return 2;
+        case "juno" : return 3;
+        case "luna": return 5;
+        case "stars": return 4;
+        case "evmos": return 6;
+    }
 }
 
 function DepositDiff(props: DepositDiffProps) {
