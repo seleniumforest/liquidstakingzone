@@ -2,6 +2,9 @@
 
 .assetsBlueBlock {
     padding: 40px 35px 40px 35px !important;
+    @media screen and (max-width: 1000px) {
+        padding: 10px !important;
+    }
 
     .assetsDeposited {
         display: grid;
@@ -26,6 +29,9 @@
                 @include shadowedBox();
                 background-color: white;
                 padding: 20px 35px 20px 35px;
+                @media screen and (max-width: 1000px) {
+                    padding: 10px !important;
+                }
                 width: fit-content;
                 height: fit-content;
                 display: flex;

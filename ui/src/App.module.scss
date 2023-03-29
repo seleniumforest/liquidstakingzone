@@ -122,6 +122,11 @@ body {
         justify-content: center;
         align-items: center;
 
+        @media screen and (max-width: 1000px) {
+            flex-direction: column;
+        }
+
+
         img {
             border-radius: 50%;
             margin: 0px 10px 0px 10px;

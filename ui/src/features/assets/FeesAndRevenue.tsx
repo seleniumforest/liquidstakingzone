@@ -63,7 +63,8 @@ export function FeesAndRevenue() {
                         lineHeight: "18px",
                         textAlign: "center",
                         padding: "10px",
-                        maxWidth: "200px"
+                        maxWidth: "200px",
+                        zIndex: 10
                     }} />
                 <a
                     data-tooltip-id="my-tooltip"

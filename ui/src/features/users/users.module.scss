@@ -3,6 +3,10 @@
 .usersBlueBlock {
     padding: 40px 35px 40px 35px !important;
 
+    @media screen and (max-width: 1000px) {
+        padding: 10px !important;
+    }
+    
     .userCharts {
         display: grid;
         grid-template-columns: 1fr 1fr;
