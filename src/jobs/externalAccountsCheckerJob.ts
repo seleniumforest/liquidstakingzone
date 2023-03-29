@@ -13,25 +13,27 @@ export const externalAccountsCheckerJob = async () => {
     let zoneInfo = await fetchZonesInfo();
 
     for (const zone of zoneInfo) {
-        let zoneEndpoints = await NetworkManager.create({
-            name: prefixToRegistryName(zone.prefix)
-        });
+        try {
+            let zoneEndpoints = await NetworkManager.create({
+                name: prefixToRegistryName(zone.prefix)
+            });
 
-        let staked = await getBalanceStaked(zone.delegationAcc, zoneEndpoints.getRpcs());
-        let balance = await getBalanceOnAccount(zone.delegationAcc, staked?.denom!, zoneEndpoints.getRpcs())
-        let undelegated = await getUndelegatedBalance(zone.delegationAcc, zoneEndpoints.getRpcs());
-        let sum = Big(staked?.amount!).plus(Big(balance?.amount!)).plus(undelegated || Big(0)).toFixed();
+            let staked = await getBalanceStaked(zone.delegationAcc, zoneEndpoints.getRpcs());
+            let balance = await getBalanceOnAccount(zone.delegationAcc, staked?.denom!, zoneEndpoints.getRpcs())
+            let undelegated = await getUndelegatedBalance(zone.delegationAcc, zoneEndpoints.getRpcs());
+            let sum = Big(staked?.amount!).plus(Big(balance?.amount!)).plus(undelegated || Big(0)).toFixed();
 
-        let balanceData: Balance = {
-            id: randomUUID(),
-            zone: zone.zone,
-            address: zone.delegationAcc,
-            date: Date.now(),
-            assets: [[staked?.denom!, sum]]
-        };
+            let balanceData: Balance = {
+                id: randomUUID(),
+                zone: zone.zone,
+                address: zone.delegationAcc,
+                date: Date.now(),
+                assets: [[staked?.denom!, sum]]
+            };
 
-        console.log(`externalAccountsCheckerJob: inserting data ${JSON.stringify(balanceData)}`);
-        await insertAccountBalance(balanceData);
+            console.log(`externalAccountsCheckerJob: inserting data ${JSON.stringify(balanceData)}`);
+            await insertAccountBalance(balanceData);
+        } catch (e: any) { console.log(`externalAccountsCheckerJob update error ${e?.message}`) }
     }
 
     console.log(`Finished update host zones transactions job: ${new Date()}`)
@@ -51,7 +53,7 @@ const getUndelegatedBalance = async (address: string, endpoints: string[]) => {
                 result.push(...data.unbondingResponses)
             } while ((nextKey?.length || 0) > 0);
 
-            return result.flatMap(x => x.entries).map(x => x.balance).reduce((prev,cur) => prev.add(Big(cur)), Big(0));
+            return result.flatMap(x => x.entries).map(x => x.balance).reduce((prev, cur) => prev.add(Big(cur)), Big(0));
         } catch (e: any) { console.log(e?.message) }
     }
 }
