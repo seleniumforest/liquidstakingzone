@@ -6,6 +6,7 @@ import { useQuery } from 'react-query';
 import { Zone } from '../../app/constants';
 import moment from 'moment';
 import { capitalize } from 'lodash';
+import { joinClasses } from '../../app/helpers';
 
 export function Events() {
     const { isLoading, error, data } = useQuery(['latestEvents'], () =>
@@ -25,22 +26,22 @@ export function Events() {
                         <table>
                             <thead>
                                 <tr>
-                                    <th scope="col">Hash</th>
-                                    <th scope="col">Time</th>
+                                    <th scope="col" className={styles.hideOnMobile}>Hash</th>
+                                    <th scope="col" className={styles.hideOnMobile}>Time</th>
                                     <th scope="col">Type</th>
-                                    <th scope="col">Assets</th>
+                                    <th scope="col" className={styles.hideOnMobile}>Assets</th>
                                     <th scope="col">Token in</th>
-                                    <th scope="col">Token out</th>
+                                    <th scope="col" className={styles.hideOnMobile}>Token out</th>
                                     <th scope="col">Value</th>
                                     <th scope="col" style={{ width: "150px" }}>Address</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {data?.map((d: any) => (<tr key={d.txhash}>
-                                    <td><a target="_blank" href={`https://www.mintscan.io/stride/txs/${d.txhash}`}>{d.txhash.slice(0, 10)}</a></td>
-                                    <td>{moment(+d.date * 1000).format("DD/MM/YYYY HH:mm:SS")}</td>
+                                    <td className={styles.hideOnMobile}><a target="_blank" href={`https://www.mintscan.io/stride/txs/${d.txhash}`}>{d.txhash.slice(0, 10)}</a></td>
+                                    <td className={styles.hideOnMobile}>{moment(+d.date * 1000).format("DD/MM/YYYY HH:mm:SS")}</td>
                                     <td className={d.action === "stake" ? styles.deposit : styles.redeem}>{d.action === "stake" ? "Deposit" : "Redeem"}</td>
-                                    <td className={styles.assetIcons}>
+                                    <td className={joinClasses(styles.assetIcons, styles.hideOnMobile)}>
                                         {d.action === "stake" ?
                                             <>
                                                 <img src={`/img/${d.zone}-logo.png`} alt={`${d.zone} logo`} />
@@ -53,7 +54,7 @@ export function Events() {
                                         }
                                     </td>
                                     <td>{d.tokenIn.toFixed(2)} {d.action === "redeem" && "st"}{capitalize(d.zone)}</td>
-                                    <td>{d.tokenOut.toFixed(2)} {d.action === "stake" && "st"}{capitalize(d.zone)}</td>
+                                    <td className={styles.hideOnMobile}>{d.tokenOut.toFixed(2)} {d.action === "stake" && "st"}{capitalize(d.zone)}</td>
                                     <td>${d.value}</td>
                                     <td><a target="_blank" href={`https://www.mintscan.io/stride/account/${d.creator}`}>
                                         {`${d.creator.slice(0, 10)}...${d.creator.slice(d.creator.length - 5, d.creator.length)}`}

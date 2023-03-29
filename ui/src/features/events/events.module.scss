@@ -20,17 +20,33 @@
                 font-weight: 700;
                 font-size: 20px;
                 line-height: 26px;
+
+                tr {
+                    th.hideOnMobile {
+                        @media screen and (max-width: 1000px) {
+                            display: none;
+                        }
+                    }
+                }
             }
 
             tbody {
-
                 tr td {
                     a {
                         color: black;
                     }
+
                     font-weight: 600;
                     font-size: 16px;
                     line-height: 20px;
+                }
+
+                tr {
+                    td.hideOnMobile {
+                        @media screen and (max-width: 1000px) {
+                            display: none;
+                        }
+                    }
                 }
 
                 .assetIcons {

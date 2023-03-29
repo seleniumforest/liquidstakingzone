@@ -2,6 +2,11 @@
 
 //2nd line with 2 blue boxes after header
 .blocksLine {
+
+    @media screen and (max-width: 1000px) {
+        display: block;
+    }
+    
     display: grid;
     grid-template-columns: 2fr 1fr;
     grid-template-rows: 1fr;
@@ -12,6 +17,10 @@
 .generalData {
     display: flex;
     padding: 15px 15px 15px 30px !important;
+
+    @media screen and (max-width: 1000px) {
+        display: block;
+    }
 
     .stats {
         flex-grow: 1;
@@ -73,6 +82,10 @@
     }
 
     .priceChart {
+        @media screen and (max-width: 1000px) {
+            max-width: 100%;
+        }
+
         flex-grow: 1;
         max-width: 55%;
         display: flex;

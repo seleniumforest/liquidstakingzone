@@ -33,6 +33,10 @@
     }
 
     &Options {
+        @media screen and (max-width: 1000px) {
+            display: block;
+        }
+
         display: flex;
         justify-content: space-between;
         gap: 10px;
@@ -40,10 +44,23 @@
         .timeSelectorsContainer {
             display: flex;
             gap: 10px;
+
+            @media screen and (max-width: 1000px) {
+                display: block;
+                margin-top: 10px;
+
+                > * {
+                    margin-top: 10px;
+                }
+            }
         }
     }
 
     &CumulativeSwitch {
+        @media screen and (max-width: 1000px) {
+            display: block;
+        }
+
         display: flex;
         justify-content: flex-end;
     }
