@@ -1,4 +1,8 @@
-# indexer
+# backend and ui
+
+``` yarn start ```
+
+# etl-service
 
 Grabs transactions from cosmos sdk chain and writes into clickhouse db
 

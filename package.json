@@ -6,6 +6,7 @@
     "workspaces": [
         "ui",
         "backend",
+        "etl-service",
         "packages/*"
     ],
     "scripts": {
