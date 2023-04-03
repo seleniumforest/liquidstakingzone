@@ -41,52 +41,47 @@ export const getTvlData = async (zone: Zone): Promise<TVLDataRecord[]> => {
     let query = await client.query({
         query: `
             WITH deposited as (
-                SELECT 
-                    toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) * 1000 as date, 
-                    SUM(am) as amount
+                SELECT
+                    dt as date,
+                    SUM(am) OVER(ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as amount
                 FROM (
-                    SELECT date, amount.2 as am
+                    SELECT 
+                        toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) * 1000 as dt,
+                        SUM(amount.2) as am
                     FROM Stride.msgs_MsgLiquidStake
                     WHERE zone = '${zone}' and txcode = 0
-                ) 
-                GROUP BY date
-                ORDER BY date
-            ),
-            redeemed as (
-                WITH redeems as (
-                    SELECT 
-                        toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) as date, 
-                        SUM(am) as amount
-                    FROM (
-                        SELECT date, toUInt256(amount) as am
-                        FROM Stride.msgs_MsgRedeemStake redeem
-                        WHERE zone = '${zone}' and txcode = 0
-                    ) 
-                    GROUP BY date
-                    ORDER BY date
-                ),
-                redemptionRates as (
-                    SELECT 
-                        dt, 
-                        AVG(rate) as rate
-                    FROM (
-                        SELECT  
-                            toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) AS dt,
-                            toUInt256(amount.2) / toUInt256(recievedStTokenAmount.2) as rate
-                        FROM Stride.msgs_MsgLiquidStake
-                        WHERE zone = '${zone}' AND txcode = 0
-                        ORDER BY date
-                    )
                     GROUP BY dt
                     ORDER BY dt
                 )
+            ),
+            redeemed as (
                 SELECT
-                    rr.dt * 1000 as date,
-                    r.amount as amount,
-                    rr.rate as redemptionRate
-                FROM redeems r 
-                RIGHT JOIN redemptionRates rr on rr.dt = r.date
-                ORDER BY date
+                    dt as date,
+                    SUM(am) OVER(ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as amount
+                FROM (
+                    SELECT 
+                        toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) * 1000 as dt,
+                        SUM(toUInt256(amount)) as am
+                    FROM Stride.msgs_MsgRedeemStake redeem
+                    WHERE zone = '${zone}' and txcode = 0
+                    GROUP BY dt
+                    ORDER BY dt
+                )
+            ),
+            redemptionRates as (
+                SELECT 
+                    dt * 1000 as date, 
+                    AVG(rate) as rate
+                FROM (
+                    SELECT  
+                        toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) AS dt,
+                        toUInt256(amount.2) / toUInt256(recievedStTokenAmount.2) as rate
+                    FROM Stride.msgs_MsgLiquidStake
+                    WHERE zone = '${zone}' AND txcode = 0
+                    ORDER BY date
+                )
+                GROUP BY dt
+                ORDER BY dt	
             ),
             priceData as (
                 SELECT 
@@ -105,17 +100,15 @@ export const getTvlData = async (zone: Zone): Promise<TVLDataRecord[]> => {
                 ORDER BY startOfDay
             )
             SELECT
-                toUnixTimestamp(dt) * 1000 as date, 
-                SUM(change) OVER(ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS tvl
-            FROM (
-                SELECT  
-                    toStartOfDay(toDateTime64(pd.date/1000, 3, 'Etc/UTC')) as dt,
-                    (select decimals from Stride.zones_info where zone = '${zone}') as decimals,
-                    ((d.amount / pow(10, decimals)) - (r.amount / (pow(10, decimals)) * r.redemptionRate)) * pd.price as change
-                FROM priceData pd
-                LEFT JOIN deposited d on pd.date = d.date
-                LEFT JOIN redeemed r on pd.date = r.date
-            )
+                *,
+                pd.date as date,
+                (select decimals from Stride.zones_info where zone = '${zone}') as decimals,
+                max2(rr.rate, 1) as redRate,
+                ((d.amount / pow(10, decimals)) - (r.amount / pow(10, decimals)) * redRate) * pd.price * redRate as tvl
+            FROM priceData pd
+            LEFT JOIN deposited d on pd.date = d.date
+            LEFT JOIN redeemed r on pd.date = r.date
+            LEFT JOIN redemptionRates rr on r.date = rr.date        
         `
     });
 
