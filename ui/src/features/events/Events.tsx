@@ -55,7 +55,7 @@ export function Events() {
                                     </td>
                                     <td>{d.tokenIn.toFixed(2)} {d.action === "redeem" && "st"}{capitalize(d.zone)}</td>
                                     <td className={styles.hideOnMobile}>{d.tokenOut.toFixed(2)} {d.action === "stake" && "st"}{capitalize(d.zone)}</td>
-                                    <td>${d.value}</td>
+                                    <td>${d.value.toFixed(0)}</td>
                                     <td><a target="_blank" href={`https://www.mintscan.io/stride/account/${d.creator}`}>
                                         {`${d.creator.slice(0, 9)}...${d.creator.slice(d.creator.length - 3, d.creator.length)}`}
                                     </a></td>
