@@ -38,7 +38,7 @@ export function getGroupingOptions(timeSpan: TimeSpan): [string, number[]] {
 }
 
 export function cutData(timePeriod: number, series: any[], dateSelector: any = (el: any) => el[0]) {
-    if (!series || timePeriod === -1)
+    if (!series || !Array.isArray(series) || series.length === 0 || timePeriod === -1)
         return series;
 
     //organize by timePeriod

@@ -6,7 +6,6 @@
   "license": "MIT",
   "scripts": {
     "deploydb": "clickhouse-client --multiquery < scripts/deploy.sql",
-    "populatedb": "node build/jobs/populateDb.js",
     "compile": "tsc"
   },
   "dependencies": {

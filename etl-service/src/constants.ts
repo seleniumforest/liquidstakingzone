@@ -97,7 +97,7 @@ export const zones: ZoneInfo[] = [
     }
 ]
 
-
+//todo refactor
 export const earliestPossibleBlocks = [
     { zone: "cosmos", height: 11925500 },
     { zone: "osmo", height: 5880000 },

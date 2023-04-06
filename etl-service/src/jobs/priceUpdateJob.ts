@@ -2,6 +2,7 @@ import { timeSpans, zones } from "../constants";
 import { getPrices, insertPrices } from "../db/";
 import { insertGeneralData } from "../db/generalData";
 import { fetchGeneralData, fetchTokenPriceHistory } from "../externalServices/coingecko";
+import { getLunaPrices } from "../externalServices/coinhallApi";
 import { getStAssetsPriceHistory } from "../externalServices/osmosisImperatorApi";
 
 export const updateTokenPrices = async () => {
@@ -25,9 +26,12 @@ export const updateTokenPrices = async () => {
 const updateStAssetsPrices = async () => {
     let actualPrices = await getStAssetsPriceHistory();
     let latestSavedPrices = await getPrices(true); 
+    
+    let lastSavedLunaPrice = latestSavedPrices.find(x => x.coin === "terra-luna-2");
+    let actualLunaPrices = await getLunaPrices(lastSavedLunaPrice?.latestDate, Date.now());
 
     //filter already saved data
-    let newPrices = actualPrices.filter(x => {
+    let newPrices = [...actualPrices, ...actualLunaPrices].filter(x => {
         let latestSavedPriceDate = latestSavedPrices?.find(y => y.coin === x.coin)?.latestDate
         if (!latestSavedPriceDate)
             return true;

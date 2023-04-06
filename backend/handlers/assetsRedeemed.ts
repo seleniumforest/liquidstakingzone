@@ -37,7 +37,7 @@ export const assetsRedeemed = async (req: Request, res: Response) => {
             )
             SELECT
                 rr.dt * 1000 as date,
-                floor(r.amount / pow(10, (select decimals from Stride.zones_info where zone = '${zone}')), 0) as amount,
+                floor(r.amount / pow(10, (select decimals from Stride.zones_info where zone = '${zone}')) * rr.rate, 0) as amount,
                 rr.rate as redemptionRate
             FROM redeems r 
             RIGHT JOIN redemptionRates rr on rr.dt = r.date
