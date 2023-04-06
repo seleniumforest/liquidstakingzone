@@ -29,7 +29,7 @@ export const assetsRedeemed = async (req: Request, res: Response) => {
                         toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) AS dt,
                         toUInt256(amount.2) / toUInt256(recievedStTokenAmount.2) as rate
                     FROM Stride.msgs_MsgLiquidStake
-                    WHERE zone = '${zone}' AND txcode = 0
+                    WHERE zone = '${zone}' AND txcode = 0 and amount.2 > 1000
                     ORDER BY date
                 )
                 GROUP BY dt
