@@ -7,7 +7,6 @@ export type UniqueDepositorsDataRecord = {
     deps: number;
 }
 
-///?????????
 export const uniqueDepositors = async (_: Request, res: Response) => {
     let query = await client.query({
         query: `
@@ -19,6 +18,7 @@ export const uniqueDepositors = async (_: Request, res: Response) => {
                     toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) AS dt,
                     COUNT(DISTINCT creator) OVER(ORDER BY date) AS deps
                 FROM Stride.msgs_MsgLiquidStake s
+                WHERE txcode = '0'
                 GROUP BY date, creator
             )
             GROUP BY dt

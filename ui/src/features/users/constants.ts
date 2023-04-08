@@ -8,7 +8,7 @@ export const headersData = {
         tooltipText: "Tooltip for Unique depositors cumulative"
     },
     depaTotalVolume: {
-        headerText: "Depositors total volume distribution",
+        headerText: "Deposits total volume distribution",
         tooltipText: "Tooltop for Depositors total volume distribution"
     }
 }

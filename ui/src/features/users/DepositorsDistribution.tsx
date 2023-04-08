@@ -86,7 +86,7 @@ export function DepositorsDistribution() {
                         useHTML
                         formatter={function (this: TooltipFormatterContextObject) {
                             const that = this as any;
-                            console.log(that);
+                            
                             return `            
                                 <span style="text-align: center;">${that.x} USD depositors</span>
                                 <br />
