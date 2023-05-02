@@ -12,6 +12,7 @@ export const denomToZone = (denom: string) => {
         case "stustars": case "ustars": return "stars";
         case "stuluna": case "uluna": return "luna";
         case "staevmos": case "aevmos": return "evmos";
+        case "stinj": return "inj";
         default: return denom;
     }
 }
