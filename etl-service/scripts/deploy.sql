@@ -133,22 +133,27 @@ CREATE TABLE Stride.price_history (
 CREATE TABLE Stride.zones_info (
     zone String,
     decimals UInt8,
-    coingeckoId String,
-    stAssetPool String
+    coingeckoId String
 ) ENGINE = MergeTree() PRIMARY KEY (zone);
 INSERT INTO Stride.zones_info
 	(*)
-SELECT 'atom', 6, 'cosmos', '803'
+SELECT 'atom', 6, 'cosmos'
 UNION ALL
-SELECT 'stars', 6, 'stargaze', '810'
+SELECT 'stars', 6, 'stargaze'
 UNION ALL
-SELECT 'osmo', 6, 'osmosis', '833'
+SELECT 'osmo', 6, 'osmosis'
 UNION ALL
-SELECT 'juno', 6, 'juno-network', '817'
+SELECT 'juno', 6, 'juno-network'
 UNION ALL
-SELECT 'luna', 6, 'terra-luna-2', '913'
+SELECT 'luna', 6, 'terra-luna-2'
 UNION ALL
-SELECT 'evmos', 18, 'evmos', '922';
+SELECT 'evmos', 18, 'evmos'
+UNION ALL
+SELECT 'inj', 18, 'injective-protocol'
+UNION ALL
+SELECT 'scrt', 6, 'secret'
+UNION ALL
+SELECT 'umee', 6, 'umee';
 /* Txs on Cosmoshub/Juno/Osmo/Stars on fees account */
 CREATE TABLE Stride.zones_restakes (
     txhash String,
