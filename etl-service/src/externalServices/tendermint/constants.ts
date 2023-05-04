@@ -2,6 +2,6 @@ export const isFulfilled = <T,>(p:PromiseSettledResult<T>): p is PromiseFulfille
 export const isRejected = <T,>(p:PromiseSettledResult<T>): p is PromiseRejectedResult => p.status === 'rejected';
 
 export const defaultRegistryUrls = [
-    "https://registry.ping.pub/",
-    "https://proxy.atomscan.com/directory/"
+    "https://proxy.atomscan.com/directory/",
+    "https://registry.ping.pub/"
 ]

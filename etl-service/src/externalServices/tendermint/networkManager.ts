@@ -3,6 +3,9 @@ import { Chain } from "@chain-registry/types";
 import { Network } from "./blocksWatcher";
 import { defaultRegistryUrls, isFulfilled } from "./constants";
 import { chains } from "chain-registry";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import { timeSpans } from "../../constants";
+import moment from "moment";
 
 export class NetworkManager {
     readonly minRequestsToTest: number = 20;
@@ -16,7 +19,8 @@ export class NetworkManager {
         this.rest = restEndpoints;
         rpcEndpoints.forEach((rpc) => this.rpcRank.set(rpc.endpoint, rpc));
 
-        console.log(`NetworkManager: Found RPCs: ${rpcEndpoints.map(x => x.endpoint).join(", ")} for network ${JSON.stringify(network)}`)
+        if (rpcEndpoints.length === 0)
+            console.warn(`NetworkManager: Found ${rpcEndpoints.length} RPCs for network ${network}`)
     }
 
     static async create(network: Network, registryUrls: string[] = defaultRegistryUrls): Promise<NetworkManager> {
@@ -124,8 +128,27 @@ export class NetworkManager {
         this.rpcRank.set(url, result ? { ...el, ok: ++el.ok } : { ...el, fail: ++el.fail });
     }
 
-    getRest() : string[] {
+    getRest(): string[] {
         return this.rest;
+    }
+
+    async getSyncedRpcs(): Promise<string[]> {
+        let rpcs = this.getRpcs();
+        let result: string[] = [];
+
+        await Promise.allSettled(
+            rpcs.map(async (rpc) => {
+                let client = await Tendermint34Client.connect(rpc);
+                let { syncInfo: { latestBlockTime } } = await client.status();
+
+                if (moment(latestBlockTime.toJSON()).diff(moment.now()) < timeSpans.hour * 1000)
+                    result.push(rpc);
+
+                return Promise.resolve();
+            })
+        )
+
+        return result;
     }
 
     getRpcs(): string[] {

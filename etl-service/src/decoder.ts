@@ -4,12 +4,12 @@ import { apiToSmallInt, tryParseJson } from './helpers';
 import { AuthInfo, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { fromBase64, fromBech32 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
-import { stride041Registry, stride050Registry, strideMixedRegistry, universalRegistry } from "./constants";
+import { stride041Registry, strideLatestRegistry, strideMixedRegistry, universalRegistry } from "./constants";
 import Big from "big.js";
 
 //<KEKW>
 const decodeMsg = (msg: any) => {
-    for (const reg of [stride050Registry, universalRegistry, stride041Registry, strideMixedRegistry]) {
+    for (const reg of [strideLatestRegistry, universalRegistry, stride041Registry, strideMixedRegistry]) {
         try {
             let decoded = reg.decode(msg);
             if (decoded && validateMsg(msg.typeUrl, decoded))

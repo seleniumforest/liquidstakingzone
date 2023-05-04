@@ -25,8 +25,8 @@ export const updateTokenPrices = async () => {
 
 const updateStAssetsPrices = async () => {
     let actualPrices = await getStAssetsPriceHistory();
-    let latestSavedPrices = await getPrices(true); 
-    
+    let latestSavedPrices = await getPrices(true);
+
     let lastSavedLunaPrice = latestSavedPrices.find(x => x.coin === "terra-luna-2");
     let actualLunaPrices = await getLunaPrices(lastSavedLunaPrice?.latestDate, Date.now());
 
@@ -38,6 +38,8 @@ const updateStAssetsPrices = async () => {
 
         return x.date > latestSavedPriceDate;
     });
+
+    newPrices.forEach(x => console.log(`updateStAssetsPrices: got new prices ${JSON.stringify(x)}`));
 
     await insertPrices(newPrices);
 }

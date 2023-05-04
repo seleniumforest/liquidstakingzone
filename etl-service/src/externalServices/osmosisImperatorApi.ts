@@ -12,30 +12,37 @@ export const getStAssetsPriceHistory = async (): Promise<Price[]> => {
     let result: Price[] = [];
 
     for (const zone of zones) {
-        let url = `${baseUrl}/${zone.stAssetPool}/chart?asset_in=${zone.zone}&asset_out=st${zone.zone}&range=1y&asset_type=symbol`;
-        let { data } = await axios.get<HistoryPriceData[]>(zone.zone === "evmos" ? evmosUrl : url);
-
-        if (!Array.isArray(data)) {
-            console.warn(`osmosisImperatorApi: Couldnt fetch data for zone ${zone.zone}. Error ${data}`);
+        if (zone.priceSource != "Imperator")
             continue;
-        }
+            
+        try {
+            let ticker = zone.ticker || zone.zone;
+            let url = `${baseUrl}/${zone.stAssetPool}/chart?asset_in=${ticker}&asset_out=st${ticker}&range=1y&asset_type=symbol`;
+            let { data } = await axios.get<HistoryPriceData[]>(zone.zone === "evmos" ? evmosUrl : url);
 
-        if (zone.zone === "evmos")
-            result.push(...data.map(x => ({
-                id: randomUUID(),
-                coin: zone.coingeckoId,
-                date: Number(x.time) * 1000,
-                price: 1 / (Number(x.open) / 1e12),
-                vsCurrency: `st${zone.zone}`
-            })));
-        else
-            result.push(...data.map(x => ({
-                id: randomUUID(),
-                coin: zone.coingeckoId,
-                date: Number(x.time) * 1000,
-                price: x.open,
-                vsCurrency: `st${zone.zone}`
-            })));
+            if (!Array.isArray(data)) {
+                console.warn(`osmosisImperatorApi: Couldnt fetch data for zone ${zone.zone}. Error ${data}`);
+                continue;
+            }
+
+            if (zone.zone === "evmos")
+                result.push(...data.map(x => ({
+                    id: randomUUID(),
+                    coin: zone.coingeckoId,
+                    date: Number(x.time) * 1000,
+                    price: 1 / (Number(x.open) / 1e12),
+                    vsCurrency: `st${zone.zone}`
+                })));
+            else
+                result.push(...data.map(x => ({
+                    id: randomUUID(),
+                    coin: zone.coingeckoId,
+                    date: Number(x.time) * 1000,
+                    price: x.open,
+                    vsCurrency: `st${zone.zone}`
+                })));
+        }
+        catch (e: any) { console.log(`getStAssetsPriceHistory update error ${e?.message}`) }
     }
 
     return result;

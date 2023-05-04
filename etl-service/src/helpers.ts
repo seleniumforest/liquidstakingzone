@@ -3,28 +3,18 @@ import { Int53 } from "@cosmjs/math";
 import { CoinTuple, TxEvent } from "./decoder";
 import { v4 as uuidv4 } from 'uuid';
 import { fromBech32 } from "@cosmjs/encoding";
+import { zones } from "./constants";
 
 export const denomToZone = (denom: string) => {
-    switch (denom) {
-        case "stuatom": case "uatom": return "atom";
-        case "stuosmo": case "uosmo": return "osmo";
-        case "stujuno": case "ujuno": return "juno";
-        case "stustars": case "ustars": return "stars";
-        case "stuluna": case "uluna": return "luna";
-        case "staevmos": case "aevmos": return "evmos";
-        case "stinj": return "inj";
-        default: return denom;
-    }
+    return zones.find(x => x.denom === denom || x.stDenom === denom)?.zone || denom;
 }
 
 export const getZoneFromAddress = (addr: string) => {
-    let addrPrefix = fromBech32(addr).prefix;
+    return fromBech32(addr).prefix;
+}
 
-    switch (addrPrefix) {
-        case "cosmos": return "atom";
-        case "terra": return "luna";
-        default: return addrPrefix;
-    }
+export const prefixToRegistryName = (prefix: string): string => {
+    return zones.find(x => x.zone === prefix)?.registryName || prefix;
 }
 
 export const randomUUID = () => uuidv4();
@@ -46,7 +36,7 @@ export const toCoinTuple = (coin: Coin): CoinTuple => {
     return [coin.denom, coin.amount];
 }
 
-//splits 243693ustrd to amount and denom
+//splits 243693ustrd to amount and denom, 243693 and ustrd
 export const parseCoin = (coin: string): CoinTuple => {
     if (!coin)
         return ["", ""];

@@ -1,4 +1,5 @@
 import CoinGecko from "coingecko-api";
+import moment from "moment";
 import { Price } from "../db";
 import { GeneralData } from "../db/generalData";
 import { randomUUID } from "../helpers";
@@ -12,7 +13,7 @@ export const fetchTokenPriceHistory = async (coingeckoId: string, from?: number)
     let prices: Price[] = [];
     from = from || firstStrideBlockTimestamp;
     let to = Date.now();
-    console.log(`Updating prices for ${coingeckoId} from timestamp ${from}`)
+    console.log(`Updating prices for ${coingeckoId} from ${moment(from).toDate()}`)
 
     //90 days is the maximum timespan to get hourly price ranges
     for (let period = from; period < to; period += $90daysInMs) {
