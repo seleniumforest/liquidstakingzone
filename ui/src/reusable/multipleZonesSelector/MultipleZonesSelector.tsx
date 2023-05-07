@@ -2,8 +2,7 @@ import React from 'react';
 import styles from './multipleZonesSelector.module.scss';
 import Select, { components } from "react-select";
 import { supportedZones, Zone } from '../../app/constants';
-import { capitalize } from 'lodash';
-import { getChartColor } from '../../features/assets/helpers';
+import { capitalize, getChartColor } from '../../features/assets/helpers';
 
 const InputOption = (props: any) => {
     return (

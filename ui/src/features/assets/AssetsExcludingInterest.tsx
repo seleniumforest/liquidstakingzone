@@ -23,7 +23,7 @@ export function AssetsExcludingInterest() {
     let [isCumulative, setIsCumulative] = useState(false);
     let [timeSpan, setTimeSpan] = useState<TimeSpan>("D");
     let [timePeriod, setTimePeriod] = useState<number>(90);
-    let [zone, setZone] = useState<Zone>("atom");
+    let [zone, setZone] = useState<Zone>("cosmos");
     const { isLoading, error, data } = useQuery(['assetsDeposited', zone], () =>
         fetch(`${process.env.REACT_APP_API_BASEURL}/assetsDeposited?zone=${zone}`).then(res => res.json())
     );

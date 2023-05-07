@@ -35,7 +35,7 @@ export function GeneralData() {
                     <div className={styles.supportedZonesLabel}>Supported zones</div>
                     <div className={styles.supportedZonesIcons}>
                         <a href="https://cosmos.network/" target="_blank">
-                            <img alt='website' src='/img/atom-logo.png' />
+                            <img alt='website' src='/img/cosmos-logo.png' />
                         </a>
                         <a href="https://www.junonetwork.io/" target="_blank">
                             <img alt='website' src='/img/juno-logo.png' />
@@ -47,10 +47,13 @@ export function GeneralData() {
                             <img alt='website' src='/img/stars-logo.png' />
                         </a>
                         <a href="https://www.terra.money/" target="_blank">
-                            <img alt='website' src='/img/luna-logo.png' />
+                            <img alt='website' src='/img/terra-logo.png' />
                         </a>
                         <a href="https://evmos.org/" target="_blank">
                             <img alt='website' src='/img/evmos-logo.png' />
+                        </a>
+                        <a href="https://injective.com/" target="_blank">
+                            <img alt='website' src='/img/inj-logo.png' />
                         </a>
                     </div>
                     {!isLoading &&

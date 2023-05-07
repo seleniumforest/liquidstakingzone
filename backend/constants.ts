@@ -1,49 +1,50 @@
-export const supportedZones = ["atom", "osmo", "juno", "luna", "evmos", "stars"] as const;
+export const supportedZones = ["cosmos", "osmo", "juno", "terra", "evmos", "stars", "umee", "inj", "scrt"] as const;
 
 export type Zone = typeof supportedZones[number];
 
 export type ZoneInfo = {
     zone: Zone,
-    decimals: number,
     coingeckoId: string,
-    stAssetPool: number
+    sortOrder: number,
+    ticker?: string
 }
 
 export const zones: ZoneInfo[] = [
     {
-        zone: "atom",
-        decimals: 6,
+        zone: "cosmos",
         coingeckoId: "cosmos",
-        stAssetPool: 803
+        sortOrder: 1,
+        ticker: "atom"
     },
     {
         zone: "stars",
-        decimals: 6,
         coingeckoId: "stargaze",
-        stAssetPool: 810
+        sortOrder: 5
     },
     {
         zone: "osmo",
-        decimals: 6,
         coingeckoId: "osmosis",
-        stAssetPool: 833
+        sortOrder: 2
     },
     {
         zone: "juno",
-        decimals: 6,
         coingeckoId: "juno-network",
-        stAssetPool: 817
+        sortOrder: 3
     },
     {
-        zone: "luna",
-        decimals: 6,
+        zone: "terra",
         coingeckoId: "terra-luna-2",
-        stAssetPool: 913
+        sortOrder: 4,
+        ticker: "luna"
     },
     {
         zone: "evmos",
-        decimals: 18,
         coingeckoId: "evmos",
-        stAssetPool: 922
+        sortOrder: 6
+    },
+    {
+        zone: "inj",
+        coingeckoId: "injective-protocol",
+        sortOrder: 7
     }
 ]

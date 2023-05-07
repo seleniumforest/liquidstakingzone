@@ -18,7 +18,7 @@ import moment from 'moment';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 
 export function RedemptionRate() {
-    let [zone, setZone] = useState<Zone>("atom");
+    let [zone, setZone] = useState<Zone>("cosmos");
     let [timePeriod, setTimePeriod] = useState<number>(90);
     const { isLoading, error, data } = useQuery(['redemptionRates', zone], () =>
         fetch(`${process.env.REACT_APP_API_BASEURL}/redemptionRates?zone=${zone}`)

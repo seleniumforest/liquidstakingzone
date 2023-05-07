@@ -55,11 +55,11 @@ export function cutData(timePeriod: number, series: any[], dateSelector: any = (
 
 export function getChartColor(zone: Zone) {
     switch (zone) {
-        case "atom": return "#008BF0";
+        case "cosmos": return "#008BF0";
         case "osmo": return "#6BD9B8";
         case "juno": return "#60F6FF";
         case "stars": return "#5B3A9F";
-        case "luna": return "#C0D8DC";
+        case "terra": return "#C0D8DC";
         case "evmos": return "#D96BCE";
         default: return "#008BF0";
     }

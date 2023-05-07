@@ -17,7 +17,7 @@ import { getChartColor } from '../assets/helpers';
 
 export function DepositorsDistribution() {
     let chartColor = "#D96BCE";
-    let [zone, setZone] = useState<Zone>("atom");
+    let [zone, setZone] = useState<Zone>("cosmos");
     const { isLoading, error, data } = useQuery(['depositorsVolume', zone], () =>
         fetch(`${process.env.REACT_APP_API_BASEURL}/depositorsVolume?zone=${zone}`).then(res => res.json())
     );

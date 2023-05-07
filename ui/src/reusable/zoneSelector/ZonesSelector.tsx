@@ -6,12 +6,13 @@ import { default as ReactSelect } from "react-select";
 import { Zone } from '../../app/constants';
 
 const zones = [
-    { value: "atom", label: "Atom" },
+    { value: "cosmos", label: "Cosmos" },
     { value: "osmo", label: "Osmo" },
     { value: "juno", label: "Juno" },
     { value: "stars", label: "Stars" },
-    { value: "luna", label: "Luna" },
-    { value: "evmos", label: "Evmos" }
+    { value: "terra", label: "Terra" },
+    { value: "evmos", label: "Evmos" },
+    { value: "inj", label: "Injective" }
 ];
 
 export function ZonesSelector({ setZone }: { setZone: Dispatch<SetStateAction<Zone>> }) {

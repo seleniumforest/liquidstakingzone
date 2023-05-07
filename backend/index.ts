@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { caching } from "./cache";
 import * as handlers from "./handlers";
 import cors from 'cors';
+import { zones } from "./constants";
 
 const app = express();
 app.use(cors());
@@ -31,6 +32,7 @@ app.get('/redemptionRates', caching, (...args) => errHandle(handlers.redemptionR
 app.get('/tvlByChains', caching, (...args) => errHandle(handlers.tvlByChains, ...args));
 app.get('/uniqueDepositors', caching, (...args) => errHandle(handlers.uniqueDepositors, ...args));
 app.get('/generalData', caching, (...args) => errHandle(handlers.generalData, ...args));
+app.get('/zonesInfo', (_, res: Response) => res.json(zones));
 
 const server = app.listen(process.env.PORT || 8081, function () {
     console.log("Backend started at", server.address())

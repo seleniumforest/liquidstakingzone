@@ -137,7 +137,7 @@ CREATE TABLE Stride.zones_info (
 ) ENGINE = MergeTree() PRIMARY KEY (zone);
 INSERT INTO Stride.zones_info
 	(*)
-SELECT 'atom', 6, 'cosmos'
+SELECT 'cosmos', 6, 'cosmos'
 UNION ALL
 SELECT 'stars', 6, 'stargaze'
 UNION ALL
@@ -145,7 +145,7 @@ SELECT 'osmo', 6, 'osmosis'
 UNION ALL
 SELECT 'juno', 6, 'juno-network'
 UNION ALL
-SELECT 'luna', 6, 'terra-luna-2'
+SELECT 'terra', 6, 'terra-luna-2'
 UNION ALL
 SELECT 'evmos', 18, 'evmos'
 UNION ALL

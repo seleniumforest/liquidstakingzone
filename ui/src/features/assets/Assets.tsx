@@ -19,10 +19,10 @@ export function Assets() {
 
     let cardData = data?.map((x: any) => ({
         zone: x.zone,
-        depositedNow: Number(fromBaseUnit(x.latestAssets[0][1], x.zone, 0)),
-        depositedYesterday: Number(fromBaseUnit(x.pastDayAssets[0][1], x.zone, 0)),
+        depositedNow: x.latestAssets,
+        depositedYesterday: x.pastDayAssets,
         icon: <img src={`/img/st${x.zone}-logo.png`} />
-    })).sort((a: any, b: any) => getZoneOrder(a.zone) > getZoneOrder(b.zone) ? 1 : -1);
+    }));
 
     return (
         <>
@@ -52,17 +52,6 @@ export function Assets() {
             </div>
         </>
     );
-}
-
-function getZoneOrder(zone: Zone) {
-    switch(zone){
-        case "atom" : return 1;
-        case "osmo": return 2;
-        case "juno" : return 3;
-        case "luna": return 5;
-        case "stars": return 4;
-        case "evmos": return 6;
-    }
 }
 
 function DepositDiff(props: DepositDiffProps) {

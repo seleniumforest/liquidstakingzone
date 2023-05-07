@@ -43,7 +43,7 @@ export function TvlByChains() {
                 }))
             })
     );
-
+    
     if (error) return <>'Error...'</>;
 
     let chartOpts = { ...baseChartOptions } as any;

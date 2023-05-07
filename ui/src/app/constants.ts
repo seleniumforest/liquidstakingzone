@@ -1,6 +1,3 @@
-import { isNumber } from "highcharts";
-import moment from "moment";
-
 export const baseChartOptions = {
     chart: {
         backgroundColor: 'transparent',
@@ -32,27 +29,6 @@ export const baseChartOptions = {
         }
     },
     tooltip: {
-        // formatter: function() : any {
-        //     const that = this as any;
-        //     let displayDate = "";
-        //     let zone = that.points[0].series.userOptions.userOptions.zone;
-      
-        //     let displayZone = zone.charAt(0).toUpperCase() + zone.slice(1);
-
-        //     if (isNumber(that.x)) {
-        //         let date = moment(that.x).format("DD MMMM YYYY");
-        //         displayDate =  date;
-        //     }
-        //     else {
-        //         displayDate = that.x;
-        //     }
-
-        //     return `            
-        //         <span style="text-align: center;">${displayDate}</span>
-        //         <br />
-        //         <span>${displayZone} ${new Intl.NumberFormat().format(that.y)}</span>
-        //     `;
-        // },
         shared: true,
         useHTML: true,
         backgroundColor: "rgba(255,255,255, 1)",
@@ -87,8 +63,15 @@ export const baseChartOptions = {
     }]
 }
 
-export const supportedZones = ["atom", "osmo", "juno", "luna", "evmos", "stars"] as const;
+export const supportedZones = ["cosmos", "osmo", "juno", "terra", "evmos", "stars", "inj"] as const;
 export type Zone = typeof supportedZones[number];
+
+export type ZoneInfo = {
+    zone: Zone,
+    coingeckoId: string,
+    sortOrder: number,
+    ticker?: string
+}
 
 export const timeSpans = ["D", "W", "M"] as const;
 export type TimeSpan = typeof timeSpans[number];

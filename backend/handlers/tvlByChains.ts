@@ -104,7 +104,8 @@ export const getTvlData = async (zone: Zone): Promise<TVLDataRecord[]> => {
             SELECT
                 pd.date as date,
                 (select decimals from Stride.zones_info where zone = '${zone}') as decimals,
-                (d.amount / pow(10, decimals) - ifNull(r.amount, 0)) * pd.price * max2(rr.rate, 1) as tvl
+                (d.amount / pow(10, decimals) - ifNull(r.amount, 0)) * pd.price * max2(rr.rate, 1) as temp_tvl,
+                if (temp_tvl = 0, any(temp_tvl) over (ORDER BY date ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) as lag, temp_tvl) as tvl
             FROM priceData pd
             LEFT JOIN deposited d on pd.date = d.date
             LEFT JOIN redeemed r on pd.date = r.date
