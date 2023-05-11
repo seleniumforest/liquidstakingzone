@@ -3,14 +3,13 @@ import React, { ReactElement } from 'react';
 import styles from './assets.module.scss';
 import appStyles from "../../App.module.scss";
 
-import { fromBaseUnit, joinClasses } from '../../app/helpers';
+import { joinClasses } from '../../app/helpers';
 import { AssetsExcludingInterest } from './AssetsExcludingInterest';
 import { AssetsRedeemed } from './AssetsRedeemed';
 import { FeesAndRevenue } from './FeesAndRevenue';
 import { TvlByChains } from './TvlByChains';
 import { RedemptionRate } from './RedemptionRate';
 import { useQuery } from 'react-query';
-import { Zone } from '../../app/constants';
 
 export function Assets() {
     const { isLoading, error, data } = useQuery(['assetsOnStakingWallets'], () =>
