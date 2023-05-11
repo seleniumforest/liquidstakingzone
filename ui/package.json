@@ -6,13 +6,6 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@reduxjs/toolkit": "^1.9.3",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^14.4.3",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^17.0.45",
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
     "dotenv": "^16.0.3",
     "highcharts": "^10.3.3",
     "highcharts-react-official": "^3.2.0",
@@ -22,14 +15,12 @@
     "react-jsx-highcharts": "^5.0.0",
     "react-jsx-highstock": "^5.0.0",
     "react-query": "^3.39.3",
-    "react-redux": "^8.0.5",
     "react-scripts": "5.0.1",
     "react-select": "^5.7.0",
     "react-switch": "^7.0.0",
     "react-tooltip": "^5.9.1",
     "sass": "^1.58.3",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "typescript": "^4.9.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -56,6 +47,10 @@
     ]
   },
   "devDependencies": {
+    "@types/jest": "^27.5.2",
+    "@types/node": "^17.0.45",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
     "@types/lodash": "^4.14.191",
     "@types/react-select": "^5.0.1"
   }
