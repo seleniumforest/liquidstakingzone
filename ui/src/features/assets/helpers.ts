@@ -37,7 +37,7 @@ export function getGroupingOptions(timeSpan: TimeSpan): [string, number[]] {
     return ['day', [1]];
 }
 
-export function cutData(timePeriod: number, series: any[], dateSelector: any = (el: any) => el[0]) {
+export function cutDataByTime(timePeriod: number, series: any[], dateSelector: any = (el: any) => el[0]) {
     if (!series || !Array.isArray(series) || series.length === 0 || timePeriod === -1)
         return series;
 

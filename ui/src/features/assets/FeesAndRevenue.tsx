@@ -6,8 +6,7 @@ import { ToggleSwitch } from '../../reusable/toggleSwitch/ToggleSwitch';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
-import { baseChartOptions, TimeSpan, Zone } from '../../app/constants';
-import _ from "lodash";
+import { backendUrl, baseChartOptions, TimeSpan } from '../../app/constants';
 import {
     HighchartsProvider, Chart, XAxis,
     YAxis, Tooltip as HSTooltip,
@@ -15,42 +14,34 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { cutData, getBorderRadius, getGroupingOptions } from './helpers';
+import { cutDataByTime, getBorderRadius, getGroupingOptions } from './helpers';
 import { useQuery } from 'react-query';
 import moment from 'moment';
 import { formatNum } from '../../app/helpers';
+import { LoadingError } from '../../reusable/error/error';
 
 export function FeesAndRevenue() {
     let [isCumulative, setIsCumulative] = useState(false);
     let [timeSpan, setTimeSpan] = useState<TimeSpan>("D");
     let [timePeriod, setTimePeriod] = useState<number>(90);
     const { isLoading, error, data } = useQuery(['protocolRevenue'], () =>
-        fetch(`${process.env.REACT_APP_API_BASEURL}/protocolRevenue`).then(res => res.json())
+        fetch(`${backendUrl}/protocolRevenue`).then(res => res.json())
     );
 
-    if (error) return <>'Error...'</>;
+    if (error) return <LoadingError />;
 
     let chartOpts = { ...baseChartOptions } as any;
-    let typedData = data?.map((x: any) => ({
-        date: Number(x.date),
-        fee: Number(x.fee),
-        restake: Number(x.restake)
-    }))
+    let chartData = isLoading ? [] : [...data];
 
     //cumulative sum calculated incorrectly on staked & grouped columns
-    let cuttedData = cutData(timePeriod, typedData, (el: any) => el.date);
+    let cuttedData = cutDataByTime(timePeriod, chartData, (el: any) => el.date);
     const feeSeries: [number, number][] = cuttedData?.map(x => [x.date, x.fee])!;
     const restakeSeries: [number, number][] = cuttedData?.map(x => [x.date, x.restake])!;
-
-    let {
-        headerText,
-        tooltipText
-    } = headersData.feesAndRevenue;
 
     return (
         <div className={styles.chartCard}>
             <div className={styles.chartCardHeader}>
-                <h3>{headerText}</h3>
+                <h3>{headersData.feesAndRevenue.headerText}</h3>
                 <Tooltip id="my-tooltip"
                     noArrow
                     style={{
@@ -68,7 +59,7 @@ export function FeesAndRevenue() {
                     }} />
                 <a
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-content={tooltipText}
+                    data-tooltip-content={headersData.feesAndRevenue.tooltipText}
                     className={styles.tooltipQuestionMark}
                     data-tooltip-place="bottom"
                 >

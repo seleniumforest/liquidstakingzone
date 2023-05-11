@@ -4,7 +4,7 @@ import styles from './chartCard.module.scss';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
-import { baseChartOptions, Zone } from '../../app/constants';
+import { backendUrl, baseChartOptions, Zone } from '../../app/constants';
 import {
     HighchartsProvider, Chart, XAxis,
     YAxis, Tooltip as HSTooltip,
@@ -12,37 +12,33 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { capitalize, cutData, getChartColor } from './helpers';
+import { capitalize, cutDataByTime, getChartColor } from './helpers';
 import { useQuery } from 'react-query';
 import moment from 'moment';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
+import { LoadingError } from '../../reusable/error/error';
 
 export function RedemptionRate() {
     let [zone, setZone] = useState<Zone>("cosmos");
     let [timePeriod, setTimePeriod] = useState<number>(90);
     const { isLoading, error, data } = useQuery(['redemptionRates', zone], () =>
-        fetch(`${process.env.REACT_APP_API_BASEURL}/redemptionRates?zone=${zone}`)
+        fetch(`${backendUrl}/redemptionRates?zone=${zone}`)
             .then(res => res.json())
     );
 
-    if (error) return <>'Error...'</>;
+    if (error) return <LoadingError />;
 
     let chartOpts = { ...baseChartOptions } as any;
+    let chartData = isLoading ? [] : [ ...data ];
+    let cuttedData = cutDataByTime(timePeriod, chartData, (el: any) => el.date);
 
-    let cuttedData = cutData(timePeriod, data, (el: any) => el.date);
-
-    let rateSeries = cuttedData?.map((x: any) => ([x.date, x.rate]));
-    let priceSeries = cuttedData?.map((x: any) => ([x.date, x.price]));
-
-    let {
-        headerText,
-        tooltipText
-    } = headersData.redemptionRate;
+    let rateSeries = cuttedData?.map((x: any) => ([x.date, x.rate])) || [];
+    let priceSeries = cuttedData?.map((x: any) => ([x.date, x.price])) || [];
 
     return (
         <div className={styles.chartCard}>
             <div className={styles.chartCardHeader}>
-                <h3>{headerText}</h3>
+                <h3>{headersData.redemptionRate.headerText}</h3>
                 <Tooltip id="my-tooltip"
                     noArrow
                     style={{
@@ -60,7 +56,7 @@ export function RedemptionRate() {
                     }} />
                 <a
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-content={tooltipText}
+                    data-tooltip-content={headersData.redemptionRate.tooltipText}
                     className={styles.tooltipQuestionMark}
                     data-tooltip-place="bottom"
                 >
@@ -100,7 +96,7 @@ export function RedemptionRate() {
                         formatter={
                             function (this: TooltipFormatterContextObject) {
                                 let that = this as any;
-                         
+
                                 let rate = that.points[0].y.toFixed(4);
                                 let price = that.points[1].y.toFixed(4);
 
@@ -110,7 +106,7 @@ export function RedemptionRate() {
                                     <span>Redemption rate: ${rate}</span>
                                     <br>
                                     <span>${capitalize(zone)}/st${capitalize(zone)} market price: ${price}</span>
-                                `;   
+                                `;
                             }}
                         backgroundColor={"rgba(255,255,255, 1)"}
                         borderColor={"#000000"}

@@ -45,11 +45,10 @@ export const assetsRedeemed = async (req: Request, res: Response) => {
         `
     });
 
-    let response = (await query.json()) as ClickhouseResponse<{
-        date: number,
-        amount: number
-    }[]>;
+    let response = (await query.json()) as ClickhouseResponse<{ date: number, amount: number }[]>;
 
-    cache.set('/assetsRedeemed', response.data)
-    res.json(response.data);
+    let data = response.data?.map((x: any) => ([Number(x.date), Number(x.amount)]));
+
+    cache.set('/assetsRedeemed', data)
+    res.json(data);
 }

@@ -23,6 +23,8 @@ export const assetsDeposited = async (req: Request, res: Response) => {
 
     let response = (await query.json()) as ClickhouseResponse<{ date: string, amount: number }[]>;
     
-    cache.set('/assetsDeposited', response.data)
-    res.json(response.data);
+    let data = response.data?.map((x: any) => ([Number(x.date), Number(x.amount)])) || [];
+
+    cache.set('/assetsDeposited', data)
+    res.json(data);
 }

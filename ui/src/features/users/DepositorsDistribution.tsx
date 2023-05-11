@@ -1,41 +1,37 @@
 import React, { useState } from 'react';
-import Highcharts, { TooltipFormatterContextObject } from 'highcharts/highstock';
+import Highcharts, { chart, TooltipFormatterContextObject } from 'highcharts/highstock';
 import styles from './../assets/chartCard.module.scss';
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
-import { baseChartOptions, Zone } from '../../app/constants';
-import _, { capitalize } from "lodash";
+import { backendUrl, baseChartOptions, Zone } from '../../app/constants';
 import {
     HighchartsProvider, Chart, XAxis,
     YAxis, Tooltip as HSTooltip,
-    HighchartsStockChart, ColumnSeries} from "react-jsx-highstock"
-
+    HighchartsStockChart, ColumnSeries
+} from "react-jsx-highstock"
 import { useQuery } from 'react-query';
 import { headersData } from './constants';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 import { getChartColor } from '../assets/helpers';
+import { LoadingError } from '../../reusable/error/error';
 
 export function DepositorsDistribution() {
-    let chartColor = "#D96BCE";
     let [zone, setZone] = useState<Zone>("cosmos");
+
     const { isLoading, error, data } = useQuery(['depositorsVolume', zone], () =>
-        fetch(`${process.env.REACT_APP_API_BASEURL}/depositorsVolume?zone=${zone}`).then(res => res.json())
+        fetch(`${backendUrl}/depositorsVolume?zone=${zone}`).then(res => res.json())
     );
 
-    //if (isLoading) return <>'Loading...'</>;
-    if (error) return <>'Error...'</>;
+    if (error) return <LoadingError />;
 
     let chartOpts = { ...baseChartOptions } as any;
-
-    let {
-        headerText,
-        tooltipText
-    } = headersData.depaTotalVolume;
+    let categories = isLoading ? [] : data.map((x: any) => `${humanize(x.range[0])}-${humanize(x.range[1])}`);
+    let chartData = isLoading ? [] : [...data].map(x => x.count);
 
     return (
         <div className={styles.chartCard}>
             <div className={styles.chartCardHeader}>
-                <h3>{headerText}</h3>
+                <h3>{headersData.depaTotalVolume.headerText}</h3>
                 <Tooltip id="my-tooltip"
                     noArrow
                     style={{
@@ -53,7 +49,7 @@ export function DepositorsDistribution() {
                     }} />
                 <a
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-content={tooltipText}
+                    data-tooltip-content={headersData.depaTotalVolume.tooltipText}
                     className={styles.tooltipQuestionMark}
                     data-tooltip-place="bottom"
                 >
@@ -71,14 +67,14 @@ export function DepositorsDistribution() {
                 <HighchartsStockChart>
                     <Chart {...chartOpts.chart} />
                     <XAxis {...chartOpts.xAxis}
-                        categories={isLoading ? [] : data.map((x: any) => `${humanize(x.range[0])}-${humanize(x.range[1])}`)}
+                        categories={categories}
                         crosshair>
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         <ColumnSeries
                             color={getChartColor(zone)}
                             stickyTracking
-                            data={isLoading ? [] : data.map((x: any) => +x.count)}
+                            data={chartData}
                             borderRadius={5}
                         />
                     </YAxis>
@@ -86,7 +82,7 @@ export function DepositorsDistribution() {
                         useHTML
                         formatter={function (this: TooltipFormatterContextObject) {
                             const that = this as any;
-                            
+
                             return `            
                                 <span style="text-align: center;">${that.x} USD depositors</span>
                                 <br />
@@ -110,7 +106,7 @@ export function DepositorsDistribution() {
 }
 
 function humanize(num: number) {
-    switch(num) {
+    switch (num) {
         case 1000: return "1k";
         case 10000: return "10k";
         case 100000: return "100k";

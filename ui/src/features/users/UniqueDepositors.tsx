@@ -5,44 +5,35 @@ import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriod
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
 import { baseChartOptions } from '../../app/constants';
-import _ from "lodash";
 import {
     HighchartsProvider, Chart, XAxis,
     YAxis, Tooltip as HSTooltip,
-    HighchartsStockChart, ColumnSeries, LineSeries, AreaSeries
+    HighchartsStockChart, AreaSeries
 } from "react-jsx-highstock"
-
-import { cutData } from '../assets/helpers';
+import { cutDataByTime } from '../assets/helpers';
 import { useQuery } from 'react-query';
 import { headersData } from './constants';
 import moment from 'moment';
+import { LoadingError } from '../../reusable/error/error';
 
 export function UniqueDepositors() {
     let [timePeriod, setTimePeriod] = useState<number>(-1);
-    let chartColor = "#ACD6FD";
 
     const { isLoading, error, data } = useQuery(['uniqueDepositors'], () =>
         fetch(`${process.env.REACT_APP_API_BASEURL}/uniqueDepositors`).then(res => res.json())
     );
 
-    //if (isLoading) return <>'Loading...'</>;
-    if (error) return <>'Error...'</>;
+    if (error) return <LoadingError />;
 
     let chartOpts = { ...baseChartOptions } as any;
-    let chartData = data?.map((x: any) => ([Number(x.date), Number(x.deps)]));
+    let chartData = isLoading ? [] : [ ...data ];
 
-    let cuttedData = cutData(timePeriod, chartData);
-
-    let {
-        headerText,
-        tooltipText
-    } = headersData.uniqueDeps;
-
+    let cuttedData = cutDataByTime(timePeriod, chartData);
 
     return (
         <div className={styles.chartCard}>
             <div className={styles.chartCardHeader}>
-                <h3>{headerText}</h3>
+                <h3>{headersData.uniqueDeps.headerText}</h3>
                 <Tooltip id="my-tooltip"
                     noArrow
                     style={{
@@ -60,7 +51,7 @@ export function UniqueDepositors() {
                     }} />
                 <a
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-content={tooltipText}
+                    data-tooltip-content={headersData.uniqueDeps.tooltipText}
                     className={styles.tooltipQuestionMark}
                     data-tooltip-place="bottom"
                 >
@@ -87,8 +78,8 @@ export function UniqueDepositors() {
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         <AreaSeries
-                            data={isLoading ? [] : cuttedData}
-                            color={chartColor}
+                            data={cuttedData}
+                            color={"#ACD6FD"}
                             borderRadius={5}
                             stickyTracking
                         />

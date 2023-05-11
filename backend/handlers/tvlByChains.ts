@@ -33,8 +33,16 @@ export const tvlByChains = async (_: Request, res: Response) => {
         .sort((a, b) => a.zone > b.zone ? 1 : -1);
     //
     
-    cache.set('/tvlByChains', sorted)
-    res.json(sorted);
+    let data = sorted?.map((zoneData: TVLData) => ({
+        zone: zoneData.zone,
+        data: zoneData.data.map((dt: TVLDataRecord) => ({
+            date: Number(dt.date),
+            tvl: Number(dt.tvl)
+        }))
+    }));
+
+    cache.set('/tvlByChains', data)
+    res.json(data);
 }
 
 export const getTvlData = async (zone: Zone): Promise<TVLDataRecord[]> => {

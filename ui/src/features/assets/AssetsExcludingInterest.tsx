@@ -7,8 +7,7 @@ import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
-import { baseChartOptions, TimePeriod, TimeSpan, Zone } from '../../app/constants';
-import _ from "lodash";
+import { backendUrl, baseChartOptions, TimeSpan, Zone } from '../../app/constants';
 import {
     HighchartsProvider, Chart, XAxis,
     YAxis, Tooltip as HSTooltip,
@@ -16,35 +15,32 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { cutData, getBorderRadius, getChartColor, getGroupingOptions, getTooltipFormatter } from './helpers';
+import { cutDataByTime, getBorderRadius, getChartColor, getGroupingOptions, getTooltipFormatter } from './helpers';
 import { useQuery } from 'react-query';
+import { LoadingError } from '../../reusable/error/error';
 
 export function AssetsExcludingInterest() {
     let [isCumulative, setIsCumulative] = useState(false);
     let [timeSpan, setTimeSpan] = useState<TimeSpan>("D");
     let [timePeriod, setTimePeriod] = useState<number>(90);
     let [zone, setZone] = useState<Zone>("cosmos");
+
     const { isLoading, error, data } = useQuery(['assetsDeposited', zone], () =>
-        fetch(`${process.env.REACT_APP_API_BASEURL}/assetsDeposited?zone=${zone}`).then(res => res.json())
+        fetch(`${backendUrl}/assetsDeposited?zone=${zone}`).then(res => res.json())
     );
 
-    //if (isLoading) return <>'Loading...'</>;
-    if (error) return <>'Error...'</>;
+    if (error) return <LoadingError />;
+
+    let chartData = isLoading ? [] : [ ...data ];
+    let cuttedData = cutDataByTime(timePeriod, chartData);
 
     let chartOpts = { ...baseChartOptions } as any;
-    let chartData = data?.map((x: any) => ([Number(x.date), Number(x.amount)]));
-    let cuttedData = cutData(timePeriod, chartData);
     chartOpts.plotOptions.column.cumulative = isCumulative;
-
-    let {
-        headerText,
-        tooltipText
-    } = headersData.exclInterest;
 
     return (
         <div className={styles.chartCard}>
             <div className={styles.chartCardHeader}>
-                <h3>{headerText}</h3>
+                <h3>{headersData.exclInterest.headerText}</h3>
                 <Tooltip id="my-tooltip"
                     noArrow
                     style={{
@@ -62,7 +58,7 @@ export function AssetsExcludingInterest() {
                     }} />
                 <a
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-content={tooltipText}
+                    data-tooltip-content={headersData.exclInterest.tooltipText}
                     className={styles.tooltipQuestionMark}
                     data-tooltip-place="bottom"
                 >
@@ -93,7 +89,7 @@ export function AssetsExcludingInterest() {
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         <ColumnSeries
-                            data={isLoading ? [] : cuttedData}
+                            data={cuttedData}
                             color={getChartColor(zone)}
                             borderRadius={getBorderRadius(timeSpan, timePeriod)}
                             stickyTracking

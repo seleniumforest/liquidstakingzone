@@ -37,7 +37,7 @@ export const depositorsVolume = async (req: Request, res: Response) => {
                         toStartOfDay(toDateTime64(date / 1000, 3, 'Etc/UTC')) as dt
                         ,* 
                     FROM Stride.price_history ph
-                    WHERE vsCurrency = 'usd' and coin = (SELECT TOP 1 coingeckoId FROM Stride.zones_info zi2 WHERE zone= '${zone}')
+                    WHERE vsCurrency = 'usd' and coin = (SELECT TOP 1 coingeckoId FROM Stride.zones_info zi2 WHERE zone='${zone}')
                     order by dt
                 )
                 GROUP BY dt
@@ -64,9 +64,10 @@ export const depositorsVolume = async (req: Request, res: Response) => {
     });
 
     let response = (await query.json()) as ClickhouseResponse<DepositorsVolumeDataRecord[]>;
+    let data = response.data?.map(x => ({ range: x.range, count: Number(x.count) }));
 
-    cache.set('/depositorsVolume', response.data)
-    res.json(response.data);
+    cache.set('/depositorsVolume', data)
+    res.json(data);
 }
 
 

@@ -1,3 +1,5 @@
+export const backendUrl = process.env.REACT_APP_API_BASEURL;
+
 export const baseChartOptions = {
     chart: {
         backgroundColor: 'transparent',

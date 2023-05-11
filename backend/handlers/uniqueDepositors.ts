@@ -27,6 +27,8 @@ export const uniqueDepositors = async (_: Request, res: Response) => {
     });
 
     let result = (await query.json()) as ClickhouseResponse<UniqueDepositorsDataRecord[]>;
-    cache.set('/uniqueDepositors', result.data);
-    res.json(result.data);
+    let data = result.data?.map((x: any) => ([Number(x.date), Number(x.deps)])) || [];
+
+    cache.set('/uniqueDepositors', data);
+    res.json(data);
 }

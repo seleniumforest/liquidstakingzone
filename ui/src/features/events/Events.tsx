@@ -6,13 +6,15 @@ import { useQuery } from 'react-query';
 import moment from 'moment';
 import { capitalize, joinClasses } from '../../app/helpers';
 import { useZonesInfo } from '../../app/hooks';
+import { LoadingError } from '../../reusable/error/error';
 
 export function Events() {
-    const { data } = useQuery(['latestEvents'], () =>
+    const { data, error } = useQuery(['latestEvents'], () =>
         fetch(`${process.env.REACT_APP_API_BASEURL}/latestEvents`).then(res => res.json())
     );
-
     const { data: zonesInfo } = useZonesInfo();
+
+    if (error) return <LoadingError />;
 
     return (
         <>
@@ -43,7 +45,7 @@ export function Events() {
                                     let ticker = zoneInfo?.ticker || d.zone;
 
                                     return (<tr key={d.txhash}>
-                                        <td className={styles.hideOnMobile}><a target="_blank" href={`https://www.mintscan.io/stride/txs/${d.txhash}`}>{d.txhash.slice(0, 10)}</a></td>
+                                        <td className={styles.hideOnMobile}><a target="_blank" rel="noreferrer" href={`https://www.mintscan.io/stride/txs/${d.txhash}`}>{d.txhash.slice(0, 10)}</a></td>
                                         <td className={styles.hideOnMobile}>{moment(+d.date * 1000).format("DD/MM/YYYY HH:mm:SS")}</td>
                                         <td className={d.action === "stake" ? styles.deposit : styles.redeem}>{d.action === "stake" ? "Deposit" : "Redeem"}</td>
                                         <td className={joinClasses(styles.assetIcons, styles.hideOnMobile)}>
@@ -61,7 +63,7 @@ export function Events() {
                                         <td>{d.tokenIn.toFixed(2)} {d.action === "redeem" && "st"}{capitalize(ticker)}</td>
                                         <td className={styles.hideOnMobile}>{d.tokenOut.toFixed(2)} {d.action === "stake" && "st"}{capitalize(ticker)}</td>
                                         <td>${d.value.toFixed(0)}</td>
-                                        <td><a target="_blank" href={`https://www.mintscan.io/stride/account/${d.creator}`}>
+                                        <td><a target="_blank" rel="noreferrer" href={`https://www.mintscan.io/stride/account/${d.creator}`}>
                                             {`${d.creator.slice(0, 9)}...${d.creator.slice(d.creator.length - 3, d.creator.length)}`}
                                         </a></td>
                                     </tr>)

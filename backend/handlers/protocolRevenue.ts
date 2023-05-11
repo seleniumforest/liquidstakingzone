@@ -75,6 +75,12 @@ export const protocolRevenue = async (_: Request, res: Response) => {
 
     let response = (await query.json()) as ClickhouseResponse<ProtocolRevenueDataRecord[]>;
 
-    cache.set('/protocolRevenue', response.data)
-    res.json(response.data);
+    let data = response.data?.map((x: any) => ({
+        date: Number(x.date),
+        fee: Number(x.fee),
+        restake: Number(x.restake)
+    })) || [];
+
+    cache.set('/protocolRevenue', data)
+    res.json(data);
 }

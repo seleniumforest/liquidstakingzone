@@ -30,7 +30,8 @@ export const activeUsers = async (_: Request, res: Response) => {
     });
 
     let response = (await query.json()) as ClickhouseResponse<{ date: string, users: number }[]>;
+    let data = response.data?.map((x: any) => ([Number(x.date), Number(x.users)])) || [];
 
-    cache.set('/activeUsers', response.data);
-    res.json(response.data);
+    cache.set('/activeUsers', data);
+    res.json(data);
 }

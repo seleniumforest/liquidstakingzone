@@ -10,12 +10,12 @@ import {
     YAxis, Tooltip as HSTooltip,
     HighchartsStockChart, AreaSeries
 } from "react-jsx-highstock"
-
 import { headersData } from './constants';
-import { capitalize, cutData, getChartColor } from './helpers';
+import { capitalize, cutDataByTime, getChartColor } from './helpers';
 import { useQuery } from 'react-query';
 import moment from 'moment';
 import { MultipleZonesSelector } from '../../reusable/multipleZonesSelector/MultipleZonesSelector';
+import { LoadingError } from '../../reusable/error/error';
 
 type TVLData = {
     zone: Zone,
@@ -31,38 +31,24 @@ export function TvlByChains() {
     let [timePeriod, setTimePeriod] = useState<number>(90);
     let [selectedZones, setSelectedZones] = useState<Zone[]>([...supportedZones]);
     const { isLoading, error, data } = useQuery<TVLData[]>(['tvlByChains'], () =>
-        fetch(`${process.env.REACT_APP_API_BASEURL}/tvlByChains`)
-            .then(res => res.json())
-            .then(res => {
-                return res.map((zoneData: TVLData) => ({
-                    zone: zoneData.zone,
-                    data: zoneData.data.map((dt: TVLDataRecord) => ({
-                        date: Number(dt.date),
-                        tvl: Number(dt.tvl)
-                    }))
-                }))
-            })
+        fetch(`${process.env.REACT_APP_API_BASEURL}/tvlByChains`).then(res => res.json())
     );
-    
-    if (error) return <>'Error...'</>;
+
+    if (error) return <LoadingError />;
 
     let chartOpts = { ...baseChartOptions } as any;
 
-    let zoneData = data?.filter(x => selectedZones.includes(x.zone));
+    let zoneData = isLoading ? [] : data?.filter(x => selectedZones.includes(x.zone));
     let timeData = zoneData?.map(x => ({
-        ...x,
-        data: cutData(timePeriod, x.data, (el: TVLDataRecord) => el.date)
-    }));
-
-    let {
-        headerText,
-        tooltipText
-    } = headersData.tvlByChains;
+        zone: x.zone,
+        data: cutDataByTime(timePeriod, x.data, (el: TVLDataRecord) => el.date)
+    })) || [];
+    let sortedByTvl = timeData.sort((a, b) => a.data.at(-1)?.tvl > b.data.at(-1)?.tvl ? 1 : -1);
 
     return (
         <div className={styles.chartCard}>
             <div className={styles.chartCardHeader}>
-                <h3>{headerText}</h3>
+                <h3>{headersData.tvlByChains.headerText}</h3>
                 <Tooltip id="my-tooltip"
                     noArrow
                     style={{
@@ -80,7 +66,7 @@ export function TvlByChains() {
                     }} />
                 <a
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-content={tooltipText}
+                    data-tooltip-content={headersData.tvlByChains.tooltipText}
                     className={styles.tooltipQuestionMark}
                     data-tooltip-place="bottom"
                 >
@@ -106,7 +92,7 @@ export function TvlByChains() {
                         tickAmount={5}>
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
-                        {timeData?.sort((a,b) => a.data.at(-1).tvl > b.data.at(-1).tvl ? 1 : -1).map(dt => (
+                        {sortedByTvl.map(dt => (
                             <AreaSeries
                                 stacking={"normal"}
                                 color={getChartColor(dt.zone)}
