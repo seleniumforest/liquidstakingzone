@@ -72,7 +72,8 @@ export type ZoneInfo = {
     zone: Zone,
     coingeckoId: string,
     sortOrder: number,
-    ticker?: string
+    ticker?: string,
+    zoneColor: string
 }
 
 export const timeSpans = ["D", "W", "M"] as const;

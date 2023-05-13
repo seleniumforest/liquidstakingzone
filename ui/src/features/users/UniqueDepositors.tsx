@@ -10,7 +10,7 @@ import {
     YAxis, Tooltip as HSTooltip,
     HighchartsStockChart, AreaSeries
 } from "react-jsx-highstock"
-import { cutDataByTime } from '../assets/helpers';
+import { cutDataByTime } from '../../app/helpers';
 import { useQuery } from 'react-query';
 import { headersData } from './constants';
 import moment from 'moment';

@@ -11,11 +11,12 @@ import {
     HighchartsStockChart, AreaSeries
 } from "react-jsx-highstock"
 import { headersData } from './constants';
-import { capitalize, cutDataByTime, getChartColor } from './helpers';
+import { capitalize, cutDataByTime } from '../../app/helpers';
 import { useQuery } from 'react-query';
 import moment from 'moment';
 import { MultipleZonesSelector } from '../../reusable/multipleZonesSelector/MultipleZonesSelector';
 import { LoadingError } from '../../reusable/error/error';
+import { getChartColor } from '../../app/helpers';
 
 type TVLData = {
     zone: Zone,

@@ -12,11 +12,12 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { capitalize, cutDataByTime, getChartColor } from './helpers';
+import { capitalize, cutDataByTime } from '../../app/helpers';
 import { useQuery } from 'react-query';
 import moment from 'moment';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 import { LoadingError } from '../../reusable/error/error';
+import { getChartColor } from '../../app/helpers';
 
 export function RedemptionRate() {
     let [zone, setZone] = useState<Zone>("cosmos");

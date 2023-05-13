@@ -15,9 +15,10 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { cutDataByTime, getBorderRadius, getChartColor, getGroupingOptions, getTooltipFormatter } from './helpers';
+import { cutDataByTime, getBorderRadius, getGroupingOptions, getTooltipFormatter } from '../../app/helpers';
 import { useQuery } from 'react-query';
 import { LoadingError } from '../../reusable/error/error';
+import { getChartColor } from '../../app/helpers';
 
 export function AssetsRedeemed() {
     let [isCumulative, setIsCumulative] = useState(false);

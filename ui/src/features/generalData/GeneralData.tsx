@@ -14,7 +14,7 @@ import {
 import { backendUrl, baseChartOptions } from '../../app/constants';
 import moment from 'moment';
 import { useQuery } from 'react-query';
-import { cutDataByTime } from '../assets/helpers';
+import { cutDataByTime } from '../../app/helpers';
 import { LoadingError } from '../../reusable/error/error';
 
 export function GeneralData() {

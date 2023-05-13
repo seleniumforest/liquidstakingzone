@@ -12,8 +12,8 @@ import {
 import { useQuery } from 'react-query';
 import { headersData } from './constants';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
-import { getChartColor } from '../assets/helpers';
 import { LoadingError } from '../../reusable/error/error';
+import { getChartColor } from '../../app/helpers';
 
 export function DepositorsDistribution() {
     let [zone, setZone] = useState<Zone>("cosmos");

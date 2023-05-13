@@ -14,7 +14,7 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { cutDataByTime, getBorderRadius, getGroupingOptions } from './helpers';
+import { cutDataByTime, getBorderRadius, getGroupingOptions } from '../../app/helpers';
 import { useQuery } from 'react-query';
 import moment from 'moment';
 import { formatNum } from '../../app/helpers';
