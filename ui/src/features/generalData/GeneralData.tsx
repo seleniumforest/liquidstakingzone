@@ -92,33 +92,15 @@ export function GeneralData() {
                                 <XAxis {...baseChartOptions.xAxis} type='datetime' />
                                 <YAxis visible={false}>
                                     <AreaSeries
-                                        data={isLoading ? [] : cuttedData}
+                                        data={cuttedData}
                                         color={"#18C7FF"}
                                         stickyTracking
                                     />
                                 </YAxis>
                                 <HSTooltip
                                     useHTML
-                                    formatter={function (this: TooltipFormatterContextObject) {
-                                        let displayDate = "";
-                                        let date = moment(this.x);
-                                        displayDate = date.format("DD MMMM YYYY");
-
-                                        return `            
-                                        <span style="text-align: center;">${displayDate}</span>
-                                        <br />
-                                        <span>STRD Price ${this.y?.toFixed(2)}</span>
-                                    `;
-                                    }}
-                                    backgroundColor={"rgba(255,255,255, 1)"}
-                                    borderColor={"#000000"}
-                                    borderWidth={1}
-                                    borderRadius={15}
-                                    shadow={false}
-                                    style={{
-                                        fontSize: "14px",
-                                        fontFamily: "Space Grotesk"
-                                    }}
+                                    formatter={tooltipFormatter}
+                                    {...chartOpts.tooltip}
                                 />
                             </HighchartsChart>
                         </HighchartsProvider>
@@ -170,4 +152,16 @@ export function GeneralData() {
             </div>
         </div >
     );
+}
+
+function tooltipFormatter(this: TooltipFormatterContextObject) {
+    let displayDate = "";
+    let date = moment(this.x);
+    displayDate = date.format("DD MMMM YYYY");
+
+    return `            
+    <span style="text-align: center;">${displayDate}</span>
+    <br />
+    <span>STRD Price ${this.y?.toFixed(2)}</span>
+`;
 }
