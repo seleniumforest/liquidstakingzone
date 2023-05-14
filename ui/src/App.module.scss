@@ -157,3 +157,69 @@ body {
         box-shadow: none;
     }
 }
+
+.chartCard {
+    >* {
+        margin-bottom: 10px;
+    }
+
+    &Header {
+        margin-bottom: 20px;;
+        >* {
+            display: inline;
+        }
+
+        h3 {
+            margin-right: 7px;
+        }
+
+        .tooltipQuestionMark {
+            position: relative;
+            bottom: 10px
+        }
+
+        a {
+            width: 16px;
+            height: 16px;
+            font-size: 12px;
+            display: inline-block;
+            text-align: center;
+            border: 1px solid black;
+            border-radius: 50%;
+            background-color: transparent;
+        }
+    }
+
+    &Options {
+        @media screen and (max-width: 1000px) {
+            display: block;
+        }
+
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+
+        .timeSelectorsContainer {
+            display: flex;
+            gap: 10px;
+
+            @media screen and (max-width: 1000px) {
+                display: block;
+                margin-top: 10px;
+
+                > * {
+                    margin-top: 10px;
+                }
+            }
+        }
+    }
+
+    &CumulativeSwitch {
+        @media screen and (max-width: 1000px) {
+            display: block;
+        }
+
+        display: flex;
+        justify-content: flex-end;
+    }
+}

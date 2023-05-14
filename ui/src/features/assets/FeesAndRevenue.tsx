@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import Highcharts, { TooltipFormatterContextObject } from 'highcharts/highstock';
-import styles from './chartCard.module.scss';
+import styles from './../../App.module.scss';
 import { TimeSpanSelector } from '../../reusable/timeSpanSelector/TimeSpanSelector';
 import { ToggleSwitch } from '../../reusable/toggleSwitch/ToggleSwitch';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
-import 'react-tooltip/dist/react-tooltip.css'
-import { Tooltip } from 'react-tooltip'
 import { backendUrl, baseChartOptions, TimeSpan } from '../../app/constants';
 import {
     HighchartsProvider, Chart, XAxis,
@@ -19,6 +17,7 @@ import { useQuery } from 'react-query';
 import moment from 'moment';
 import { formatNum } from '../../app/helpers';
 import { LoadingError } from '../../reusable/error/error';
+import { AppTooltip } from '../../reusable/appTooltip/AppTooltip';
 
 export function FeesAndRevenue() {
     let [isCumulative, setIsCumulative] = useState(false);
@@ -42,29 +41,7 @@ export function FeesAndRevenue() {
         <div className={styles.chartCard}>
             <div className={styles.chartCardHeader}>
                 <h3>{headersData.feesAndRevenue.headerText}</h3>
-                <Tooltip id="my-tooltip"
-                    noArrow
-                    style={{
-                        backgroundColor: "white",
-                        color: "black",
-                        border: "3px solid black",
-                        borderRadius: "6px",
-                        fontFamily: 'Space Grotesk',
-                        fontSize: "14px",
-                        lineHeight: "18px",
-                        textAlign: "center",
-                        padding: "10px",
-                        maxWidth: "200px",
-                        zIndex: 10
-                    }} />
-                <a
-                    data-tooltip-id="my-tooltip"
-                    data-tooltip-content={headersData.feesAndRevenue.tooltipText}
-                    className={styles.tooltipQuestionMark}
-                    data-tooltip-place="bottom"
-                >
-                    ?
-                </a>
+                <AppTooltip text={headersData.feesAndRevenue.tooltipText} />
             </div>
             <div className={styles.chartCardOptions}>
                 <div></div>

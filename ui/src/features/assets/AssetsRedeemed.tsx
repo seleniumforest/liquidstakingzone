@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import Highcharts, { } from 'highcharts/highstock';
-import styles from './chartCard.module.scss';
+import appStyles from './../../App.module.scss';
 import { TimeSpanSelector } from '../../reusable/timeSpanSelector/TimeSpanSelector';
 import { ToggleSwitch } from '../../reusable/toggleSwitch/ToggleSwitch';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
-import 'react-tooltip/dist/react-tooltip.css'
-import { Tooltip } from 'react-tooltip'
 import { backendUrl, baseChartOptions, TimeSpan, Zone } from '../../app/constants';
 import {
     HighchartsProvider, Chart, XAxis,
@@ -19,6 +17,7 @@ import { cutDataByTime, getBorderRadius, getGroupingOptions, getTooltipFormatter
 import { useQuery } from 'react-query';
 import { LoadingError } from '../../reusable/error/error';
 import { getChartColor } from '../../app/helpers';
+import { AppTooltip } from '../../reusable/appTooltip/AppTooltip';
 
 export function AssetsRedeemed() {
     let [isCumulative, setIsCumulative] = useState(false);
@@ -39,43 +38,21 @@ export function AssetsRedeemed() {
     chartOpts.plotOptions.column.cumulative = isCumulative;
 
     return (
-        <div className={styles.chartCard}>
-            <div className={styles.chartCardHeader}>
+        <div className={appStyles.chartCard}>
+            <div className={appStyles.chartCardHeader}>
                 <h3>{headersData.redeemedAssets.headerText}</h3>
-                <Tooltip id="my-tooltip"
-                    noArrow
-                    style={{
-                        backgroundColor: "white",
-                        color: "black",
-                        border: "3px solid black",
-                        borderRadius: "6px",
-                        fontFamily: 'Space Grotesk',
-                        fontSize: "14px",
-                        lineHeight: "18px",
-                        textAlign: "center",
-                        padding: "10px",
-                        maxWidth: "200px",
-                        zIndex: 10
-                    }} />
-                <a
-                    data-tooltip-id="my-tooltip"
-                    data-tooltip-content={headersData.redeemedAssets.tooltipText}
-                    className={styles.tooltipQuestionMark}
-                    data-tooltip-place="bottom"
-                >
-                    ?
-                </a>
+                <AppTooltip text={headersData.redeemedAssets.tooltipText} />
             </div>
-            <div className={styles.chartCardOptions}>
+            <div className={appStyles.chartCardOptions}>
                 <div>
                     <ZonesSelector setZone={setZone} />
                 </div>
-                <div className={styles.timeSelectorsContainer}>
+                <div className={appStyles.timeSelectorsContainer}>
                     <TimeSpanSelector setTimeSpan={setTimeSpan} selectedValue={timeSpan} />
                     <TimePeriodSelector setTimePeriod={setTimePeriod} selectedValue={timePeriod} />
                 </div>
             </div>
-            <div className={styles.chartCardCumulativeSwitch}>
+            <div className={appStyles.chartCardCumulativeSwitch}>
                 <ToggleSwitch
                     checked={isCumulative || false}
                     setChecked={setIsCumulative} />

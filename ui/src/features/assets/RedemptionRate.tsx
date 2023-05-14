@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import Highcharts, { TooltipFormatterContextObject } from 'highcharts/highstock';
-import styles from './chartCard.module.scss';
+import appStyles from './../../App.module.scss';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
-import 'react-tooltip/dist/react-tooltip.css'
-import { Tooltip } from 'react-tooltip'
 import { backendUrl, baseChartOptions, Zone } from '../../app/constants';
 import {
     HighchartsProvider, Chart, XAxis,
@@ -18,6 +16,7 @@ import moment from 'moment';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 import { LoadingError } from '../../reusable/error/error';
 import { getChartColor } from '../../app/helpers';
+import { AppTooltip } from '../../reusable/appTooltip/AppTooltip';
 
 export function RedemptionRate() {
     let [zone, setZone] = useState<Zone>("cosmos");
@@ -37,42 +36,20 @@ export function RedemptionRate() {
     let priceSeries = cuttedData?.map((x: any) => ([x.date, x.price])) || [];
 
     return (
-        <div className={styles.chartCard}>
-            <div className={styles.chartCardHeader}>
+        <div className={appStyles.chartCard}>
+            <div className={appStyles.chartCardHeader}>
                 <h3>{headersData.redemptionRate.headerText}</h3>
-                <Tooltip id="my-tooltip"
-                    noArrow
-                    style={{
-                        backgroundColor: "white",
-                        color: "black",
-                        border: "3px solid black",
-                        borderRadius: "6px",
-                        fontFamily: 'Space Grotesk',
-                        fontSize: "14px",
-                        lineHeight: "18px",
-                        textAlign: "center",
-                        padding: "10px",
-                        maxWidth: "200px",
-                        zIndex: 10
-                    }} />
-                <a
-                    data-tooltip-id="my-tooltip"
-                    data-tooltip-content={headersData.redemptionRate.tooltipText}
-                    className={styles.tooltipQuestionMark}
-                    data-tooltip-place="bottom"
-                >
-                    ?
-                </a>
+                <AppTooltip text={headersData.redemptionRate.tooltipText} />
             </div>
-            <div className={styles.chartCardOptions}>
+            <div className={appStyles.chartCardOptions}>
                 <div>
                     <ZonesSelector setZone={setZone} />
                 </div>
-                <div className={styles.timeSelectorsContainer}>
+                <div className={appStyles.timeSelectorsContainer}>
                     <TimePeriodSelector setTimePeriod={setTimePeriod} selectedValue={timePeriod} />
                 </div>
             </div>
-            <div className={styles.chartCardCumulativeSwitch}>
+            <div className={appStyles.chartCardCumulativeSwitch}>
             </div>
             <HighchartsProvider Highcharts={Highcharts}>
                 <HighchartsStockChart>

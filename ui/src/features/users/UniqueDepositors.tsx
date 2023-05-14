@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import Highcharts, { TooltipFormatterContextObject } from 'highcharts/highstock';
-import styles from './../assets/chartCard.module.scss';
+import styles from './../assets/../../App.module.scss';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
-import 'react-tooltip/dist/react-tooltip.css'
-import { Tooltip } from 'react-tooltip'
 import { baseChartOptions } from '../../app/constants';
 import {
     HighchartsProvider, Chart, XAxis,
@@ -15,6 +13,7 @@ import { useQuery } from 'react-query';
 import { headersData } from './constants';
 import moment from 'moment';
 import { LoadingError } from '../../reusable/error/error';
+import { AppTooltip } from '../../reusable/appTooltip/AppTooltip';
 
 export function UniqueDepositors() {
     let [timePeriod, setTimePeriod] = useState<number>(-1);
@@ -34,29 +33,7 @@ export function UniqueDepositors() {
         <div className={styles.chartCard}>
             <div className={styles.chartCardHeader}>
                 <h3>{headersData.uniqueDeps.headerText}</h3>
-                <Tooltip id="my-tooltip"
-                    noArrow
-                    style={{
-                        backgroundColor: "white",
-                        color: "black",
-                        border: "3px solid black",
-                        borderRadius: "6px",
-                        fontFamily: 'Space Grotesk',
-                        fontSize: "14px",
-                        lineHeight: "18px",
-                        textAlign: "center",
-                        padding: "10px",
-                        maxWidth: "200px",
-                        zIndex: 10
-                    }} />
-                <a
-                    data-tooltip-id="my-tooltip"
-                    data-tooltip-content={headersData.uniqueDeps.tooltipText}
-                    className={styles.tooltipQuestionMark}
-                    data-tooltip-place="bottom"
-                >
-                    ?
-                </a>
+                <AppTooltip text={headersData.uniqueDeps.tooltipText} />
             </div>
             <div className={styles.chartCardOptions}>
                 <div>

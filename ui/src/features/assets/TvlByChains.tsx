@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import Highcharts, { TooltipFormatterContextObject } from 'highcharts/highstock';
-import styles from './chartCard.module.scss';
+import appStyles from './../../App.module.scss';
 import { TimePeriodSelector } from '../../reusable/timePeriodSelector/TimePeriodSelector';
-import 'react-tooltip/dist/react-tooltip.css'
-import { Tooltip } from 'react-tooltip'
 import { baseChartOptions, supportedZones, Zone } from '../../app/constants';
 import {
     HighchartsProvider, Chart, XAxis,
@@ -17,6 +15,7 @@ import moment from 'moment';
 import { MultipleZonesSelector } from '../../reusable/multipleZonesSelector/MultipleZonesSelector';
 import { LoadingError } from '../../reusable/error/error';
 import { getChartColor } from '../../app/helpers';
+import { AppTooltip } from '../../reusable/appTooltip/AppTooltip';
 
 type TVLData = {
     zone: Zone,
@@ -47,42 +46,20 @@ export function TvlByChains() {
     let sortedByTvl = timeData.sort((a, b) => a.data.at(-1)?.tvl > b.data.at(-1)?.tvl ? 1 : -1);
 
     return (
-        <div className={styles.chartCard}>
-            <div className={styles.chartCardHeader}>
+        <div className={appStyles.chartCard}>
+            <div className={appStyles.chartCardHeader}>
                 <h3>{headersData.tvlByChains.headerText}</h3>
-                <Tooltip id="my-tooltip"
-                    noArrow
-                    style={{
-                        backgroundColor: "white",
-                        color: "black",
-                        border: "3px solid black",
-                        borderRadius: "6px",
-                        fontFamily: 'Space Grotesk',
-                        fontSize: "14px",
-                        lineHeight: "18px",
-                        textAlign: "center",
-                        padding: "10px",
-                        maxWidth: "200px",
-                        zIndex: 10
-                    }} />
-                <a
-                    data-tooltip-id="my-tooltip"
-                    data-tooltip-content={headersData.tvlByChains.tooltipText}
-                    className={styles.tooltipQuestionMark}
-                    data-tooltip-place="bottom"
-                >
-                    ?
-                </a>
+                <AppTooltip text={headersData.tvlByChains.tooltipText} />
             </div>
-            <div className={styles.chartCardOptions}>
+            <div className={appStyles.chartCardOptions}>
                 <div>
                     <MultipleZonesSelector selectedZones={selectedZones} setSelectedZones={setSelectedZones} />
                 </div>
-                <div className={styles.timeSelectorsContainer}>
+                <div className={appStyles.timeSelectorsContainer}>
                     <TimePeriodSelector setTimePeriod={setTimePeriod} selectedValue={timePeriod} />
                 </div>
             </div>
-            <div className={styles.chartCardCumulativeSwitch}>
+            <div className={appStyles.chartCardCumulativeSwitch}>
             </div>
             <HighchartsProvider Highcharts={Highcharts}>
                 <HighchartsStockChart>
