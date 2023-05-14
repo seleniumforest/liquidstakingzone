@@ -29,13 +29,16 @@ export function FeesAndRevenue() {
 
     if (error) return <LoadingError />;
 
-    let chartOpts = { ...baseChartOptions } as any;
+    let chartOpts = { ...baseChartOptions };
     let chartData = isLoading ? [] : [...data];
 
     //cumulative sum calculated incorrectly on staked & grouped columns
     let cuttedData = cutDataByTime(timePeriod, chartData, (el: any) => el.date);
     const feeSeries: [number, number][] = cuttedData?.map(x => [x.date, x.fee])!;
     const restakeSeries: [number, number][] = cuttedData?.map(x => [x.date, x.restake])!;
+
+    let groupingOptions = getGroupingOptions(timeSpan);
+    let units = groupingOptions ? [ groupingOptions ] : undefined;
 
     return (
         <div className={styles.chartCard}>
@@ -58,10 +61,7 @@ export function FeesAndRevenue() {
             <HighchartsProvider Highcharts={Highcharts}>
                 <HighchartsStockChart>
                     <Chart {...chartOpts.chart} />
-                    <XAxis {...chartOpts.xAxis}
-                        tickmarkPlacement={"between"}
-                        minTickInterval={30 * 24 * 3600 * 1000}
-                        tickAmount={5}>
+                    <XAxis {...chartOpts.xAxis}>
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         <ColumnSeries
@@ -76,13 +76,13 @@ export function FeesAndRevenue() {
                                 approximation: "sum",
                                 groupAll: true,
                                 forced: true,
-                                units: getGroupingOptions(timeSpan) ? [getGroupingOptions(timeSpan)] : undefined
+                                units: units
                             }}
                         />
                         <ColumnSeries
                             data={isLoading ? [] : feeSeries}
                             color={"#EB7257"}
-                            borderRadius={timeSpan === "M" ? 5 : (timeSpan === "W" ? 3 : 1)}
+                            borderRadius={getBorderRadius(timeSpan, timePeriod)}
                             stickyTracking
                             stacking={"normal"}
                             cumulative={isCumulative}
@@ -91,45 +91,40 @@ export function FeesAndRevenue() {
                                 approximation: "sum",
                                 groupAll: true,
                                 forced: true,
-                                units: getGroupingOptions(timeSpan) ? [getGroupingOptions(timeSpan)] : undefined
+                                units: units
                             }}
                         />
                     </YAxis>
                     <HSTooltip
                         useHTML
-                        formatter={
-                            function (this: TooltipFormatterContextObject) {
-                                const that = this as any;
-
-                                let restakeSum = formatNum(Math.ceil(isCumulative ? that.points[0].point.cumulativeSum : that.points[0].y));
-                                let feeSum = formatNum(Math.ceil(isCumulative ? that.points[1].point.cumulativeSum : that.points[1].y));
-
-                                let displayDate = "";
-                                let date = moment(that.x);
-                                displayDate = timeSpan == "M" ? date.format("MMMM YYYY") : date.format("DD MMMM YYYY");
-
-                                return `  
-                                    <span style="text-align: center;">${displayDate}</span>
-                                    <br />
-                                    <span>Fees: $${isCumulative ?
-                                        formatNum(Math.ceil(that.points[0].point.cumulativeSum - that.points[1].point.cumulativeSum)) :
-                                        restakeSum}</span>
-                                    <br />
-                                    <span>Revenue: $${feeSum}</span>
-                                `;
-                            }}
-                        backgroundColor={"rgba(255,255,255, 1)"}
-                        borderColor={"#000000"}
-                        borderWidth={1}
-                        borderRadius={15}
-                        shadow={false}
-                        style={{
-                            fontSize: "14px",
-                            fontFamily: "Space Grotesk"
-                        }}
+                        formatter={tooltipFormatter(isCumulative, timeSpan)}
+                        {...chartOpts.tooltip}
                     />
                 </HighchartsStockChart>
             </HighchartsProvider>
         </div >
     );
+}
+
+const tooltipFormatter = (isCumulative: boolean, timeSpan: TimeSpan) => {
+    return function (this: TooltipFormatterContextObject) {
+        const that = this as any;
+
+        let restakeSum = formatNum(Math.ceil(isCumulative ? that.points[0].point.cumulativeSum : that.points[0].y));
+        let feeSum = formatNum(Math.ceil(isCumulative ? that.points[1].point.cumulativeSum : that.points[1].y));
+
+        let displayDate = "";
+        let date = moment(that.x);
+        displayDate = timeSpan == "M" ? date.format("MMMM YYYY") : date.format("DD MMMM YYYY");
+
+        return `  
+            <span style="text-align: center;">${displayDate}</span>
+            <br />
+            <span>Fees: $${isCumulative ?
+                formatNum(Math.ceil(that.points[0].point.cumulativeSum - that.points[1].point.cumulativeSum)) :
+                restakeSum}</span>
+            <br />
+            <span>Revenue: $${feeSum}</span>
+        `;
+    };
 }

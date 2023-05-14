@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Highcharts, { } from 'highcharts/highstock';
+import Highcharts, { TooltipFormatterContextObject } from 'highcharts/highstock';
 import appStyles from './../../App.module.scss';
 import { TimeSpanSelector } from '../../reusable/timeSpanSelector/TimeSpanSelector';
 import { ToggleSwitch } from '../../reusable/toggleSwitch/ToggleSwitch';
@@ -13,11 +13,12 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { cutDataByTime, getBorderRadius, getGroupingOptions, getTooltipFormatter } from '../../app/helpers';
+import { cutDataByTime, getBorderRadius, getGroupingOptions } from '../../app/helpers';
 import { useQuery } from 'react-query';
 import { LoadingError } from '../../reusable/error/error';
 import { getChartColor } from '../../app/helpers';
 import { AppTooltip } from '../../reusable/appTooltip/AppTooltip';
+import moment from 'moment';
 
 export function AssetsExcludingInterest() {
     let [isCumulative, setIsCumulative] = useState(false);
@@ -34,8 +35,11 @@ export function AssetsExcludingInterest() {
     let chartData = isLoading ? [] : [ ...data ];
     let cuttedData = cutDataByTime(timePeriod, chartData);
 
-    let chartOpts = { ...baseChartOptions } as any;
+    let chartOpts = { ...baseChartOptions };
     chartOpts.plotOptions.column.cumulative = isCumulative;
+
+    let groupingOptions = getGroupingOptions(timeSpan);
+    let units = groupingOptions ? [ groupingOptions ] : undefined;
 
     return (
         <div className={appStyles.chartCard}>
@@ -60,10 +64,7 @@ export function AssetsExcludingInterest() {
             <HighchartsProvider Highcharts={Highcharts}>
                 <HighchartsStockChart>
                     <Chart {...chartOpts.chart} />
-                    <XAxis {...chartOpts.xAxis}
-                        tickmarkPlacement={"between"}
-                        minTickInterval={30 * 24 * 3600 * 1000}
-                        tickAmount={5}>
+                    <XAxis {...chartOpts.xAxis}>
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         <ColumnSeries
@@ -77,25 +78,37 @@ export function AssetsExcludingInterest() {
                                 approximation: "sum",
                                 groupAll: true,
                                 forced: true,
-                                units: getGroupingOptions(timeSpan) ? [getGroupingOptions(timeSpan)] : undefined
+                                units: units
                             }}
                         />
                     </YAxis>
                     <HSTooltip
                         useHTML
-                        formatter={getTooltipFormatter(zone, timeSpan, isCumulative) || undefined}
-                        backgroundColor={"rgba(255,255,255, 1)"}
-                        borderColor={"#000000"}
-                        borderWidth={1}
-                        borderRadius={15}
-                        shadow={false}
-                        style={{
-                            fontSize: "14px",
-                            fontFamily: "Space Grotesk"
-                        }}
+                        formatter={tooltipFormatter(zone, timeSpan, isCumulative)}
+                        {...chartOpts.tooltip}
                     />
                 </HighchartsStockChart>
             </HighchartsProvider>
         </div >
     );
+}
+
+const tooltipFormatter = (zone: Zone, timeSpan: TimeSpan, isCumulative: boolean) => {
+    return function (this: TooltipFormatterContextObject) {
+        const that = this as any;
+
+        let displayZone = zone!.charAt(0).toUpperCase() + zone!.slice(1);
+        let displayAmount = new Intl.NumberFormat()
+            .format(isCumulative ? that.points[0].point.cumulativeSum : that.y);
+
+        let displayDate = "";
+        let date = moment(that.x);
+        displayDate = timeSpan == "M" ? date.format("MMMM YYYY") : date.format("DD MMMM YYYY");
+
+        return `            
+        <span style="text-align: center;">${displayDate}</span>
+        <br />
+        <span>${displayZone} ${displayAmount}</span>
+    `;
+    }
 }

@@ -1,4 +1,3 @@
-import { TooltipFormatterContextObject } from 'highcharts/highstock';
 import moment from 'moment';
 import { TimeSpan, Zone } from './constants';
 
@@ -19,25 +18,6 @@ export function getChartColor(zone: Zone) {
         case "evmos": return "#ED4E33";
         case "inj": return "#343FF5";
         default: return "#008BF0";
-    }
-}
-export function getTooltipFormatter(zone: Zone, timeSpan: TimeSpan, isCumulative: boolean) {
-    return function (this: TooltipFormatterContextObject) {
-        const that = this as any;
-
-        let displayZone = zone!.charAt(0).toUpperCase() + zone!.slice(1);
-        let displayAmount = new Intl.NumberFormat()
-            .format(isCumulative ? that.points[0].point.cumulativeSum : that.y);
-
-        let displayDate = "";
-        let date = moment(that.x);
-        displayDate = timeSpan == "M" ? date.format("MMMM YYYY") : date.format("DD MMMM YYYY");
-
-        return `            
-            <span style="text-align: center;">${displayDate}</span>
-            <br />
-            <span>${displayZone} ${displayAmount}</span>
-        `;
     }
 }
 

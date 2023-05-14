@@ -36,7 +36,7 @@ export function TvlByChains() {
 
     if (error) return <LoadingError />;
 
-    let chartOpts = { ...baseChartOptions } as any;
+    let chartOpts = { ...baseChartOptions };
 
     let zoneData = isLoading ? [] : data?.filter(x => selectedZones.includes(x.zone));
     let timeData = zoneData?.map(x => ({
@@ -64,10 +64,7 @@ export function TvlByChains() {
             <HighchartsProvider Highcharts={Highcharts}>
                 <HighchartsStockChart>
                     <Chart {...chartOpts.chart} />
-                    <XAxis {...chartOpts.xAxis}
-                        tickmarkPlacement={"between"}
-                        minTickInterval={30 * 24 * 3600 * 1000}
-                        tickAmount={5}>
+                    <XAxis {...chartOpts.xAxis}>
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         {sortedByTvl.map(dt => (
@@ -82,40 +79,33 @@ export function TvlByChains() {
                     </YAxis>
                     <HSTooltip
                         useHTML
-                        formatter={
-                            function (this: TooltipFormatterContextObject) {
-                                let result = `<span style="text-align: center;">${moment(this.x).format("DD MMMM YYYY")}</span>`;
-
-                                let totalTvl = 0;
-                                let zoneLabels = this.points?.map(point => {
-                                    let zone = capitalize(point.series.name);
-                                    let tvl = new Intl.NumberFormat().format(Math.ceil(point.y as number));
-                                    totalTvl += Number(point.y);
-
-                                    let markerColor = getChartColor(point.series.name as Zone);
-                                    return `<br>
-                                    <span style="color: ${markerColor}; border-radius: 50%;">●</span>
-                                    <span>${zone} $${tvl}</span>`;
-                                })
-
-                                if (this.points?.length! > 1)
-                                    result += `<br><br><span>Total: $${new Intl.NumberFormat().format(Math.ceil(totalTvl))}</span>`;
-
-                                zoneLabels?.forEach(x => result += x);
-                                return result;
-                            }}
-                        backgroundColor={"rgba(255,255,255, 1)"}
-                        borderColor={"#000000"}
-                        borderWidth={1}
-                        borderRadius={15}
-                        shadow={false}
-                        style={{
-                            fontSize: "14px",
-                            fontFamily: "Space Grotesk"
-                        }}
+                        formatter={tooltipFormatter}
+                        {...chartOpts.tooltip}
                     />
                 </HighchartsStockChart>
             </HighchartsProvider>
         </div >
     );
+}
+
+function tooltipFormatter(this: TooltipFormatterContextObject) {
+    let result = `<span style="text-align: center;">${moment(this.x).format("DD MMMM YYYY")}</span>`;
+
+    let totalTvl = 0;
+    let zoneLabels = this.points?.map(point => {
+        let zone = capitalize(point.series.name);
+        let tvl = new Intl.NumberFormat().format(Math.ceil(point.y as number));
+        totalTvl += Number(point.y);
+
+        let markerColor = getChartColor(point.series.name as Zone);
+        return `<br>
+        <span style="color: ${markerColor}; border-radius: 50%;">●</span>
+        <span>${zone} $${tvl}</span>`;
+    })
+
+    if (this.points?.length! > 1)
+        result += `<br><br><span>Total: $${new Intl.NumberFormat().format(Math.ceil(totalTvl))}</span>`;
+
+    zoneLabels?.forEach(x => result += x);
+    return result;
 }

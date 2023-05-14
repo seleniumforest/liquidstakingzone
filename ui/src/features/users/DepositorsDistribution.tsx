@@ -23,7 +23,7 @@ export function DepositorsDistribution() {
 
     if (error) return <LoadingError />;
 
-    let chartOpts = { ...baseChartOptions } as any;
+    let chartOpts = { ...baseChartOptions };
     let categories = isLoading ? [] : data.map((x: any) => `${humanize(x.range[0])}-${humanize(x.range[1])}`);
     let chartData = isLoading ? [] : [...data].map(x => x.count);
 
@@ -57,29 +57,23 @@ export function DepositorsDistribution() {
                     </YAxis>
                     <HSTooltip
                         useHTML
-                        formatter={function (this: TooltipFormatterContextObject) {
-                            const that = this as any;
-
-                            return `            
-                                <span style="text-align: center;">${that.x} USD depositors</span>
-                                <br />
-                                <span>Depositors: ${that.points[0].y}</span>
-                            `;
-                        }}
-                        backgroundColor={"rgba(255,255,255, 1)"}
-                        borderColor={"#000000"}
-                        borderWidth={1}
-                        borderRadius={15}
-                        shadow={false}
-                        style={{
-                            fontSize: "14px",
-                            fontFamily: "Space Grotesk"
-                        }}
+                        formatter={tooltipFormatter}
+                        {...chartOpts.tooltip}
                     />
                 </HighchartsStockChart>
             </HighchartsProvider>
         </div >
     );
+}
+
+function tooltipFormatter(this: TooltipFormatterContextObject) {
+    const that = this as any;
+
+    return `            
+        <span style="text-align: center;">${that.x} USD depositors</span>
+        <br />
+        <span>Depositors: ${that.points[0].y}</span>
+    `;
 }
 
 function humanize(num: number) {

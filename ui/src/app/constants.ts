@@ -28,7 +28,10 @@ export const baseChartOptions = {
         tickColor: '#000000',
         labels: {
             format: '{value:%b %Y}'
-        }
+        },
+        tickmarkPlacement: "between",
+        minTickInterval: 30 * 24 * 3600 * 1000,
+        tickAmount: 5
     },
     tooltip: {
         shared: true,
@@ -39,7 +42,7 @@ export const baseChartOptions = {
         borderRadius: 15,
         shadow: false,
         style: {
-            fontSize: 14,
+            fontSize: "14px",
             fontFamily: "Space Grotesk"
         }
     },
@@ -63,7 +66,7 @@ export const baseChartOptions = {
         color: "#18C7FF",
         data: [0.4, 0.41, 0.45, 0.42, 0.43, 0.5, 0.2, 0.3] as any
     }]
-}
+} as any;
 
 export const supportedZones = ["cosmos", "osmo", "juno", "terra", "evmos", "stars", "inj"] as const;
 export type Zone = typeof supportedZones[number];

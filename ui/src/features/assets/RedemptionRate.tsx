@@ -21,6 +21,7 @@ import { AppTooltip } from '../../reusable/appTooltip/AppTooltip';
 export function RedemptionRate() {
     let [zone, setZone] = useState<Zone>("cosmos");
     let [timePeriod, setTimePeriod] = useState<number>(90);
+    
     const { isLoading, error, data } = useQuery(['redemptionRates', zone], () =>
         fetch(`${backendUrl}/redemptionRates?zone=${zone}`)
             .then(res => res.json())
@@ -28,7 +29,7 @@ export function RedemptionRate() {
 
     if (error) return <LoadingError />;
 
-    let chartOpts = { ...baseChartOptions } as any;
+    let chartOpts = { ...baseChartOptions };
     let chartData = isLoading ? [] : [ ...data ];
     let cuttedData = cutDataByTime(timePeriod, chartData, (el: any) => el.date);
 
@@ -54,10 +55,7 @@ export function RedemptionRate() {
             <HighchartsProvider Highcharts={Highcharts}>
                 <HighchartsStockChart>
                     <Chart {...chartOpts.chart} />
-                    <XAxis {...chartOpts.xAxis}
-                        tickmarkPlacement={"between"}
-                        minTickInterval={30 * 24 * 3600 * 1000}
-                        tickAmount={5}>
+                    <XAxis {...chartOpts.xAxis}>
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         <LineSeries
@@ -71,33 +69,28 @@ export function RedemptionRate() {
                     </YAxis>
                     <HSTooltip
                         useHTML
-                        formatter={
-                            function (this: TooltipFormatterContextObject) {
-                                let that = this as any;
-
-                                let rate = that.points[0].y.toFixed(4);
-                                let price = that.points[1].y.toFixed(4);
-
-                                return `
-                                    <span style="text-align: center;">${moment(this.x).format("DD MMMM YYYY")}</span>
-                                    <br>
-                                    <span>Redemption rate: ${rate}</span>
-                                    <br>
-                                    <span>${capitalize(zone)}/st${capitalize(zone)} market price: ${price}</span>
-                                `;
-                            }}
-                        backgroundColor={"rgba(255,255,255, 1)"}
-                        borderColor={"#000000"}
-                        borderWidth={1}
-                        borderRadius={15}
-                        shadow={false}
-                        style={{
-                            fontSize: "14px",
-                            fontFamily: "Space Grotesk"
-                        }}
+                        formatter={tooltipFormatter(zone)}
+                        {...chartOpts.tooltip}
                     />
                 </HighchartsStockChart>
             </HighchartsProvider>
         </div >
     );
 }
+
+const tooltipFormatter = (zone: Zone) => {
+    return function (this: TooltipFormatterContextObject) {
+        let that = this as any;
+
+        let rate = that.points[0].y.toFixed(4);
+        let price = that.points[1].y.toFixed(4);
+
+        return `
+            <span style="text-align: center;">${moment(this.x).format("DD MMMM YYYY")}</span>
+            <br>
+            <span>Redemption rate: ${rate}</span>
+            <br>
+            <span>${capitalize(zone)}/st${capitalize(zone)} market price: ${price}</span>
+        `;
+    };
+} 

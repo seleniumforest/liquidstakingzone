@@ -25,7 +25,7 @@ export function ActiveUsers() {
 
     if (error) return <LoadingError />;
 
-    let chartOpts = { ...baseChartOptions } as any;
+    let chartOpts = { ...baseChartOptions };
     let chartData = isLoading ? [] : [ ...data ];
 
     let ma = caculateMovingAverage(chartData?.map((x: any) => x[1]), 30);
@@ -52,11 +52,7 @@ export function ActiveUsers() {
             <HighchartsProvider Highcharts={Highcharts}>
                 <HighchartsStockChart>
                     <Chart {...chartOpts.chart} />
-                    <XAxis {...chartOpts.xAxis}
-                        tickmarkPlacement={"between"}
-                        minTickInterval={30 * 24 * 3600 * 1000}
-                        tickAmount={5}
-                        crosshair>
+                    <XAxis {...chartOpts.xAxis} crosshair>
                     </XAxis>
                     <YAxis {...chartOpts.yAxis} opposite={false}>
                         <ColumnSeries
@@ -71,34 +67,28 @@ export function ActiveUsers() {
                     </YAxis>
                     <HSTooltip
                         useHTML
-                        formatter={function (this: TooltipFormatterContextObject) {
-                            const that = this as any;
-                            
-                            let daily = that.points[0].y;
-                            let monthly = Math.ceil(that.points[1].y);
-
-                            return `            
-                                <span style="text-align: center;">${moment(that.x).format("DD MMMM YYYY")}</span>
-                                <br />
-                                <span>Daily: ${daily}</span>
-                                <br />
-                                <span>Monthly: ${monthly}</span>
-                            `;
-                        }}
-                        backgroundColor={"rgba(255,255,255, 1)"}
-                        borderColor={"#000000"}
-                        borderWidth={1}
-                        borderRadius={15}
-                        shadow={false}
-                        style={{
-                            fontSize: "14px",
-                            fontFamily: "Space Grotesk"
-                        }}
+                        formatter={tooltipFormatter}
+                        {...chartOpts.tooltip}
                     />
                 </HighchartsStockChart>
             </HighchartsProvider>
         </div >
     );
+}
+
+function tooltipFormatter(this: TooltipFormatterContextObject) {
+    const that = this as any;
+                            
+    let daily = that.points[0].y;
+    let monthly = Math.ceil(that.points[1].y);
+
+    return `            
+        <span style="text-align: center;">${moment(that.x).format("DD MMMM YYYY")}</span>
+        <br />
+        <span>Daily: ${daily}</span>
+        <br />
+        <span>Monthly: ${monthly}</span>
+    `;
 }
 
 const calculateItemsSum = (data: any, start: any, stop: any) => {
