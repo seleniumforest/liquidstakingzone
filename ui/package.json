@@ -16,6 +16,7 @@
     "react-jsx-highcharts": "^5.0.0",
     "react-jsx-highstock": "^5.0.0",
     "react-query": "^3.39.3",
+    "react-router-dom": "^6.13.0",
     "react-scripts": "5.0.1",
     "react-select": "^5.7.0",
     "react-switch": "^7.0.0",

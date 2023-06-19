@@ -33,6 +33,7 @@ app.get('/tvlByChains', caching, (...args) => errHandle(handlers.tvlByChains, ..
 app.get('/uniqueDepositors', caching, (...args) => errHandle(handlers.uniqueDepositors, ...args));
 app.get('/generalData', caching, (...args) => errHandle(handlers.generalData, ...args));
 app.get('/zonesInfo', (_, res: Response) => res.json(zones));
+app.get('/status', (...args) => errHandle(handlers.statusPage, ...args));
 
 const server = app.listen(process.env.PORT || 8081, function () {
     console.log("Backend started at", server.address())
