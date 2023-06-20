@@ -6,6 +6,24 @@ import { zones } from "./constants";
 
 const app = express();
 
+const whitelist = ['https://liquidstakingzone.com', 'http://localhost:3000'];
+
+const corsOptionsCheck = (req: any, callback: any) => {
+    let corsOptions;
+
+    let isDomainAllowed = whitelist.indexOf(req.header('Origin')) !== -1;
+
+    if (isDomainAllowed) {
+        // Enable CORS for this request
+        corsOptions = { origin: true }
+    } else {
+        // Disable CORS for this request
+        corsOptions = { origin: false }
+    }
+    callback(null, corsOptions)
+}
+app.use(cors(corsOptionsCheck));
+
 const errHandle = async (handler: any, req: Request, res: Response, next: NextFunction) => {
     try {
         return await handler(req, res, next);
