@@ -58,6 +58,9 @@ export function GeneralData() {
                         <a href="https://injective.com/" target="_blank" rel="noreferrer">
                             <img alt='website' src='/img/inj-logo.png' />
                         </a>
+                        <a href="https://umee.cc/" target="_blank" rel="noreferrer">
+                            <img alt='website' src='/img/umee-logo.png' />
+                        </a>
                     </div>
                     {!isLoading &&
                         <div className={styles.mcapAndVolumeBox}>
