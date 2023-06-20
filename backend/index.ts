@@ -5,7 +5,6 @@ import cors from 'cors';
 import { zones } from "./constants";
 
 const app = express();
-app.use(cors());
 
 const errHandle = async (handler: any, req: Request, res: Response, next: NextFunction) => {
     try {
