@@ -32,17 +32,33 @@ export const tvlByChains = async (_: Request, res: Response) => {
         }))
         .sort((a, b) => a.zone > b.zone ? 1 : -1);
     //
-    
+
     let data = sorted?.map((zoneData: TVLData) => ({
         zone: zoneData.zone,
-        data: zoneData.data.map((dt: TVLDataRecord) => ({
-            date: Number(dt.date),
-            tvl: Number(dt.tvl)
-        }))
+        data: correctZeroTvl(zoneData.data)
     }));
 
     cache.set('/tvlByChains', data)
     res.json(data);
+}
+
+const correctZeroTvl = (data: { date: number, tvl: number }[]) => {
+    let result: any[] = [];
+    let lastNonZeroTvl = Number(data[0].tvl);
+
+    for (let i = 0; i < data.length; i++) {
+        let tvl = Number(data[i].tvl);
+
+        if (tvl > 0) {
+            result.push({ date: Number(data[i].date), tvl })
+            lastNonZeroTvl = tvl;
+        }
+        else {
+            result.push({ date: Number(data[i].date), tvl: lastNonZeroTvl })
+        }
+    }
+
+    return result;
 }
 
 export const getTvlData = async (zone: Zone): Promise<TVLDataRecord[]> => {
