@@ -17,6 +17,7 @@ export function getChartColor(zone: Zone) {
         case "terra": return "#02BD60";
         case "evmos": return "#ED4E33";
         case "inj": return "#343FF5";
+        case "umee": return "#16183c";
         default: return "#008BF0";
     }
 }

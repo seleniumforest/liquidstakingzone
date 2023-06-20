@@ -48,7 +48,7 @@ export const universalRegistry = new CosmjsRegistry([
 ]);
 
 export type Registry = CosmjsRegistry | StrideRegistry
-export type Zone = "cosmos" | "stars" | "osmo" | "juno" | "terra" | "evmos" | "inj" | "scrt" | "umee";
+export type Zone = "cosmos" | "stars" | "osmo" | "juno" | "terra" | "evmos" | "inj" | "scrt" | "umee" | "comdex";
 export type PriceSource = "Imperator" | "Other";
 
 export type ZoneInfo = {
@@ -113,7 +113,8 @@ export const zones: ZoneInfo[] = [
         denom: "uluna",
         stDenom: "stuluna",
         registryName: "terra2",
-        ticker: "luna"
+        ticker: "luna",
+        priceSource: "Other"
     },
     {
         zone: "evmos",
@@ -132,7 +133,8 @@ export const zones: ZoneInfo[] = [
         //stAssetPool: 922,
         denom: "inj",
         stDenom: "stinj",
-        registryName: "injective"
+        registryName: "injective",
+        priceSource: "Imperator"
     },
     {
         zone: "scrt",
@@ -141,16 +143,28 @@ export const zones: ZoneInfo[] = [
         //stAssetPool: 922,
         denom: "uscrt",
         stDenom: "stuscrt",
-        registryName: "secretnetwork"
+        registryName: "secretnetwork",
+        priceSource: "Imperator"
     },
     {
         zone: "umee",
         decimals: 6,
         coingeckoId: "umee",
-        //stAssetPool: 922,
+        stAssetPool: 1035,
         denom: "uumee",
         stDenom: "stuumee",
-        registryName: "umee"
+        registryName: "umee",
+        priceSource: "Imperator"
+    },
+    {
+        zone: "comdex",
+        decimals: 6,
+        coingeckoId: "comdex",
+        //stAssetPool: 922,
+        denom: "ucmdx",
+        stDenom: "stucmdx",
+        registryName: "comdex",
+        priceSource: "Imperator"
     }
 ]
 

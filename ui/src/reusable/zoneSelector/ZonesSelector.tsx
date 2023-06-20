@@ -12,7 +12,8 @@ const zones = [
     { value: "stars", label: "Stars" },
     { value: "terra", label: "Terra" },
     { value: "evmos", label: "Evmos" },
-    { value: "inj", label: "Injective" }
+    { value: "inj", label: "Injective" },
+    { value: "umee", label: "Umee" }
 ];
 
 export function ZonesSelector({ setZone }: { setZone: Dispatch<SetStateAction<Zone>> }) {
