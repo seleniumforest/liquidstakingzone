@@ -66,10 +66,7 @@ export const decodeTxs = (block: Block, prefix: string = "stride"): DecodedBlock
                 data: decodedTx,
                 events: tx.tx_result.events.map(ev => ({
                     type: ev.type,
-                    attributes: ev.attributes.map(attr => ({
-                        key: new TextDecoder().decode(fromBase64(attr.key || "")),
-                        value: new TextDecoder().decode(fromBase64(attr.value || ""))
-                    }))
+                    attributes: ev.attributes
                 })),
                 code: apiToSmallInt(tx.tx_result.code),
                 log: tryParseJson<EventLog>(tx.tx_result.log) || []
