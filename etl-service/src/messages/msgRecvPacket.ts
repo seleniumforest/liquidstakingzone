@@ -7,8 +7,16 @@ import { insertRedemptionRate, msgLiquidStake } from "./msgLiquidStake";
 
 export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any): Promise<void> => {
     let liquidStakeEvent = tx.tx_result.events.find(evt => evt.type === "liquid_stake");
-    let msgPacket = JSON.parse(new TextDecoder().decode(msg.packet.data));
-    let autopilot = JSON.parse(msgPacket.receiver);
+    let msgPacket: any = undefined;
+    let autopilot: any = undefined;
+    try {
+        msgPacket = JSON.parse(new TextDecoder().decode(msg.packet.data));
+        autopilot = JSON.parse(msgPacket.receiver);
+    } catch (e: any) {
+        console.error(`insertMsgRecvPacket error ${e?.message}`);
+        return;
+    }
+
     if (!msgPacket || !liquidStakeEvent || !autopilot)
         return;
 
