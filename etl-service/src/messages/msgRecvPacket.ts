@@ -7,6 +7,9 @@ import { insertRedemptionRate, msgLiquidStake } from "./msgLiquidStake";
 
 export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any): Promise<void> => {
     let liquidStakeEvent = tx.tx_result.events.find(evt => evt.type === "liquid_stake");
+    if (!liquidStakeEvent)
+        return;
+        
     let msgPacket: any = undefined;
     let autopilot: any = undefined;
     try {
@@ -17,7 +20,7 @@ export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any): Promise<void
         return;
     }
 
-    if (!msgPacket || !liquidStakeEvent || !autopilot)
+    if (!msgPacket|| !autopilot)
         return;
 
     let zone = zones.find(z => z.denom === msgPacket.denom)!;
