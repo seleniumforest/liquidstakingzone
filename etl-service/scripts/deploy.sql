@@ -92,7 +92,8 @@ CREATE TABLE Stride.msgs_MsgLiquidStake (
     txcode UInt8,
     amount Tuple (String, UInt256),
     recievedStTokenAmount Tuple (String, UInt256),
-    zone String
+    zone String,
+    ibcSeq String DEFAULT ('0')
 ) ENGINE = MergeTree() PRIMARY KEY (id);
 /* stride.stakeibc.MsgRedeemStake */
 CREATE TABLE Stride.msgs_MsgRedeemStake (

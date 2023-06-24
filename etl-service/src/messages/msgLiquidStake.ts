@@ -9,7 +9,8 @@ export interface msgLiquidStake extends msgData {
     amount: CoinTuple,
     recievedStTokenAmount: CoinTuple,
     zone: string,
-    redemptionRate: number
+    redemptionRate: number,
+    ibcSeq?: string
 }
 
 export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any): Promise<void> => {

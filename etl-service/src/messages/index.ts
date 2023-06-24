@@ -7,6 +7,7 @@ import { insertMsgDelegate } from "./msgDelegate";
 import { insertMsgRedeemStake } from "./msgRedeemStake";
 import { insertMsgVote } from "./msgVote";
 import { insertMsgAcknowledgement } from "./msgAcknowledgement";
+import { insertMsgRecvPacket } from "./msgRecvPacket";
 
 //todo fix any
 export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void>>([
@@ -28,7 +29,8 @@ export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void
     ["/cosmos.gov.v1beta1.MsgVote", insertMsgVote],
     ["/cosmos.gov.v1.MsgVote", insertMsgVote],
 
-    ["/ibc.core.channel.v1.MsgAcknowledgement", insertMsgAcknowledgement]
+    ["/ibc.core.channel.v1.MsgAcknowledgement", insertMsgAcknowledgement],
+    ["/ibc.core.channel.v1.MsgRecvPacket", insertMsgRecvPacket]
 ]); 
 
 //fills base fields that exist in every msg type
