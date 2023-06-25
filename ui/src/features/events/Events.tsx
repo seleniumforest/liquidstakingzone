@@ -46,7 +46,7 @@ export function Events() {
 
                                     return (<tr key={d.txhash}>
                                         <td className={styles.hideOnMobile}><a target="_blank" rel="noreferrer" href={`https://www.mintscan.io/stride/txs/${d.txhash}`}>{d.txhash.slice(0, 10)}</a></td>
-                                        <td className={styles.hideOnMobile}>{moment(+d.date * 1000).format("DD/MM/YYYY HH:mm:SS")}</td>
+                                        <td className={styles.hideOnMobile}>{moment(+d.date).format("DD/MM/YYYY HH:mm:SS")}</td>
                                         <td className={d.action === "stake" ? styles.deposit : styles.redeem}>{d.action === "stake" ? "Deposit" : "Redeem"}</td>
                                         <td className={joinClasses(styles.assetIcons, styles.hideOnMobile)}>
                                             {d.action === "stake" ?
