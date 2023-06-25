@@ -26,8 +26,8 @@ export const externalAccountsCheckerJob = async () => {
 
             let staked = await getBalanceStaked(zone.delegationAcc, rpcs);
             let balance = await getBalanceOnAccount(zone.delegationAcc, staked?.denom!, rpcs)
-            let undelegated = await getUndelegatedBalance(zone.delegationAcc, rpcs);
-            let sum = Big(staked?.amount!).plus(Big(balance?.amount!)).plus(undelegated || Big(0)).toFixed();
+            //let undelegated = await getUndelegatedBalance(zone.delegationAcc, rpcs);
+            let sum = Big(staked?.amount!).plus(Big(balance?.amount!)).toFixed();
 
             let balanceData: Balance = {
                 id: randomUUID(),
