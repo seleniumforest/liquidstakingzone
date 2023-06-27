@@ -9,23 +9,20 @@ export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any): Promise<void
     let liquidStakeEvent = tx.tx_result.events.find(evt => evt.type === "liquid_stake");
     if (!liquidStakeEvent)
         return;
-        
-    let msgPacket: any = undefined;
-    let autopilot: any = undefined;
+
+    let isAutopilot = false;
     try {
-        msgPacket = JSON.parse(new TextDecoder().decode(msg.packet.data));
-        autopilot = JSON.parse(msgPacket.receiver);
-    } catch (e: any) {
-        console.error(`insertMsgRecvPacket error ${e?.message}`);
-        return;
-    }
+        let msgPacket = JSON.parse(new TextDecoder().decode(msg.packet.data));
+        isAutopilot = typeof JSON.parse(msgPacket.receiver)?.autopilot === "object";
+    } catch (e: any) {}
 
-    if (!msgPacket|| !autopilot)
+    let stakedBaseDenom = liquidStakeEvent.attributes.find(attr => attr.key === "native_base_denom")?.value;
+    if (!stakedBaseDenom || !isAutopilot)
         return;
 
-    let zone = zones.find(z => z.denom === msgPacket.denom)!;
+    let zone = zones.find(z => z.denom === stakedBaseDenom)!;
     if (!zone) {
-        console.error(`insertMsgRecvPacket: height ${tx.height} zone for denom ${msgPacket.denom} not found`);
+        console.error(`insertMsgRecvPacket: height ${tx.height} zone for denom ${stakedBaseDenom} not found`);
         return;
     };
 
