@@ -10,18 +10,20 @@ import {
 } from "react-jsx-highstock"
 
 import { headersData } from './constants';
-import { capitalize, cutDataByTime } from '../../app/helpers';
+import { cutDataByTime } from '../../app/helpers';
 import { useQuery } from 'react-query';
 import moment from 'moment';
 import { ZonesSelector } from '../../reusable/zoneSelector/ZonesSelector';
 import { LoadingError } from '../../reusable/error/error';
 import { getChartColor } from '../../app/helpers';
 import { AppTooltip } from '../../reusable/appTooltip/AppTooltip';
+import { useZonesInfo } from '../../app/hooks';
 
 export function RedemptionRate() {
     let [zone, setZone] = useState<Zone>("cosmos");
     let [timePeriod, setTimePeriod] = useState<number>(90);
-    
+    let { data: zonesData } = useZonesInfo();
+
     const { isLoading, error, data } = useQuery(['redemptionRates', zone], () =>
         fetch(`${backendUrl}/redemptionRates?zone=${zone}`)
             .then(res => res.json())
@@ -35,6 +37,7 @@ export function RedemptionRate() {
 
     let rateSeries = cuttedData?.map((x: any) => ([x.date, x.rate])) || [];
     let priceSeries = cuttedData?.map((x: any) => ([x.date, x.price])) || [];
+    let zoneTicker = zonesData?.find(x => x.zone === zone)?.ticker || zone;
 
     return (
         <div className={appStyles.chartCard}>
@@ -69,7 +72,7 @@ export function RedemptionRate() {
                     </YAxis>
                     <HSTooltip
                         useHTML
-                        formatter={tooltipFormatter(zone)}
+                        formatter={tooltipFormatter(zoneTicker)}
                         {...chartOpts.tooltip}
                     />
                 </HighchartsStockChart>
@@ -78,10 +81,10 @@ export function RedemptionRate() {
     );
 }
 
-const tooltipFormatter = (zone: Zone) => {
+const tooltipFormatter = (ticker: string) => {
     return function (this: TooltipFormatterContextObject) {
         let that = this as any;
-
+        let displayTicker = ticker.toUpperCase();
         let rate = that.points[0].y.toFixed(4);
         let price = that.points[1].y.toFixed(4);
 
@@ -90,7 +93,7 @@ const tooltipFormatter = (zone: Zone) => {
             <br>
             <span>Redemption rate: ${rate}</span>
             <br>
-            <span>${capitalize(zone)}/st${capitalize(zone)} market price: ${price}</span>
+            <span>${displayTicker}/st${displayTicker} market price: ${price}</span>
         `;
     };
 } 
