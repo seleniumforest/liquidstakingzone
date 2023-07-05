@@ -46,5 +46,10 @@ export const zones: ZoneInfo[] = [
         zone: "inj",
         coingeckoId: "injective-protocol",
         sortOrder: 7
+    },
+    {
+        zone: "umee",
+        coingeckoId: "umee",
+        sortOrder: 8
     }
 ]
