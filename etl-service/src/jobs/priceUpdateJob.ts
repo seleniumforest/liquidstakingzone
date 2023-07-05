@@ -28,8 +28,8 @@ const updateStAssetsPrices = async () => {
     let latestSavedPrices = await getPrices(true);
 
     let lastSavedLunaPrice = latestSavedPrices.find(x => x.coin === "terra-luna-2");
-    let actualLunaPrices = await getLunaPrices(lastSavedLunaPrice?.latestDate, Date.now());
-
+    let actualLunaPrices = await getLunaPrices(lastSavedLunaPrice?.latestDate);
+    
     //filter already saved data
     let newPrices = [...actualPrices, ...actualLunaPrices].filter(x => {
         let latestSavedPriceDate = latestSavedPrices?.find(y => y.coin === x.coin)?.latestDate
