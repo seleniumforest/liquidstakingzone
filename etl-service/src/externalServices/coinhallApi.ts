@@ -22,3 +22,23 @@ export const getLunaPrices = async (from: number | undefined): Promise<Price[]> 
 
     return [];
 }
+
+export const getEvmosPrices = async (from: number | undefined): Promise<Price[]> => {
+    try {
+        let fromIso = from ? new Date(from).toISOString() : startDate;
+        let now = new Date().toISOString();
+        const astroLunaPoolDataUrl = `https://api.seer.coinhall.org/api/coinhall/charts/osmo1q80sc32t5nesvl4hyncfrnvj2qhucnl77jxvz977e0rlgc6ljv6q0vftu3?interval=1_HOUR&baseAsset=ibc%2FC5579A9595790017C600DD726276D978B9BF314CF82406CE342720A9C7911A01&quote=ibc%2F6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A&from=${fromIso}&to=${now}`;
+        console.log(astroLunaPoolDataUrl)
+        const response = await axios.get<{ candles: { t: number, o: number }[]}>(astroLunaPoolDataUrl);
+
+        return response.data.candles.map(x => ({
+            id: randomUUID(),
+            coin: "evmos",
+            date: x.t,
+            price: x.o,
+            vsCurrency: "stevmos"
+        }));
+    } catch (e: any) { console.log(`getEvmosPrices: error updating prices ${e?.message}`) }
+
+    return [];
+}
