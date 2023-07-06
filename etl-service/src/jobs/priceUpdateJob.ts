@@ -1,9 +1,8 @@
-import { timeSpans, zones } from "../constants";
-import { getPrices, insertPrices } from "../db/";
+import { Zone, timeSpans, zones } from "../constants";
+import { Price, getPrices, insertPrices } from "../db/";
 import { insertGeneralData } from "../db/generalData";
 import { fetchGeneralData, fetchTokenPriceHistory } from "../externalServices/coingecko";
 import { getEvmosPrices, getLunaPrices } from "../externalServices/coinhallApi";
-import { getStAssetsPriceHistory } from "../externalServices/osmosisImperatorApi";
 
 export const updateTokenPrices = async () => {
     let latestPrices = await getPrices(false);
@@ -24,23 +23,17 @@ export const updateTokenPrices = async () => {
 };
 
 const updateStAssetsPrices = async () => {
-    let actualPrices = await getStAssetsPriceHistory();
     let latestSavedPrices = await getPrices(true);
+    
+    let newPrices: Price[] = [];
+    for (const zone of zones) {
+        let priceHandler = zone.stAssetPriceFetchFn;
+        if (!priceHandler)
+            continue;
 
-    let lastSavedLunaPrice = latestSavedPrices.find(x => x.coin === "terra-luna-2");
-    let actualLunaPrices = await getLunaPrices(lastSavedLunaPrice?.latestDate);
-
-    let lastSavedEvmosPrice = latestSavedPrices.find(x => x.coin === "evmos");
-    let actualEvmosPrices = await getEvmosPrices(lastSavedEvmosPrice?.latestDate);
-
-    //filter already saved data
-    let newPrices = [...actualPrices, ...actualLunaPrices, ...actualEvmosPrices].filter(x => {
-        let latestSavedPriceDate = latestSavedPrices?.find(y => y.coin === x.coin)?.latestDate
-        if (!latestSavedPriceDate)
-            return true;
-
-        return x.date > latestSavedPriceDate;
-    });
+        let latestDate = latestSavedPrices.find(x => x.coin === zone.coingeckoId);
+        newPrices.push(...await priceHandler(latestDate?.latestDate));
+    }
 
     newPrices.forEach(x => console.log(`updateStAssetsPrices: got new prices ${JSON.stringify(x)}`));
 

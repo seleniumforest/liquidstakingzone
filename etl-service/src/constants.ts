@@ -3,6 +3,9 @@ import { strideProtoRegistry } from "stridejs";
 import { strideProtoRegistry as strideOldProtoRegistry } from "stridejsold";
 import { cosmosProtoRegistry, ibcProtoRegistry } from "osmojs";
 import { Registry as StrideRegistry } from "stridejs/node_modules/@cosmjs/proto-signing";
+import { Price } from "./db";
+import { getStAssetPriceHistory } from "./externalServices/osmosisImperatorApi";
+import { getEvmosPrices, getLunaPrices } from "./externalServices/coinhallApi";
 
 const composeMixedRegistry = () => {
     let allTypes: [string, GeneratedType][] = [];
@@ -49,7 +52,6 @@ export const universalRegistry = new CosmjsRegistry([
 
 export type Registry = CosmjsRegistry | StrideRegistry
 export type Zone = "cosmos" | "stars" | "osmo" | "juno" | "terra" | "evmos" | "inj" | "scrt" | "umee" | "comdex";
-export type PriceSource = "Imperator" | "Other";
 
 export type ZoneInfo = {
     zone: Zone,
@@ -60,7 +62,7 @@ export type ZoneInfo = {
     stDenom: string,
     registryName: string,
     ticker?: string,
-    priceSource?: PriceSource
+    stAssetPriceFetchFn?: (fromDate: number | undefined) => Promise<Price[]>
 }
 
 export const zones: ZoneInfo[] = [
@@ -73,7 +75,7 @@ export const zones: ZoneInfo[] = [
         stDenom: "stuatom",
         registryName: "cosmoshub",
         ticker: "atom",
-        priceSource: "Imperator"
+        stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("cosmos", from)
     },
     {
         zone: "stars",
@@ -83,7 +85,7 @@ export const zones: ZoneInfo[] = [
         denom: "ustars",
         stDenom: "stustars",
         registryName: "stargaze",
-        priceSource: "Imperator"
+        stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("stars", from)
     },
     {
         zone: "osmo",
@@ -93,7 +95,7 @@ export const zones: ZoneInfo[] = [
         denom: "uosmo",
         stDenom: "stuosmo",
         registryName: "osmosis",
-        priceSource: "Imperator"
+        stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("osmo", from)
     },
     {
         zone: "juno",
@@ -103,7 +105,7 @@ export const zones: ZoneInfo[] = [
         denom: "ujuno",
         stDenom: "stujuno",
         registryName: "juno",
-        priceSource: "Imperator"
+        stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("juno", from)
     },
     {
         zone: "terra",
@@ -114,7 +116,7 @@ export const zones: ZoneInfo[] = [
         stDenom: "stuluna",
         registryName: "terra2",
         ticker: "luna",
-        priceSource: "Other"
+        stAssetPriceFetchFn: async (from) => getLunaPrices(from)
     },
     {
         zone: "evmos",
@@ -124,7 +126,7 @@ export const zones: ZoneInfo[] = [
         denom: "aevmos",
         stDenom: "staevmos",
         registryName: "evmos",
-        priceSource: "Imperator"
+        stAssetPriceFetchFn: async (from) => getEvmosPrices(from)
     },
     {
         zone: "inj",
@@ -134,7 +136,6 @@ export const zones: ZoneInfo[] = [
         denom: "inj",
         stDenom: "stinj",
         registryName: "injective",
-        priceSource: "Imperator"
     },
     {
         zone: "scrt",
@@ -144,7 +145,6 @@ export const zones: ZoneInfo[] = [
         denom: "uscrt",
         stDenom: "stuscrt",
         registryName: "secretnetwork",
-        priceSource: "Imperator"
     },
     {
         zone: "umee",
@@ -154,7 +154,7 @@ export const zones: ZoneInfo[] = [
         denom: "uumee",
         stDenom: "stuumee",
         registryName: "umee",
-        priceSource: "Imperator"
+        stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("umee", from)
     },
     {
         zone: "comdex",
@@ -163,8 +163,7 @@ export const zones: ZoneInfo[] = [
         //stAssetPool: 922,
         denom: "ucmdx",
         stDenom: "stucmdx",
-        registryName: "comdex",
-        priceSource: "Imperator"
+        registryName: "comdex"
     }
 ]
 
