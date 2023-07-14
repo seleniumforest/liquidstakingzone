@@ -23,6 +23,11 @@ export const insertData = async (table: string, data: any): Promise<void> => {
     });
 }
 
+export type ClickhouseResponse<T> = {
+    meta: any,
+    data: T
+}
+
 export * from "./redemptionRates"
 export * from "./prices"
 export * from "./blocks"

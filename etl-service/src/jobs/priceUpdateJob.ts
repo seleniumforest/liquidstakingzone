@@ -1,8 +1,7 @@
-import { Zone, timeSpans, zones } from "../constants";
+import { timeSpans, zones } from "../constants";
 import { Price, getPrices, insertPrices } from "../db/";
 import { insertGeneralData } from "../db/generalData";
 import { fetchGeneralData, fetchTokenPriceHistory } from "../externalServices/coingecko";
-import { getEvmosPrices, getLunaPrices } from "../externalServices/coinhallApi";
 
 export const updateTokenPrices = async () => {
     let latestPrices = await getPrices(false);

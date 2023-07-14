@@ -52,5 +52,5 @@ export const fetchGeneralData = async (): Promise<GeneralData | undefined> => {
         console.log(`fetchGeneralData: Got new data:`, mcap, vol, Date.now());
         
         return { mcap, vol, id: randomUUID(), date: Date.now() };
-    } catch (e: any) { console.log(`fetchGeneralData: Error fetching data ${e?.message}`); }
+    } catch (e: any) { console.error(`fetchGeneralData: Error fetching data ${e?.message}`); }
 }

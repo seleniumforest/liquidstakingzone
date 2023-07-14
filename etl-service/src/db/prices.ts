@@ -1,4 +1,4 @@
-import { client, insertData } from "./";
+import { ClickhouseResponse, client, insertData } from "./";
 
 //todo fix this shitty flag parameter
 export const getPrices = async (vsStTokens: boolean): Promise<{ coin: string, latestDate: number }[]> => {
@@ -13,9 +13,10 @@ export const getPrices = async (vsStTokens: boolean): Promise<{ coin: string, la
             wait_end_of_query: 1,
         },
     });
-    let data = ((await response.json()) as any).data;
 
-    return data.map(({ coin, latestDate }: { coin: string, latestDate: number }) => ({ coin, latestDate: Number(latestDate) }));
+    let res = await response.json<ClickhouseResponse<{ coin: string, latestDate: number }[]>>();
+
+    return res.data;
 }
 
 export const insertPrices = async (prices: Price[]) => {

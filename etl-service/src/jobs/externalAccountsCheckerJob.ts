@@ -34,10 +34,16 @@ export const externalAccountsCheckerJob = async () => {
             if (!staked || !balance || !undelegated)
                 return;
 
-            let redemeptionRecodsForZone = redemeptionRecods!.filter(x => x.denom === zone.hostDenom && x.claim_is_pending === false);
-            let redemptedAmount = redemeptionRecodsForZone.reduce((prev, cur) => prev.add(cur.amount), Big(0));
-            //console.log(`${zone.zone} balances: ` + staked?.amount!, balance?.amount!, undelegated.toFixed(), redemptedAmount.toFixed());
-            let sum = Big(staked?.amount!).plus(Big(balance?.amount!)).plus(undelegated).minus(redemptedAmount).toFixed();
+            let redemeptionRecodsForZone = redemeptionRecods!
+                .filter(x => x.denom === zone.hostDenom && x.claim_is_pending === false);
+            let redemptedAmount = redemeptionRecodsForZone
+                .reduce((prev, cur) => prev.add(cur.amount), Big(0));
+
+            let sum = Big(staked?.amount!)
+                .plus(Big(balance?.amount!))
+                .plus(undelegated)
+                .minus(redemptedAmount)
+                .toFixed();
 
             let balanceData: Balance = {
                 id: randomUUID(),
@@ -49,7 +55,7 @@ export const externalAccountsCheckerJob = async () => {
 
             console.log(`externalAccountsCheckerJob: inserting data ${JSON.stringify(balanceData)}`);
             await insertAccountBalance(balanceData);
-        } catch (e: any) { console.log(`externalAccountsCheckerJob update error ${e?.message}`) }
+        } catch (e: any) { console.error(`externalAccountsCheckerJob update error ${e?.message}`) }
     }))
 
     console.log(`Finished update host zones transactions job: ${new Date()}`)
@@ -62,13 +68,22 @@ const getUndelegatedBalance = async (address: string, endpoints: string[]) => {
             let nextKey: Uint8Array | undefined;
 
             do {
-                let client = QueryClient.withExtensions(await Tendermint34Client.connect(endp), setupStakingExtension);
-                let data: QueryDelegatorUnbondingDelegationsResponse = await client.staking.delegatorUnbondingDelegations(address, nextKey);
+                let client = QueryClient.withExtensions(
+                    await Tendermint34Client.connect(endp), 
+                    setupStakingExtension
+                );
+
+                let data: QueryDelegatorUnbondingDelegationsResponse = 
+                    await client.staking.delegatorUnbondingDelegations(address, nextKey);
+
                 nextKey = data.pagination?.nextKey;
                 result.push(...data.unbondingResponses)
             } while (nextKey?.length! > 0);
 
-            return result.flatMap(x => x.entries).map(x => x.balance).reduce((prev, cur) => prev.add(Big(cur)), Big(0));
+            return result
+                .flatMap(x => x.entries)
+                .map(x => x.balance)
+                .reduce((prev, cur) => prev.add(Big(cur)), Big(0));
         } catch (e: any) { 
             // console.log(`getUndelegatedBalance endp ${endp} Error ${e?.message}`) 
         }
