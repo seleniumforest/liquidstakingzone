@@ -47,8 +47,8 @@ export const fetchGeneralData = async (): Promise<GeneralData | undefined> => {
             community_data: true
         });
 
-        let mcap = data.data.market_data.market_cap.usd;
-        let vol = data.data.market_data.total_volume.usd;
+        let mcap = Math.round(data.data.market_data.market_cap.usd);
+        let vol = Math.round(data.data.market_data.total_volume.usd);
         console.log(`fetchGeneralData: Got new data:`, mcap, vol, Date.now());
         
         return { mcap, vol, id: randomUUID(), date: Date.now() };
