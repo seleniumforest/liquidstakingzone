@@ -71,13 +71,13 @@ export const getPriceDataById = async (coingeckoId: string, vsUsd: boolean = tru
         query: `
             SELECT 
                 toUnixTimestamp(startOfDay) * 1000 as date,  
-                avg(price) AS price 
+                avg(avgprice) AS price 
             FROM (
                 SELECT 
-                    avg(price) as price, 
+                    avg(price) as avgprice, 
                     toStartOfDay(toDateTime64(date/1000, 3, 'Etc/UTC')) as startOfDay
                 FROM Stride.price_history
-                WHERE coin = '${coingeckoId}' AND vsCurrency ${vsUsd ? '=' : '!='} 'usd'
+                WHERE coin = '${coingeckoId}' AND vsCurrency ${vsUsd ? '=' : '!='} 'usd' and price > 0
                 GROUP BY startOfDay, date
                 ORDER BY date DESC
             ) 
