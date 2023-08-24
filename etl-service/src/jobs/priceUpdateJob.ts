@@ -30,8 +30,8 @@ const updateStAssetsPrices = async () => {
         if (!priceHandler)
             continue;
 
-        let latestDate = latestSavedPrices.find(x => x.coin === zone.coingeckoId);
-        newPrices.push(...await priceHandler(latestDate?.latestDate));
+        let latestDateTime = latestSavedPrices.find(x => x.coin === zone.coingeckoId);
+        newPrices.push(...await priceHandler(latestDateTime?.latestDate));
     }
 
     newPrices.forEach(x => console.log(`updateStAssetsPrices: got new prices ${JSON.stringify(x)}`));
