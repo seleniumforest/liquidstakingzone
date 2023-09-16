@@ -21,12 +21,12 @@ export const fetchZonesInfo = async (): Promise<HostZoneConfig[]> => {
             zone: denomToZone(zone.host_denom),
             hostDenom: zone.host_denom,
             prefix: zone.bech32prefix,
-            address: zone.address,
+            address: zone.deposit_address,
             redemptionRate: Number(zone.redemption_rate),
-            delegationAcc: zone.delegation_account.address,
-            feeAcc: zone.fee_account.address,
-            redemptionAcc: zone.redemption_account.address,
-            withdrawalAcc: zone.withdrawal_account.address
+            delegationAcc: zone.delegation_ica_address,
+            feeAcc: zone.fee_ica_address,
+            redemptionAcc: zone.redemption_ica_address,
+            withdrawalAcc: zone.withdrawal_ica_address
         }));
 
         cache.set(key, result);
