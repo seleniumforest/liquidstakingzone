@@ -51,7 +51,7 @@ export const universalRegistry = new CosmjsRegistry([
 ]);
 
 export type Registry = CosmjsRegistry | StrideRegistry
-export type Zone = "cosmos" | "stars" | "osmo" | "juno" | "terra" | "evmos" | "inj" | "scrt" | "umee" | "comdex";
+export type Zone = "cosmos" | "stars" | "osmo" | "juno" | "terra" | "evmos" | "inj" | "scrt" | "umee" | "comdex" | "somm";
 
 export type ZoneInfo = {
     zone: Zone,
@@ -164,6 +164,16 @@ export const zones: ZoneInfo[] = [
         denom: "ucmdx",
         stDenom: "stucmdx",
         registryName: "comdex"
+    },
+    {
+        zone: "somm",
+        decimals: 6,
+        coingeckoId: "sommelier",
+        stAssetPool: 1120,
+        denom: "usomm",
+        stDenom: "stusomm",
+        registryName: "sommelier",
+        stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("somm", from)
     }
 ]
 
