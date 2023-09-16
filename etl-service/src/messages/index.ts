@@ -8,11 +8,13 @@ import { insertMsgRedeemStake } from "./msgRedeemStake";
 import { insertMsgVote } from "./msgVote";
 import { insertMsgAcknowledgement } from "./msgAcknowledgement";
 import { insertMsgRecvPacket } from "./msgRecvPacket";
+import { insertMsgLSMLiquidStake } from "./msgLSMLiquidStake";
 
 //todo fix any
 export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void>>([
     ["/stride.stakeibc.MsgLiquidStake", insertMsgLiquidStake],
     ["/Stridelabs.stride.stakeibc.MsgLiquidStake", insertMsgLiquidStake],
+    ["/stride.stakeibc.MsgLSMLiquidStake", insertMsgLSMLiquidStake],
 
     ["/stride.stakeibc.MsgRedeemStake", insertMsgRedeemStake],
     ["/Stridelabs.stride.stakeibc.MsgRedeemStake", insertMsgRedeemStake],

@@ -24,7 +24,7 @@ export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any): Promise<voi
         creator: msg.creator,
         amount,
         recievedStTokenAmount: recievedStToken,
-        redemptionRate: Number(amount[1]) / Number(recievedStToken[1])
+        redemptionRate
     };
     await insertData("msgs_MsgLiquidStake", data);
 

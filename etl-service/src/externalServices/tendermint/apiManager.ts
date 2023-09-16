@@ -35,7 +35,7 @@ export class ApiManager {
             }
         }));
 
-        let success = results.filter(isFulfilled).map(x => x.value) as number[];
+        let success = results.filter(isFulfilled).map(x => x.value).filter(x => typeof x === "number" && x > 0);
         let result = Math.max(...success, lastKnownHeight);
 
         if (result === 0) {
