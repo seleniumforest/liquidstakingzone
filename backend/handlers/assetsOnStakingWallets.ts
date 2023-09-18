@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { cache } from "../middlewares";
 import { Zone, zones } from "../constants";
 import { ClickhouseResponse, client } from "../db";
 
@@ -11,7 +10,7 @@ type AssetsInStakingDataRecord = {
     pastDayAssets: number,
 }
 
-export const assetsOnStakingWallets = async (req: Request, res: Response) => {
+export const assetsOnStakingWallets = async (_: Request, res: Response) => {
     let query = await client.query({
         query: `
             WITH latestData as (
@@ -49,8 +48,7 @@ export const assetsOnStakingWallets = async (req: Request, res: Response) => {
     });
 
     let response = (await query.json()) as ClickhouseResponse<AssetsInStakingDataRecord[]>;
-    let sorted = response.data.sort((a, b) => getSortOrder(a.zone) > getSortOrder(b.zone) ? 1 : -1)
-    cache.set(req.originalUrl, sorted)
+    let sorted = response.data.sort((a, b) => getSortOrder(a.zone) > getSortOrder(b.zone) ? 1 : -1);
     res.json(sorted);
 }
 

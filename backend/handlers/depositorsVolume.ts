@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { cache } from "../middlewares";
 import { Zone } from "../constants";
 import { ClickhouseResponse, client } from "../db";
 
@@ -65,7 +64,5 @@ export const depositorsVolume = async (req: Request, res: Response) => {
 
     let response = (await query.json()) as ClickhouseResponse<DepositorsVolumeDataRecord[]>;
     let data = response.data?.map(x => ({ range: x.range, count: Number(x.count) }));
-
-    cache.set(req.originalUrl, data)
     res.json(data);
 }

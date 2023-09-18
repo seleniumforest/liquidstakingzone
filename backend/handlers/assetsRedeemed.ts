@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { cache } from "../middlewares";
 import { Zone } from "../constants";
 import { ClickhouseResponse, client } from "../db";
 
@@ -46,9 +45,6 @@ export const assetsRedeemed = async (req: Request, res: Response) => {
     });
 
     let response = (await query.json()) as ClickhouseResponse<{ date: number, amount: number }[]>;
-
     let data = response.data?.map((x: any) => ([Number(x.date), Number(x.amount)]));
-
-    cache.set(req.originalUrl, data)
     res.json(data);
 }

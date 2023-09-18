@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
 import { supportedZones } from "../constants";
 import { getTvlData } from "./tvlByChains";
-import { cache } from "../middlewares";
 import { getPriceDataById } from "./redemptionRates";
 import { ClickhouseResponse, client } from "../db";
 
-export const generalData = async (req: Request, res: Response) => {
+export const generalData = async (_: Request, res: Response) => {
     let tvlData = 0;
 
     for (const zone of supportedZones) {
@@ -21,7 +20,6 @@ export const generalData = async (req: Request, res: Response) => {
         prices: prices.map(x => [Number(x.date), x.price])
     };
 
-    cache.set(req.originalUrl, response);
     res.json(response);
 }
 

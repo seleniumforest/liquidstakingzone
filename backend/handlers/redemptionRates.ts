@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { cache } from "../middlewares";
 import { Zone, zones } from "../constants";
 import { ClickhouseResponse, client } from "../db";
 
@@ -30,7 +29,6 @@ export const redemptionRates = async (req: Request, res: Response) => {
     if (merged[merged.length - 1].price === 1)
         merged = merged.slice(0, merged.length - 1);
 
-    cache.set(req.originalUrl, merged)
     res.json(merged);
 }
 

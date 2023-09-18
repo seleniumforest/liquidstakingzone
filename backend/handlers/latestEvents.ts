@@ -1,22 +1,8 @@
 import { Request, Response } from "express";
-import { cache } from "../middlewares";
 import { Zone } from "../constants";
 import { ClickhouseResponse, client } from "../db";
-import { fromBaseUnit } from "../helpers";
-import { getPriceData, PriceData } from "./redemptionRates";
 
-type LatestEventsDataRecord = {
-    date: number,
-    txhash: string,
-    creator: string,
-    tokenIn: number,
-    tokenOut: number,
-    zone: Zone,
-    value: number,
-    action: "redeem" | "stake"
-}
-
-export const latestEvents = async (req: Request, res: Response) => {
+export const latestEvents = async (_: Request, res: Response) => {
     let query = await client.query({
         query: `
             WITH priceData AS (
@@ -83,7 +69,16 @@ export const latestEvents = async (req: Request, res: Response) => {
     });
 
     let response = (await query.json()) as ClickhouseResponse<LatestEventsDataRecord[]>;
-    
-    cache.set(req.originalUrl, response.data);
     res.json(response.data);
+}
+
+type LatestEventsDataRecord = {
+    date: number,
+    txhash: string,
+    creator: string,
+    tokenIn: number,
+    tokenOut: number,
+    zone: Zone,
+    value: number,
+    action: "redeem" | "stake"
 }

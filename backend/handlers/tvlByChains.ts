@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { cache } from "../middlewares";
-import { supportedZones, Zone, zones } from "../constants";
+import { supportedZones, Zone } from "../constants";
 import { ClickhouseResponse, client } from "../db";
 
 export type TVLData = {
@@ -38,7 +37,6 @@ export const tvlByChains = async (req: Request, res: Response) => {
         data: correctZeroTvl(zoneData.data)
     }));
 
-    cache.set(req.originalUrl, data)
     res.json(data);
 }
 

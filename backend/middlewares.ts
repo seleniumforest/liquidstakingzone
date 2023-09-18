@@ -1,7 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import NodeCache from "node-cache";
-
-export const cache = new NodeCache({ stdTTL: 60 * 5, checkperiod: 120, deleteOnExpire: true });
 
 export const caching = async (req: Request, res: Response, next: NextFunction) => {
     if (req.originalUrl === "/status")
