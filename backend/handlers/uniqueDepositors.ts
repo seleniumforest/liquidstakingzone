@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { cache } from "../cache";
+import { cache } from "../middlewares";
 import { ClickhouseResponse, client } from "../db";
 
 export type UniqueDepositorsDataRecord = {
@@ -7,7 +7,7 @@ export type UniqueDepositorsDataRecord = {
     deps: number;
 }
 
-export const uniqueDepositors = async (_: Request, res: Response) => {
+export const uniqueDepositors = async (req: Request, res: Response) => {
     let query = await client.query({
         query: `
             SELECT 
@@ -29,6 +29,6 @@ export const uniqueDepositors = async (_: Request, res: Response) => {
     let result = (await query.json()) as ClickhouseResponse<UniqueDepositorsDataRecord[]>;
     let data = result.data?.map((x: any) => ([Number(x.date), Number(x.deps)])) || [];
 
-    cache.set('/uniqueDepositors', data);
+    cache.set(req.originalUrl, data);
     res.json(data);
 }

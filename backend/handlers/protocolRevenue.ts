@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { cache } from "../cache";
+import { cache } from "../middlewares";
 import { ClickhouseResponse, client } from "../db";
 
 type ProtocolRevenueDataRecord = {
@@ -8,7 +8,7 @@ type ProtocolRevenueDataRecord = {
     restake: number
 }
 
-export const protocolRevenue = async (_: Request, res: Response) => {
+export const protocolRevenue = async (req: Request, res: Response) => {
     let sql = `
             WITH prices as (
                 SELECT coin,
@@ -81,6 +81,6 @@ export const protocolRevenue = async (_: Request, res: Response) => {
         restake: Number(x.restake)
     })) || [];
 
-    cache.set('/protocolRevenue', data)
+    cache.set(req.originalUrl, data)
     res.json(data);
 }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { supportedZones } from "../constants";
 import { getTvlData } from "./tvlByChains";
-import { cache } from "../cache";
+import { cache } from "../middlewares";
 import { getPriceDataById } from "./redemptionRates";
 import { ClickhouseResponse, client } from "../db";
 
@@ -14,7 +14,6 @@ export const generalData = async (req: Request, res: Response) => {
 
     let prices = await getPriceDataById("stride", true);
     let { mcap, vol } = await getGeneralDataFromDb();
-    console.log(mcap, vol)
     let response = {
         tvl: tvlData,
         marketCap: +mcap,
@@ -22,7 +21,7 @@ export const generalData = async (req: Request, res: Response) => {
         prices: prices.map(x => [Number(x.date), x.price])
     };
 
-    cache.set('/generalData', response);
+    cache.set(req.originalUrl, response);
     res.json(response);
 }
 

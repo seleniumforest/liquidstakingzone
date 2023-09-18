@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { cache } from "../cache";
+import { cache } from "../middlewares";
 import { Zone } from "../constants";
 import { ClickhouseResponse, client } from "../db";
 
@@ -25,6 +25,6 @@ export const assetsDeposited = async (req: Request, res: Response) => {
     
     let data = response.data?.map((x: any) => ([Number(x.date), Number(x.amount)])) || [];
 
-    cache.set('/assetsDeposited', data)
+    cache.set(req.originalUrl, data)
     res.json(data);
 }

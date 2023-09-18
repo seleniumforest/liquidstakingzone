@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { cache } from "../cache";
+import { cache } from "../middlewares";
 import { supportedZones, Zone, zones } from "../constants";
 import { ClickhouseResponse, client } from "../db";
 
@@ -13,7 +13,7 @@ type TVLDataRecord = {
     tvl: number;
 }
 
-export const tvlByChains = async (_: Request, res: Response) => {
+export const tvlByChains = async (req: Request, res: Response) => {
     let result: TVLData[] = [];
 
     await Promise.allSettled(
@@ -38,7 +38,7 @@ export const tvlByChains = async (_: Request, res: Response) => {
         data: correctZeroTvl(zoneData.data)
     }));
 
-    cache.set('/tvlByChains', data)
+    cache.set(req.originalUrl, data)
     res.json(data);
 }
 

@@ -1,27 +1,13 @@
 import express, { NextFunction, Request, Response } from "express";
-import { caching } from "./cache";
+import { caching, corsOptionsCheck, logging } from "./middlewares";
 import * as handlers from "./handlers";
 import cors from 'cors';
 import { zones } from "./constants";
 
 const app = express();
 
-const whitelist = ['https://liquidstaking.zone', 'http://localhost:3000', "https://analytics-backend.vercel.app"];
-
-const corsOptionsCheck = (req: any, callback: any) => {
-    let corsOptions;
-
-    let isDomainAllowed = whitelist.indexOf(req.header('Origin')) !== -1;
-    if (isDomainAllowed) {
-        // Enable CORS for this request
-        corsOptions = { origin: true }
-    } else {
-        // Disable CORS for this request
-        corsOptions = { origin: false }
-    }
-    callback(null, corsOptions)
-}
 app.use(cors(corsOptionsCheck));
+app.use(logging)
 
 const errHandle = async (handler: any, req: Request, res: Response, next: NextFunction) => {
     try {
@@ -31,11 +17,6 @@ const errHandle = async (handler: any, req: Request, res: Response, next: NextFu
         return res.status(500).json(e);
     }
 }
-
-app.use((req: Request, res: Response, next: NextFunction) => {
-    console.log(`${new Date()} called ${req.originalUrl}`);
-    next();
-})
 
 app.get('/activeUsers', caching, (...args) => errHandle(handlers.activeUsers, ...args));
 app.get('/assetsDeposited', caching, (...args) => errHandle(handlers.assetsDeposited, ...args));
@@ -48,7 +29,7 @@ app.get('/redemptionRates', caching, (...args) => errHandle(handlers.redemptionR
 app.get('/tvlByChains', caching, (...args) => errHandle(handlers.tvlByChains, ...args));
 app.get('/uniqueDepositors', caching, (...args) => errHandle(handlers.uniqueDepositors, ...args));
 app.get('/generalData', caching, (...args) => errHandle(handlers.generalData, ...args));
-app.get('/zonesInfo', (_, res: Response) => res.json(zones));
+app.get('/zonesInfo', caching, (_, res: Response) => res.json(zones));
 app.get('/status', (...args) => errHandle(handlers.statusPage, ...args));
 
 const server = app.listen(process.env.PORT || 8081, function () {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { cache } from "../cache";
+import { cache } from "../middlewares";
 import { Zone, zones } from "../constants";
 import { ClickhouseResponse, client } from "../db";
 
@@ -50,7 +50,7 @@ export const assetsOnStakingWallets = async (req: Request, res: Response) => {
 
     let response = (await query.json()) as ClickhouseResponse<AssetsInStakingDataRecord[]>;
     let sorted = response.data.sort((a, b) => getSortOrder(a.zone) > getSortOrder(b.zone) ? 1 : -1)
-    cache.set('/assetsOnStakingWallets', sorted)
+    cache.set(req.originalUrl, sorted)
     res.json(sorted);
 }
 

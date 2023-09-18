@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { cache } from "../cache";
+import { cache } from "../middlewares";
 import { ClickhouseResponse, client } from "../db";
 
-export const activeUsers = async (_: Request, res: Response) => {
+export const activeUsers = async (req: Request, res: Response) => {
     let query = await client.query({
         query: `
           WITH stakeUsers AS (
@@ -32,6 +32,6 @@ export const activeUsers = async (_: Request, res: Response) => {
     let response = (await query.json()) as ClickhouseResponse<{ date: string, users: number }[]>;
     let data = response.data?.map((x: any) => ([Number(x.date), Number(x.users)])) || [];
 
-    cache.set('/activeUsers', data);
+    cache.set(req.originalUrl, data);
     res.json(data);
 }
