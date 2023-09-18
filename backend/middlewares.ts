@@ -4,19 +4,16 @@ import NodeCache from "node-cache";
 export const cache = new NodeCache({ stdTTL: 60 * 5, checkperiod: 120, deleteOnExpire: true });
 
 export const caching = async (req: Request, res: Response, next: NextFunction) => {
-    let key = req.originalUrl;
-    let cached = cache.get(key);
-
-    if (cached) {
-        return res.json(cached);
-    }
+    if (req.originalUrl === "/status")
+        res.setHeader('Cache-Control', 'no-store');
+    else
+        res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
 
     next();
 }
 
 export const logging = (req: Request, res: Response, next: NextFunction) => {
-    let cached = cache.get(req.originalUrl);
-    console.log(`${new Date()} called ${req.originalUrl} ${cached ? "cached" : "not cached"}`);
+    console.log(`${new Date()} called ${req.originalUrl}`);
     next();
 }
 

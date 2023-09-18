@@ -7,7 +7,8 @@ import { zones } from "./constants";
 const app = express();
 
 app.use(cors(corsOptionsCheck));
-app.use(logging)
+app.use(caching);
+app.use(logging);
 
 const errHandle = async (handler: any, req: Request, res: Response, next: NextFunction) => {
     try {
@@ -18,18 +19,18 @@ const errHandle = async (handler: any, req: Request, res: Response, next: NextFu
     }
 }
 
-app.get('/activeUsers', caching, (...args) => errHandle(handlers.activeUsers, ...args));
-app.get('/assetsDeposited', caching, (...args) => errHandle(handlers.assetsDeposited, ...args));
-app.get('/assetsOnStakingWallets', caching, (...args) => errHandle(handlers.assetsOnStakingWallets, ...args));
-app.get('/assetsRedeemed', caching, (...args) => errHandle(handlers.assetsRedeemed, ...args));
-app.get('/depositorsVolume', caching, (...args) => errHandle(handlers.depositorsVolume, ...args));
-app.get('/latestEvents', caching, (...args) => errHandle(handlers.latestEvents, ...args));
-app.get('/protocolRevenue', caching, (...args) => errHandle(handlers.protocolRevenue, ...args));
-app.get('/redemptionRates', caching, (...args) => errHandle(handlers.redemptionRates, ...args));
-app.get('/tvlByChains', caching, (...args) => errHandle(handlers.tvlByChains, ...args));
-app.get('/uniqueDepositors', caching, (...args) => errHandle(handlers.uniqueDepositors, ...args));
-app.get('/generalData', caching, (...args) => errHandle(handlers.generalData, ...args));
-app.get('/zonesInfo', caching, (_, res: Response) => res.json(zones));
+app.get('/activeUsers', (...args) => errHandle(handlers.activeUsers, ...args));
+app.get('/assetsDeposited', (...args) => errHandle(handlers.assetsDeposited, ...args));
+app.get('/assetsOnStakingWallets', (...args) => errHandle(handlers.assetsOnStakingWallets, ...args));
+app.get('/assetsRedeemed', (...args) => errHandle(handlers.assetsRedeemed, ...args));
+app.get('/depositorsVolume', (...args) => errHandle(handlers.depositorsVolume, ...args));
+app.get('/latestEvents', (...args) => errHandle(handlers.latestEvents, ...args));
+app.get('/protocolRevenue', (...args) => errHandle(handlers.protocolRevenue, ...args));
+app.get('/redemptionRates', (...args) => errHandle(handlers.redemptionRates, ...args));
+app.get('/tvlByChains', (...args) => errHandle(handlers.tvlByChains, ...args));
+app.get('/uniqueDepositors', (...args) => errHandle(handlers.uniqueDepositors, ...args));
+app.get('/generalData', (...args) => errHandle(handlers.generalData, ...args));
+app.get('/zonesInfo', (_, res: Response) => res.json(zones));
 app.get('/status', (...args) => errHandle(handlers.statusPage, ...args));
 
 const server = app.listen(process.env.PORT || 8081, function () {
