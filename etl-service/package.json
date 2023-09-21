@@ -5,7 +5,7 @@
   "typings": "./build/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "deploydb": "clickhouse-client --multiquery < scripts/deploy.sql",
+    "deploydb": "ts-node scripts/deploy.ts",
     "compile": "tsc"
   },
   "dependencies": {
@@ -30,6 +30,7 @@
     "node-cache": "^5.1.2",
     "node-cron": "^3.0.2",
     "osmojs": "^14.0.0-rc.0",
+    "shelljs": "^0.8.5",
     "stridejs": "0.8.0-alpha.5",
     "stridejsold": "npm:stridejs@0.4.1",
     "ts-node": "^10.9.1",
@@ -39,13 +40,14 @@
     "yargs": "^17.5.1"
   },
   "devDependencies": {
-    "@types/big.js": "^6.1.6",
-    "@types/yargs": "^17.0.14",
     "@types/axios": "^0.14.0",
+    "@types/big.js": "^6.1.6",
     "@types/coingecko-api": "^1.0.10",
     "@types/node": "^18.7.18",
     "@types/node-cron": "^3.0.7",
+    "@types/shelljs": "^0.8.12",
     "@types/uuid": "^9.0.0",
-    "@types/write": "^2.0.1"
+    "@types/write": "^2.0.1",
+    "@types/yargs": "^17.0.14"
   }
 }

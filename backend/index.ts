@@ -1,5 +1,5 @@
-import express, { NextFunction, Request, Response } from "express";
-import { caching, corsOptionsCheck, logging } from "./middlewares";
+import express, { Response } from "express";
+import { caching, corsOptionsCheck, errHandle, logging } from "./middlewares";
 import * as handlers from "./handlers";
 import cors from 'cors';
 import { zones } from "./constants";
@@ -9,15 +9,6 @@ const app = express();
 app.use(cors(corsOptionsCheck));
 app.use(caching);
 app.use(logging);
-
-const errHandle = async (handler: any, req: Request, res: Response, next: NextFunction) => {
-    try {
-        return await handler(req, res, next);
-    } catch (e: any) {
-        console.log(e?.message);
-        return res.status(500).json(e);
-    }
-}
 
 app.get('/activeUsers', (...args) => errHandle(handlers.activeUsers, ...args));
 app.get('/assetsDeposited', (...args) => errHandle(handlers.assetsDeposited, ...args));

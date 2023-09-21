@@ -5,6 +5,20 @@ import { getPriceDataById } from "./redemptionRates";
 import { ClickhouseResponse, client } from "../db";
 
 export const generalData = async (_: Request, res: Response) => {
+    async function getGeneralDataFromDb() {
+        let query = await client.query({
+            query: `
+                SELECT TOP 1 * 
+                FROM Stride.general_data
+                ORDER BY date desc
+            `
+        });
+    
+        let response = (await query.json()) as ClickhouseResponse<{mcap: number, vol: number}[]>;
+    
+        return response.data[0];
+    }
+    
     let tvlData = 0;
 
     for (const zone of supportedZones) {
@@ -21,18 +35,4 @@ export const generalData = async (_: Request, res: Response) => {
     };
 
     res.json(response);
-}
-
-async function getGeneralDataFromDb() {
-    let query = await client.query({
-        query: `
-            SELECT TOP 1 * 
-            FROM Stride.general_data
-            ORDER BY date desc
-        `
-    });
-
-    let response = (await query.json()) as ClickhouseResponse<{mcap: number, vol: number}[]>;
-
-    return response.data[0];
 }

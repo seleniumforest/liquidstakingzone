@@ -2,58 +2,29 @@ import { Request, Response } from "express";
 import { Zone, zones } from "../constants";
 import { ClickhouseResponse, client } from "../db";
 
-type RedemptionRateDataRecord = {
-    date: number,
-    rate: number,
-    price: number
-}
-
-const findClosestDate = (data: { date: number, price: number }[], target: number) => {
-    let sorted = data.sort((a, b) => Math.abs(a.date - target) > Math.abs(b.date - target) ? 1 : -1);
-
-    return sorted[0];
-}
-
 export const redemptionRates = async (req: Request, res: Response) => {
-    let zone = req.query.zone as Zone;
-    let rates = await getRedemptionRatesData(zone);
-    let prices = await getPriceData(zone, false);
+    type RedemptionRateDataRecord = {
+        date: number,
+        rate: number,
+        price: number
+    }
+    
+    let zoneInfo = zones.find(x => x.zone === req.query.zone);
+    if (!zoneInfo) {
+        res.status(400);
+        return res.json(`Zone ${req.query.zone} doesnt exist`);
+    }
 
-    let merged = rates.map(r => ({
-        date: Number(r.date),
-        rate: r.rate,
-        price: findClosestDate(prices, r.date)?.price || 1
-    }));
-
-    //do not show last element if price still not indexed
-    if (merged[merged.length - 1].price === 1)
-        merged = merged.slice(0, merged.length - 1);
-
-    res.json(merged);
-}
-
-const getRedemptionRatesData = async (zone: string): Promise<RedemptionRateDataRecord[]> => {
     let query = await client.query({
-        query: `
-            SELECT 
-                dt as date, 
-                AVG(rate) as rate
-            FROM (
-                SELECT  
-                    toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) * 1000 AS dt,
-                    toUInt256(amount.2) / toUInt256(recievedStTokenAmount.2) as rate
-                FROM Stride.msgs_MsgLiquidStake
-                WHERE zone = '${zone}' AND txcode = 0 and amount.2 > 1000
-                ORDER BY date
-            )
-            GROUP BY dt
-            ORDER BY dt     
-        `
+        query: `SELECT * FROM redemption_rates_and_prices(zone_name='${zoneInfo.zone}')`
     });
 
     let response = (await query.json()) as ClickhouseResponse<RedemptionRateDataRecord[]>;
-    return response.data;
-};
+    res.json(response.data.map(el => ({
+        ...el,
+        date: Number(el.date)
+    })));
+}
 
 export type PriceData = {
     date: number,

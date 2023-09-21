@@ -1,10 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 
 export const caching = async (req: Request, res: Response, next: NextFunction) => {
-    if (req.originalUrl === "/status")
-        res.setHeader('Cache-Control', 'no-store');
-    else
-        res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
+    let isLocalhost = req.header('Origin')?.indexOf("http://localhost")! < 1;
+
+    if (!isLocalhost) {
+        if (req.originalUrl === "/status")
+            res.setHeader('Cache-Control', 'no-store');
+        else
+            res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
+    }
 
     next();
 }
@@ -14,18 +18,21 @@ export const logging = (req: Request, res: Response, next: NextFunction) => {
     next();
 }
 
-const whitelist = ['https://liquidstaking.zone', 'http://localhost:3000', "https://analytics-backend.vercel.app"];
-
 export const corsOptionsCheck = (req: any, callback: any) => {
-    let corsOptions;
+    let isDomainAllowed = [
+        'https://liquidstaking.zone',
+        'http://localhost:3000',
+        "https://analytics-backend.vercel.app"
+    ].indexOf(req.header('Origin')) !== -1;
 
-    let isDomainAllowed = whitelist.indexOf(req.header('Origin')) !== -1;
-    if (isDomainAllowed) {
-        // Enable CORS for this request
-        corsOptions = { origin: true }
-    } else {
-        // Disable CORS for this request
-        corsOptions = { origin: false }
+    callback(null, { origin: isDomainAllowed })
+}
+
+export const errHandle = async (handler: any, req: Request, res: Response, next: NextFunction) => {
+    try {
+        return await handler(req, res, next);
+    } catch (err: any) {
+        console.log(err?.message || err);
+        return res.status(500).json(err);
     }
-    callback(null, corsOptions)
 }
