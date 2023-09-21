@@ -13,10 +13,13 @@ const processBlock = async (block: Block) => {
 (async () => {
     let lastKnownBlock = Number(await prepareDbToWrite());
     let startBlock = lastKnownBlock > 0 ? lastKnownBlock : 1;
+    let customRpcs = JSON.parse((process.env.CUSTOM_RPCS || []) as string);
+
+    console.log(`Starting indexer from block ${startBlock} with custom rpcs ${customRpcs}`);
 
     await BlocksWatcher
         .create()
-        .addNetwork({ name: "stride", fromBlock: startBlock, rpcUrls:["https://stride-rpc.quantnode.tech/"] })
+        .addNetwork({ name: "stride", fromBlock: startBlock, rpcUrls: customRpcs })
         .useBatchFetching(3)
         .onRecieve(async (block) => await processBlock(block))
         .run()
