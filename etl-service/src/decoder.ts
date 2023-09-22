@@ -1,4 +1,3 @@
-import { Block } from "./externalServices/tendermint/index";
 import { decodePubkey, decodeTxRaw } from "@cosmjs/proto-signing";
 import { apiToSmallInt, tryParseJson } from './helpers';
 import { AuthInfo, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
@@ -6,6 +5,8 @@ import { fromBase64, fromBech32 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
 import { stride041Registry, strideLatestRegistry, strideMixedRegistry, universalRegistry } from "./constants";
 import Big from "big.js";
+import { IndexedBlock } from "cosmos-indexer";
+import { Block } from "@cosmjs/stargate";
 
 //<KEKW>
 const decodeMsg = (msg: any) => {
@@ -39,15 +40,15 @@ const validateMsg = (type: string, msg: any) => {
 }
 //</KEKW>
 
-export const decodeTxs = (block: Block, prefix: string = "stride"): DecodedBlock => {
+export const decodeTxs = (block: IndexedBlock, prefix: string = "stride"): DecodedBlock => {
     let decodedTxs: DecodedTx[] = block?.txs.map(tx => {
-        let decodedTx = decodeTxRaw(Buffer.from(fromBase64(tx.tx || "")));
+        let decodedTx = decodeTxRaw(tx.tx);
         let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, prefix);
 
         decodedTx.body.messages = decodedTx.body.messages.map(msg => {
             let decodedMsg = decodeMsg(msg);
             if (!decodedMsg)
-                console.warn(`Cannot decode msgType ${msg.typeUrl} in block ${block.height}`)
+                console.warn(`Cannot decode msgType ${msg.typeUrl} in block ${block.header.height}`)
 
             return {
                 typeUrl: msg.typeUrl,
@@ -58,18 +59,24 @@ export const decodeTxs = (block: Block, prefix: string = "stride"): DecodedBlock
         });;
 
         let result: DecodedTx = {
-            ...tx,
+            height: tx.height.toString(),
+            hash: tx.hash,
+            tx: new TextDecoder().decode(tx.tx),
+            index: tx.txIndex,
             sender: senderAddr,
-            date: block.date,
+            date: Date.parse(block.header.time),
             tx_result: {
-                ...tx.tx_result,
+                ...tx.tx,
                 data: decodedTx,
-                events: tx.tx_result.events.map(ev => ({
+                events: tx.events.map(ev => ({
                     type: ev.type,
-                    attributes: ev.attributes
+                    attributes: ev.attributes.map(x => ({
+                        key: x.key,
+                        value: x.value
+                    }))
                 })),
-                code: apiToSmallInt(tx.tx_result.code),
-                log: tryParseJson<EventLog>(tx.tx_result.log) || []
+                code: tx.code,
+                log: tryParseJson<EventLog>(tx.rawLog) || []
             }
         }
 
@@ -102,8 +109,8 @@ export interface DecodedBlock extends Omit<Block, "txs"> {
 export type EventLog = {
     type: string,
     attributes: {
-        key?: string,
-        value?: string
+        key: string,
+        value: string
     }[]
 }[];
 

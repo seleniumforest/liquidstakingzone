@@ -17,6 +17,7 @@
     "@cosmjs/stargate": "^0.29.5",
     "@cosmjs/tendermint-rpc": "^0.29.5",
     "@protobufs/cosmos": "^0.1.0",
+    "cosmos-indexer": "https://github.com/seleniumforest/cosmos-indexer",
     "axios": "^0.27.2",
     "big.js": "^6.2.1",
     "chain-registry": "1.15.0",

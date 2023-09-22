@@ -6,19 +6,23 @@ export const insertBlock = async (block: DecodedBlock) => {
     try {
         //insert block header
         if (block.header)
-            await insertData("block_headers", block.header)
+            await insertData("block_headers", {
+                height: block.header.height,
+                hash: block.id,
+                date: Date.parse(block.header.time),
+                chainId: block.header.chainId
+            })
 
 
         let knownMsgsCount = 0;
         let unknownMsgsCount = 0;
         if (block.txs.length > 0) {
             await insertData('transactions', block.txs.map(tx => ({
-                height: block.height,
+                height: block.header.height,
                 txhash: tx.hash,
                 sender: tx.sender,
                 code: tx.tx_result.code,
-                date: block.date,
-                rawdata: JSON.stringify(tx)
+                date: Date.parse(block.header.time)
             })))
 
             //insert each msg
@@ -37,7 +41,7 @@ export const insertBlock = async (block: DecodedBlock) => {
                 }
             };
         }
-        console.log(`Saved block ${block.height} with total ${block.txs.length} transactions, ${knownMsgsCount} known messages, ${unknownMsgsCount} unknown`)
+        console.log(`Saved block ${block.header.height} with total ${block.txs.length} transactions, ${knownMsgsCount} known messages, ${unknownMsgsCount} unknown`)
     } catch (e: any) {
         console.log(e)
     }
@@ -73,7 +77,7 @@ export const getLastBlock = async (): Promise<{ height: number, hashes: string[]
 
 //In the case of indexer crashes on block n, we need to clean this block data to aviod inconsistency
 //returns block height to conwinue process with.
-export const prepareDbToWrite = async () : Promise<number> => {
+export const prepareDbToWrite = async (): Promise<number> => {
     let lastBlock = await getLastBlock();
     if (lastBlock.height === 0)
         return 0;
