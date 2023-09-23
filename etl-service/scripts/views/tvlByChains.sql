@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW tvl_by_chains AS WITH deposited as (
+CREATE OR REPLACE VIEW Stride.tvl_by_chains AS WITH deposited as (
         SELECT dt as date,
             SUM(am) OVER(
                 ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW

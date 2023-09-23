@@ -9,7 +9,7 @@ export const insertBlock = async (block: DecodedBlock) => {
             await insertData("block_headers", {
                 height: block.header.height,
                 hash: block.id,
-                date: Date.parse(block.header.time),
+                date: Math.round(Date.parse(block.header.time) / 1000),
                 chainId: block.header.chainId
             })
 
@@ -22,7 +22,7 @@ export const insertBlock = async (block: DecodedBlock) => {
                 txhash: tx.hash,
                 sender: tx.sender,
                 code: tx.tx_result.code,
-                date: Date.parse(block.header.time)
+                date: Math.round(Date.parse(block.header.time) / 1000)
             })))
 
             //insert each msg

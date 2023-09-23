@@ -7,7 +7,8 @@ async function exec(file: string) {
     let query = `clickhouse-client --multiquery < ${file} `;
     if (process.env.CLICKHOUSE_PASS)
         query += `--user ${process.env.CLICKHOUSE_USER} --password ${process.env.CLICKHOUSE_PASS}`;
-    
+
+    console.log(query);
     return shell.exec(query);
 }
 

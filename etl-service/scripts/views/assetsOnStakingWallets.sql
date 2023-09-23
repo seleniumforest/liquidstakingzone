@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW assets_on_staking_wallets as WITH latestData as (
+CREATE OR REPLACE VIEW Stride.assets_on_staking_wallets as WITH latestData as (
     SELECT *
     from Stride.account_balances_history a2
         JOIN (

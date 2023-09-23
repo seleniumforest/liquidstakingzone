@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW assets_deposited AS
+CREATE OR REPLACE VIEW Stride.assets_deposited AS
 SELECT toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) * 1000 as date,
     floor(
         SUM(am) / pow(

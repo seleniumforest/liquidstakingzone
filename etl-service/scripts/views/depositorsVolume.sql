@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW depositors_volume AS WITH ranges as (
+CREATE OR REPLACE VIEW Stride.depositors_volume AS WITH ranges as (
         SELECT (0, 10) AS range
         UNION ALL
         SELECT (10, 100) AS range

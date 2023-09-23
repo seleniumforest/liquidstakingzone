@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW active_users as WITH stakeUsers AS (
+CREATE OR REPLACE VIEW Stride.active_users as WITH stakeUsers AS (
     SELECT toStartOfDay(toDateTime64(date, 3, 'Etc/UTC')) as dt,
         COUNT(DISTINCT creator) as users
     FROM Stride.msgs_MsgLiquidStake

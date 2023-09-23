@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW latest_events AS WITH priceData AS (
+CREATE OR REPLACE VIEW Stride.latest_events AS WITH priceData AS (
         SELECT zi.zone as zone,
             price
         FROM (

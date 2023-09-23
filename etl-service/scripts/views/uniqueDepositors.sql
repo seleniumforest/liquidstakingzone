@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW unique_depositors AS
+CREATE OR REPLACE VIEW Stride.unique_depositors AS
 SELECT dt * 1000 as date,
     MAX(deps) as deps
 FROM (

@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW protocol_revenue AS WITH prices as (
+CREATE OR REPLACE VIEW Stride.protocol_revenue AS WITH prices as (
         SELECT coin,
             toUnixTimestamp(startOfDay) * 1000 as date,
             avg(price) AS price

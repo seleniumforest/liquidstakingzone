@@ -8,7 +8,7 @@ export const redemptionRates = async (req: Request, res: Response) => {
         rate: number,
         price: number
     }
-    
+
     let zoneInfo = zones.find(x => x.zone === req.query.zone);
     if (!zoneInfo) {
         res.status(400);

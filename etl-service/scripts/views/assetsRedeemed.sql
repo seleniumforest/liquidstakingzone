@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW assets_deposited AS WITH redeems as (
+CREATE OR REPLACE VIEW Stride.assets_redeemed AS WITH redeems as (
         SELECT toUnixTimestamp(toStartOfDay(toDateTime64(date, 3, 'Etc/UTC'))) as date,
             SUM(am) as amount
         FROM (

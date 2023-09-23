@@ -64,7 +64,7 @@ export const decodeTxs = (block: IndexedBlock, prefix: string = "stride"): Decod
             tx: new TextDecoder().decode(tx.tx),
             index: tx.txIndex,
             sender: senderAddr,
-            date: Date.parse(block.header.time),
+            date: Math.round(Date.parse(block.header.time) / 1000),
             tx_result: {
                 ...tx.tx,
                 data: decodedTx,
