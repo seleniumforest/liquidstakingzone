@@ -20,7 +20,7 @@ const processBlock = async (block: IndexedBlock) => {
 
     await BlocksWatcher
         .create()
-        .addNetwork({ name: "stride", fromBlock: 5543616, rpcUrls: customRpcs, dataToFetch: "INDEXED_TXS" })
+        .addNetwork({ name: "stride", fromBlock: startBlock, rpcUrls: customRpcs, dataToFetch: "INDEXED_TXS" })
         .useBatchFetching(5)
         .useChainRegistryRpcs()
         .onBlockRecieved(async (_ctx, block) => await processBlock(block as IndexedBlock))
