@@ -37,7 +37,7 @@ function Footer() {
         <div className={styles.footer}>
             <div style={{ flexGrow: 4 }} />
             © 2023, ❤️ Proudly built by
-            <a href="https://twitter.com/LetsCodeWeb3" target="_blank" rel="noreferrer">
+            <a href="https://web3engineering.co.uk/" target="_blank" rel="noreferrer">
                 <img src='/img/letscode-logo.png' alt={`Let's Code`} />
             </a>
             <span>X</span>
