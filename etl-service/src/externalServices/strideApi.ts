@@ -60,7 +60,7 @@ export interface UserRedemptionRecord {
     id: string,
     sender: string,
     receiver: string,
-    amount: string
+    st_token_amount: string
     denom: string,
     host_zone_id: string,
     epoch_number: number,

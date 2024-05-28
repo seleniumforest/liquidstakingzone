@@ -38,7 +38,7 @@ export const externalAccountsCheckerJob = async () => {
             let redemeptionRecodsForZone = redemeptionRecods!
                 .filter(x => x.denom === zone.hostDenom && x.claim_is_pending === false);
             let redemptedAmount = redemeptionRecodsForZone
-                .reduce((prev, cur) => prev.add(cur.amount), Big(0));
+                .reduce((prev, cur) => prev.add(cur.st_token_amount), Big(0));
 
             let sum = Big(staked?.amount!)
                 .plus(Big(balance?.amount!))
