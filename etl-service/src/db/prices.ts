@@ -15,11 +15,12 @@ export const getPrices = async (vsStTokens: boolean): Promise<{ coin: string, la
     });
 
     let res = await response.json<ClickhouseResponse<{ coin: string, latestDate: number }[]>>();
-
-    return res.data.map(x => ({
-        coin: x.coin,
-        latestDate: +x.latestDate
-    }));
+    debugger;
+    return [];
+    // return res.data.map(x => ({
+    //     coin: x.data,
+    //     latestDate: +x.latestDate
+    // }));
 }
 
 export const insertPrices = async (prices: Price[]) => {

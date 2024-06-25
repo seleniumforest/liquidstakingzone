@@ -28,7 +28,7 @@ const composeMixedRegistry = () => {
         ["/Stridelabs.stride.stakeibc.MsgCreateAirdrop", "/stride.stakeibc.MsgCreateAirdrop"],
         ["/Stridelabs.stride.stakeibc.MsgDeleteAirdrop", "/stride.stakeibc.MsgDeleteAirdrop"],
         ["/stride.interchainquery.MsgSubmitQueryResponse", "/stride.interchainquery.v1.MsgSubmitQueryResponse"]
-      //  '/stride.interchainquery.v1.MsgSubmitQueryResponse'
+        //  '/stride.interchainquery.v1.MsgSubmitQueryResponse'
     ];
 
     remappedTypes.forEach(([oldTypeUrl, newTypeUrl]) => {
@@ -45,20 +45,21 @@ export const strideMixedRegistry = composeMixedRegistry();
 export const stride041Registry = new CosmjsRegistry(strideOldProtoRegistry);
 export const strideLatestRegistry = new CosmjsRegistry(strideProtoRegistry as [string, GeneratedType][]);
 export const universalRegistry = new CosmjsRegistry([
-    ...cosmosProtoRegistry, 
-    ...strideProtoRegistry as [string, GeneratedType][], 
+    ...cosmosProtoRegistry,
+    ...strideProtoRegistry as [string, GeneratedType][],
     ...ibcProtoRegistry
 ]);
 
 export type Registry = CosmjsRegistry | StrideRegistry
-export type Zone = "cosmos" | "stars" | "osmo" | "juno" | "terra" | "evmos" | "inj" | "scrt" | "umee" | "comdex" | "somm";
+export type Zone = "cosmos" | "stars" | "osmo" | "juno" | "terra" | "evmos" |
+    "inj" | "scrt" | "umee" | "comdex" | "somm" | "dydx" | "saga" | "dym" | "tia";
 
 export type ZoneInfo = {
     zone: Zone,
     decimals: number,
     coingeckoId: string,
     stAssetPool?: number,
-    denom: string, 
+    denom: string,
     stDenom: string,
     registryName: string,
     ticker?: string,
@@ -174,6 +175,46 @@ export const zones: ZoneInfo[] = [
         stDenom: "stusomm",
         registryName: "sommelier",
         stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("somm", from)
+    },
+    {
+        zone: "dydx",
+        decimals: 18,
+        coingeckoId: "dydx-chain",
+        stAssetPool: 1423,
+        denom: "adydx",
+        stDenom: "stadydx",
+        registryName: "dydx",
+        stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("dydx", from)
+    },
+    {
+        zone: "saga",
+        decimals: 6,
+        coingeckoId: "saga-2",
+        stAssetPool: 1674,
+        denom: "usaga",
+        stDenom: "stusaga",
+        registryName: "saga",
+        stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("saga", from)
+    },
+    {
+        zone: "dym",
+        decimals: 18,
+        coingeckoId: "dymension",
+        stAssetPool: 1566,
+        denom: "adym",
+        stDenom: "stadym",
+        registryName: "dymension",
+        stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("dym", from)
+    },
+    {
+        zone: "tia",
+        decimals: 6,
+        coingeckoId: "celestia",
+        stAssetPool: 1428,
+        denom: "utia",
+        stDenom: "stutia",
+        registryName: "celestia",
+        stAssetPriceFetchFn: async (from) => getStAssetPriceHistory("dym", from)
     }
 ]
 

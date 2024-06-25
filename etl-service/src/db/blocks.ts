@@ -1,8 +1,9 @@
+import { BlocksWatcherContext, IndexedBlock } from 'cosmos-indexer';
 import { DecodedBlock } from '../decoder';
 import { msgsMap } from '../messages';
 import { client, insertData } from './';
 
-export const insertBlock = async (block: DecodedBlock) => {
+export const insertBlock = async (ctx: BlocksWatcherContext, block: DecodedBlock) => {
     try {
         //insert block header
         if (block.header)

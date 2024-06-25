@@ -5,7 +5,7 @@ import { fromBase64, fromBech32 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
 import { stride041Registry, strideLatestRegistry, strideMixedRegistry, universalRegistry } from "./constants";
 import Big from "big.js";
-import { IndexedBlock } from "cosmos-indexer";
+import { BlocksWatcherContext, IndexedBlock, IndexerBlock } from "cosmos-indexer";
 import { Block } from "@cosmjs/stargate";
 
 //<KEKW>
@@ -40,10 +40,10 @@ const validateMsg = (type: string, msg: any) => {
 }
 //</KEKW>
 
-export const decodeTxs = (block: IndexedBlock, prefix: string = "stride"): DecodedBlock => {
+export const decodeTxs = (ctx: BlocksWatcherContext, block: IndexedBlock): DecodedBlock => {
     let decodedTxs: DecodedTx[] = block?.txs.map(tx => {
         let decodedTx = decodeTxRaw(tx.tx);
-        let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, prefix);
+        let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, "stride");
 
         decodedTx.body.messages = decodedTx.body.messages.map(msg => {
             let decodedMsg = decodeMsg(msg);

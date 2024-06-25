@@ -1,14 +1,13 @@
-import { BlocksWatcher, IndexedBlock } from 'cosmos-indexer';
-import * as dotenv from 'dotenv';
+import { BlocksWatcher, BlocksWatcherContext, IndexedBlock, IndexerBlock } from 'cosmos-indexer';
 import { insertBlock, prepareDbToWrite } from '../db/';
 import { decodeTxs } from '../decoder';
 import { tryParseJson } from '../helpers';
-dotenv.config();
 
-const processBlock = async (block: IndexedBlock) => {
-    let blockData = decodeTxs(block);
+const processBlock = async (ctx: BlocksWatcherContext, b: IndexerBlock) => {
+    let block = b as IndexedBlock;
+    let blockData = decodeTxs(ctx, block);
     if (blockData && blockData.header)
-        await insertBlock(blockData);
+        await insertBlock(ctx, blockData);
 }
 
 (async () => {
@@ -20,9 +19,14 @@ const processBlock = async (block: IndexedBlock) => {
 
     await BlocksWatcher
         .create()
-        .addNetwork({ name: "stride", fromBlock: startBlock, rpcUrls: customRpcs, dataToFetch: "INDEXED_TXS" })
+        .useNetwork({
+            name: "stride",
+            //fromBlock: startBlock,
+            rpcUrls: customRpcs,
+            dataToFetch: "INDEXED_TXS",
+            onDataRecievedCallback: processBlock,
+        })
         .useBatchFetching(5)
         .useChainRegistryRpcs()
-        .onBlockRecieved(async (_ctx, block) => await processBlock(block as IndexedBlock))
         .run()
 })();

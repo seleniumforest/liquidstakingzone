@@ -22,7 +22,8 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/etl-service/src/jobs/fetchBlocksJob.ts",
-            "runtimeExecutable": "ts-node"
+            "runtimeExecutable": "ts-node",
+            "envFile": "${workspaceFolder}/etl-service/.env"
         },
         {
             "type": "node",

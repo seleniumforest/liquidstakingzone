@@ -18,4 +18,12 @@ SELECT 'inj', 18, 'injective-protocol'
 UNION ALL
 SELECT 'scrt', 6, 'secret'
 UNION ALL
-SELECT 'umee', 6, 'umee';
+SELECT 'umee', 6, 'umee'
+UNION ALL
+SELECT 'tia', 6, 'celestia'
+UNION ALL
+SELECT 'dym', 6, 'dymension'
+UNION ALL
+SELECT 'saga', 6, 'saga-2'
+UNION ALL
+SELECT 'dydx', 6, 'dydx-chain'

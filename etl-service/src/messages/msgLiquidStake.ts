@@ -14,7 +14,7 @@ export interface msgLiquidStake extends msgData {
 }
 
 export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any): Promise<void> => {
-    let recievedStToken = getRecievedStAmountFromEvents(tx.tx_result.events);
+    let recievedStToken = parseCoin(getValueByTwoKeys(tx.tx_result.events, "coinbase", "amount"))
     let amount: CoinTuple = [msg.hostDenom, (msg.amount as Long).toString()];
     let redemptionRate = Number(amount[1]) / Number(recievedStToken[1]);
 
@@ -54,8 +54,4 @@ export const insertRedemptionRate = async (txdate: number, rate: number, zone: s
         redemptionRate: rate,
         zone: zone
     });
-}
-
-const getRecievedStAmountFromEvents = (events: EventLog) => {
-    return parseCoin(getValueByTwoKeys(events, "coinbase", "amount"))
 }

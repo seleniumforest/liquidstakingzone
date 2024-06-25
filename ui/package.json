@@ -6,7 +6,6 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@reduxjs/toolkit": "^1.9.3",
-    "dotenv": "^16.0.3",
     "highcharts": "^10.3.3",
     "highcharts-react-official": "^3.2.0",
     "moment": "^2.29.4",

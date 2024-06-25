@@ -21,7 +21,7 @@ export const externalAccountsCheckerJob = async () => {
     for (const zone of zoneInfo) {
         try {
             let name = prefixToRegistryName(zone.prefix);
-            let zoneEndpoints = await NetworkManager.create({ name }, true, 60 * 1000 * 10);
+            let zoneEndpoints = await NetworkManager.create({ name: name } as any, true, 60 * 1000 * 10);
 
             let rpcs = zoneEndpoints.getClients().map(x => x.rpcUrl);
             if (rpcs.length === 0) {

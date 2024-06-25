@@ -1,7 +1,5 @@
 import shell from 'shelljs';
 import path from "path";
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 async function exec(file: string) {
     let query = `clickhouse-client --multiquery < ${file} `;
