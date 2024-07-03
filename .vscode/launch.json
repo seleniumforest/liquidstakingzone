@@ -33,7 +33,8 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/etl-service/src/jobs/priceUpdateJob.ts",
-            "runtimeExecutable": "ts-node"
+            "runtimeExecutable": "ts-node",
+            "envFile": "${workspaceFolder}/etl-service/.env"
         },
         {
             "type": "node",
@@ -43,7 +44,8 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/etl-service/src/jobs/externalAccountsCheckerJob.ts",
-            "runtimeExecutable": "ts-node"
+            "runtimeExecutable": "ts-node",
+            "envFile": "${workspaceFolder}/etl-service/.env"
         }
     ]
 }

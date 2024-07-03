@@ -1,11 +1,12 @@
-import { fromBase64 } from '@cosmjs/encoding';
+import { fromBase64, fromBech32 } from '@cosmjs/encoding';
 import { Coin } from '@cosmjs/proto-signing';
-import { insertData, isFeeTxExist } from '../db/';
 import { DecodedTx } from "../decoder";
 import { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { getFeeFromEvents, getZoneFromAddress } from '../helpers';
+import { getFeeFromEvents } from '../helpers';
 import { fetchZonesInfo } from '../externalServices/strideApi';
 import { universalRegistry } from '../constants';
+import { prisma } from '../db';
+import { getBaseTxData } from '.';
 
 export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise<void> => {
     //icacontroller-cosmoshub-4.WITHDRAWAL
@@ -24,7 +25,7 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
         .filter(x => x.typeUrl === "/cosmos.bank.v1beta1.MsgSend")
         .map(x => universalRegistry.decode({ typeUrl: x.typeUrl, value: x.value }))
         .map(decoded => {
-            let zone = getZoneFromAddress(decoded.toAddress);
+            let zone = fromBech32(decoded.toAddress).prefix
             let zoneConfig = hostZonesConfig.find(x => x.zone === zone);
             let type = "";
 
@@ -34,11 +35,7 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
                 type = "fee";
 
             return {
-                txhash: tx.hash,
-                height: tx.height,
-                sender: tx.sender,
-                code: tx.tx_result.code,
-                fee: getFeeFromEvents(tx.tx_result.events),
+                ...getBaseTxData(tx),
                 zone: zone,
                 fromAddress: decoded.fromAddress,
                 sequence: Number(msg.packet.sequence.toString()),
@@ -60,10 +57,35 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
 
     for (const sendMsg of sendMsgs) {
         //there's multiple versions of same tx on blockchains, from different relayers
-        let isExists = await isFeeTxExist(sendMsg.zone, sendMsg.sequence, sendMsg.type);
-        if (isExists)
-            continue;
+        //let isExists = await isFeeTxExist(sendMsg.zone, sendMsg.sequence, sendMsg.type);
+        let isFeeTxExist = await prisma.zonesRestake.findUnique({
+            where: {
+                zone_sequence_type: {
+                    zone: sendMsg.zone,
+                    sequence: sendMsg.sequence,
+                    type: sendMsg.type
+                }
+            }
+        });
 
-        await insertData("zones_restakes", sendMsg);
+        if (isFeeTxExist != null)
+            continue;
+        await prisma.zonesRestake.upsert({
+            where: {
+                zone_sequence_type: {
+                    zone: sendMsg.zone,
+                    sequence: sendMsg.sequence,
+                    type: sendMsg.type
+                }
+            },
+            create: {
+                ...sendMsg,
+                height: +tx.height,
+                sender: tx.sender,
+                amountAmount: sendMsg.amount[1],
+                amountDenom: sendMsg.amount[0]
+            },
+            update: {}
+        });
     }
 }

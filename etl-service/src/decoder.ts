@@ -1,11 +1,11 @@
 import { decodePubkey, decodeTxRaw } from "@cosmjs/proto-signing";
-import { apiToSmallInt, tryParseJson } from './helpers';
+import { tryParseJson } from './helpers';
 import { AuthInfo, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { fromBase64, fromBech32 } from "@cosmjs/encoding";
+import { fromBech32 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
 import { stride041Registry, strideLatestRegistry, strideMixedRegistry, universalRegistry } from "./constants";
 import Big from "big.js";
-import { BlocksWatcherContext, IndexedBlock, IndexerBlock } from "cosmos-indexer";
+import { BlocksWatcherContext, IndexedBlock } from "cosmos-indexer";
 import { Block } from "@cosmjs/stargate";
 
 //<KEKW>
@@ -64,7 +64,7 @@ export const decodeTxs = (ctx: BlocksWatcherContext, block: IndexedBlock): Decod
             tx: new TextDecoder().decode(tx.tx),
             index: tx.txIndex,
             sender: senderAddr,
-            date: Math.round(Date.parse(block.header.time) / 1000),
+            date: Date.parse(block.header.time),
             tx_result: {
                 ...tx.tx,
                 data: decodedTx,
@@ -117,7 +117,7 @@ export type EventLog = {
 export interface DecodedTx {
     tx?: string;
     sender: string,
-    date?: number,
+    date: number,
     tx_result: {
         code: number;
         log: EventLog;

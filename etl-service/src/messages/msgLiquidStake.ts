@@ -1,57 +1,34 @@
 import Long from 'long';
-import { getMsgBaseData, msgData } from ".";
-import { deleteRedemptionRate, getRedemptionRates, insertData, setRedemptionRate } from '../db/';
-import { CoinTuple, DecodedTx, EventLog } from "../decoder";
-import { denomToZone, getValueByTwoKeys, parseCoin } from '../helpers';
-
-export interface msgLiquidStake extends msgData {
-    creator: string,
-    amount: CoinTuple,
-    recievedStTokenAmount: CoinTuple,
-    zone: string,
-    redemptionRate: number,
-    ibcSeq?: string
-}
+import { DecodedTx } from "../decoder";
+import { getValueByTwoKeys, parseCoin } from '../helpers';
+import { prisma } from '../db';
+import { getBaseTxData, insertRedemptionRate } from '.';
 
 export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any): Promise<void> => {
-    let recievedStToken = parseCoin(getValueByTwoKeys(tx.tx_result.events, "coinbase", "amount"))
-    let amount: CoinTuple = [msg.hostDenom, (msg.amount as Long).toString()];
-    let redemptionRate = Number(amount[1]) / Number(recievedStToken[1]);
+    let recievedStToken = parseCoin(getValueByTwoKeys(tx.tx_result.events, "coinbase", "amount"));
+    let redemptionRate = Number((msg.amount as Long).toString()) / Number(recievedStToken[1]);
+    let { zone } = await prisma.zonesInfo.findUniqueOrThrow({
+        where: {
+            stDenom: recievedStToken[0]?.toLowerCase()
+        }
+    });
 
-    let data: msgLiquidStake = {
-        ...getMsgBaseData(tx),
-        zone: denomToZone(recievedStToken[0]) || "",
-        creator: msg.creator,
-        amount,
-        recievedStTokenAmount: recievedStToken,
-        redemptionRate
-    };
-    await insertData("msgs_MsgLiquidStake", data);
+    await prisma.msgLiquidStake.create({
+        data: {
+            ...getBaseTxData(tx),
+            zone: zone,
+            creator: msg.creator,
+            amountDenom: msg.hostDenom,
+            amountAmount: (msg.amount as Long).toString(),
+            receivedStTokenAmount: recievedStToken[1],
+            receivedStTokenDenom: recievedStToken[0]
+        }
+    })
 
     //set approximate redemption rate for tx's epoch
     if (!tx.date) {
         console.warn("insertRedemptionRate: wrong txdate");
         return;
     }
-    await insertRedemptionRate(tx.date * 1000, redemptionRate, data.zone);
-}
-
-export const insertRedemptionRate = async (txdate: number, rate: number, zone: string, forceInsert: boolean = false) => {
-    let networkStartDate = 1662318000451;
-    let epochDuration = 21600000;
-
-    let txEpochNumber = Math.ceil((txdate - networkStartDate) / epochDuration)
-    let redemptionRates = await getRedemptionRates();
-    let targetEpoch = redemptionRates.find(x => x.epochNumber === txEpochNumber);
-    if (targetEpoch && !forceInsert)
-        return;
-
-    await deleteRedemptionRate(txEpochNumber, zone);
-    await setRedemptionRate({
-        epochNumber: txEpochNumber,
-        dateStart: networkStartDate + (epochDuration * txEpochNumber),
-        dateEnd: networkStartDate + (epochDuration * (txEpochNumber + 1)),
-        redemptionRate: rate,
-        zone: zone
-    });
+    await insertRedemptionRate(tx.date, redemptionRate, zone);
 }

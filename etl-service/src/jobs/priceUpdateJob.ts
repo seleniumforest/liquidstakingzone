@@ -1,10 +1,16 @@
-import { timeSpans, zones } from "../constants";
-import { Price, getPrices, insertPrices } from "../db/";
-import { insertGeneralData } from "../db/generalData";
+import { TimeSpansMs, priceSources } from "../constants";
+import { prisma } from "../db";
 import { fetchGeneralData, fetchTokenPriceHistory } from "../externalServices/coingecko";
 
 export const updateTokenPrices = async () => {
-    let latestPrices = await getPrices(false);
+    let latestPrices = await prisma.$queryRaw<{ coin: string, latestDate: Date }[]>`
+        SELECT coin, MAX(date) as "latestDate"
+        FROM public."PriceHistory" ph
+        WHERE ph."vsCurrency" = 'usd'
+        GROUP BY coin
+    `;
+
+    let zones = await prisma.zonesInfo.findMany({ select: { coingeckoId: true } });
 
     let tokens = ["stride", ...zones
         .map(x => x.coingeckoId)]
@@ -14,46 +20,66 @@ export const updateTokenPrices = async () => {
         }));
 
     for (let token of tokens) {
-        let prices = await fetchTokenPriceHistory(token.coin, token.latestDate);
-        await insertPrices(prices);
+        try {
+            let prices = await fetchTokenPriceHistory(token.coin, token.latestDate?.getTime());
+            await prisma.priceHistory.createMany({
+                data: prices
+            });
+        }
+        catch (e) {
+            console.warn(`updateStAssetsPrices: Cannot update prices for coin ${token.coin} err ${JSON.stringify(e, null, 4)}`);
+        }
         //to prevent spamming and getting 429 errors
         await new Promise((res) => setTimeout(res, 60000));
     }
 };
 
 const updateStAssetsPrices = async () => {
-    let latestSavedPrices = await getPrices(true);
-    
-    let newPrices: Price[] = [];
-    for (const zone of zones) {
-        let priceHandler = zone.stAssetPriceFetchFn;
-        if (!priceHandler)
-            continue;
+    let latestPrices = await prisma.$queryRaw<{ coin: string, latestDate: number }[]>`
+        SELECT coin, MAX(date) as "latestDate"
+        FROM public."PriceHistory" ph
+        WHERE ph."vsCurrency" != 'usd'
+        GROUP BY coin
+    `;
 
-        let latestDateTime = latestSavedPrices.find(x => x.coin === zone.coingeckoId);
-        newPrices.push(...await priceHandler(latestDateTime?.latestDate));
+    for (const [zone, priceSrc] of priceSources) {
+        try {
+            let currentZone = await prisma.zonesInfo.findFirstOrThrow({ where: { zone } });
+            let latestDateTime = latestPrices.find(x => x.coin === currentZone.coingeckoId);
+            let newPrices = await priceSrc(latestDateTime?.latestDate);
+            await prisma.priceHistory.createMany({
+                data: newPrices
+            });
+
+            newPrices.forEach(x => console.log(`updateStAssetsPrices: got new prices ${JSON.stringify(x)}`));
+        } catch (e) {
+            console.warn(`updateStAssetsPrices: Cannot update st prices for zone ${zone} err ${JSON.stringify(e, null, 4)}`);
+        }
     }
-
-    newPrices.forEach(x => console.log(`updateStAssetsPrices: got new prices ${JSON.stringify(x)}`));
-
-    await insertPrices(newPrices);
 }
 
 const updateGeneralData = async () => {
-    let data = await fetchGeneralData();
-    if (data)
-        insertGeneralData([data]);
+    try {
+        let data = await fetchGeneralData();
+        if (!data)
+            return;
+
+        await prisma.generalData.create({ data })
+    }
+    catch (e) {
+        console.warn(`updateStAssetsPrices: Cannot update general data err ${JSON.stringify(e, null, 4)}`);
+    }
 }
 
 export const priceUpdateJob = async () => {
     console.log("Running price update job");
+    await updateTokenPrices();
     await updateGeneralData();
     await updateStAssetsPrices();
-    await updateTokenPrices();
     console.log("Finished price update job");
 };
 
 (async () => {
-    setInterval(priceUpdateJob, timeSpans.hour);
+    setInterval(priceUpdateJob, TimeSpansMs.hour);
     await priceUpdateJob();
 })();

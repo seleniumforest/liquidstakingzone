@@ -1,28 +1,6 @@
 import { Coin } from "@cosmjs/proto-signing";
-import { Int53 } from "@cosmjs/math";
 import { CoinTuple, TxEvent } from "./decoder";
-import { v4 as uuidv4 } from 'uuid';
-import { fromBech32 } from "@cosmjs/encoding";
-import { zones } from "./constants";
-
-export const denomToZone = (denom: string) => {
-    return zones.find(x => x.denom === denom || x.stDenom === denom)?.zone || denom;
-}
-
-export const getZoneFromAddress = (addr: string) => {
-    return fromBech32(addr).prefix;
-}
-
-export const prefixToRegistryName = (prefix: string): string => {
-    return zones.find(x => x.zone === prefix)?.registryName || prefix;
-}
-
-export const randomUUID = () => uuidv4();
-
-export const apiToSmallInt = (input: number) => {
-    const asInt = Int53.fromString(input.toString());
-    return asInt.toNumber();
-}
+import axios from "axios";
 
 export const tryParseJson = <T>(data: string): T | null => {
     try {
@@ -52,6 +30,11 @@ export const parseCoin = (coin: string): CoinTuple => {
     ]
 }
 
+export const getAttributeValue = (attrs: any[], key: string) => {
+    let attribute = attrs.find(attr => attr.key === key);
+    return attribute.value || "";
+}
+
 export const getSenderFromEvents = (events: TxEvent[]): string => {
     return getValueByTwoKeys(events, "message", "sender");
 }
@@ -76,4 +59,20 @@ export const getValueByKey = (events: TxEvent, key: string): string => {
     return events.attributes
         .find(x => x.key === key)
         ?.value || "";
+}
+
+export async function notifyTelegram(data: string | object) {
+    let message: any = data;
+    if (typeof data !== "string")
+        message = JSON.stringify(data);
+
+    try {
+        await axios.post(
+            "http://localhost:3000/notify",
+            { message },
+            { headers: { "Content-Type": "application/json" } }
+        );
+    } catch (e) {
+        console.error(`notifyTelegram: Error sending notification: message ${message} err ${JSON.stringify(e, null, 4)}`);
+    }
 }
