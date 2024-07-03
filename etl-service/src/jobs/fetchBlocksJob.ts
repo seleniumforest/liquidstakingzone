@@ -59,11 +59,13 @@ const processBlock = async (ctx: BlocksWatcherContext, b: IndexerBlock) => {
 }
 
 (async () => {
-    let { _max: { height: lastKnownBlock } } = await prisma.transaction.aggregate({
+    let { _max: { height: lastKnownBlock } } = await prisma.blockHeader.aggregate({
         _max: { height: true }
     });
-    if (!lastKnownBlock) lastKnownBlock = 100000;
-    let startBlock = lastKnownBlock > 0 ? lastKnownBlock : 1;
+    if (!lastKnownBlock)
+        lastKnownBlock = 0;
+
+    let startBlock = lastKnownBlock > 0 ? (lastKnownBlock + 1) : 1;
     let customRpcs = tryParseJson(process.env.CUSTOM_RPCS) as string[] || [];
 
     console.log(`Starting indexer from block ${startBlock} with custom rpcs ${customRpcs}`);
@@ -72,15 +74,15 @@ const processBlock = async (ctx: BlocksWatcherContext, b: IndexerBlock) => {
         .create()
         .useNetwork({
             name: "stride",
-            fromBlock: 9137645,
+            fromBlock: startBlock,
             rpcUrls: customRpcs,
             dataToFetch: "INDEXED_TXS",
             onDataRecievedCallback: processBlock,
         })
         .useBatchFetching(5)
-        // .useBlockCache({
-        //     type: "postgres",
-        //     url: process.env.DATABASE_RAW_URL
-        // })
+        .useBlockCache({
+            type: "postgres",
+            url: process.env.DATABASE_RAW_URL
+        })
         .run()
 })();

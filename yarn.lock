@@ -4674,7 +4674,7 @@ cosmjs-types@^0.8.0:
 
 "cosmos-indexer@git+https://github.com/seleniumforest/cosmos-indexer.git":
   version "0.4.0"
-  resolved "git+https://github.com/seleniumforest/cosmos-indexer.git#5dfb25f9325d08cfd5909e7f5d8282030935db4c"
+  resolved "git+https://github.com/seleniumforest/cosmos-indexer.git#6052567cf5e73ee9e52dc90860227e12bd66d9c8"
   dependencies:
     "@cosmjs/stargate" "0.32.3"
     "@cosmjs/tendermint-rpc" "0.32.3"
