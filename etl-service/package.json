@@ -5,12 +5,10 @@
   "typings": "./build/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "deploydb": "node -r ts-node/register --env-file=.env scripts/deploy.ts",
-    "blocks": "node -r ts-node/register --env-file=.env src/jobs/fetchBlocksJob.ts",
-    "balances": "node -r ts-node/register --env-file=.env src/jobs/externalAccountsCheckerJob.ts",
-    "prices": "node -r ts-node/register --env-file=.env src/jobs/priceUpdateJob.ts",
-    "notifier": "node -r ts-node/register --env-file=.env src/jobs/statusWatcherJob.ts",
-    "compile": "tsc"
+    "blocks": "node --env-file=.env build/src/jobs/fetchBlocksJob.js",
+    "balances": "node --env-file=.env build/src/jobs/externalAccountsCheckerJob.js",
+    "prices": "node --env-file=.env build/src/jobs/priceUpdateJob.js",
+    "notifier": "node --env-file=.env build/src/jobs/statusWatcherJob.js"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
