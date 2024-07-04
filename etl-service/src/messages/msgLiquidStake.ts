@@ -5,7 +5,13 @@ import { prisma } from '../db';
 import { getBaseTxData, insertRedemptionRate } from '.';
 
 export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any): Promise<void> => {
-    let recievedStToken = parseCoin(getValueByTwoKeys(tx.tx_result.events, "coinbase", "amount"));
+    let coinbase = getValueByTwoKeys(tx.tx_result.events, "coinbase", "amount");
+    if (!coinbase) {
+        //tx failed
+        return;
+    }
+
+    let recievedStToken = parseCoin(coinbase);
     let redemptionRate = Number((msg.amount as Long).toString()) / Number(recievedStToken[1]);
     let { zone } = await prisma.zonesInfo.findUniqueOrThrow({
         where: {
