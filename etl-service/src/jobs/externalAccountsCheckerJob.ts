@@ -1,12 +1,13 @@
 import { fetchUserRedemptionRecords, fetchZonesInfo } from "../externalServices/strideApi";
 import Big from "big.js";
 import { QueryClient, setupStakingExtension, StargateClient } from "@cosmjs/stargate";
-import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import { connectComet } from "@cosmjs/tendermint-rpc";
 import { UnbondingDelegation } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 import { QueryDelegatorUnbondingDelegationsResponse } from "cosmjs-types/cosmos/staking/v1beta1/query";
 import { NetworkManager } from "cosmos-indexer";
 import { prisma } from "../db";
 import { TimeSpansMs } from "../constants";
+import * as bank from "cosmjs-types/cosmos/bank/v1beta1/query";
 
 // checks balances on external ICA accounts 
 export const externalAccountsCheckerJob = async () => {
@@ -82,8 +83,9 @@ const getUndelegatedBalance = async (address: string, endpoints: string[]) => {
             let nextKey: Uint8Array | undefined;
 
             do {
+                let c = await connectComet(endp);
                 let client = QueryClient.withExtensions(
-                    await Tendermint34Client.connect(endp),
+                    c as any,
                     setupStakingExtension
                 );
 

@@ -22,7 +22,7 @@
     "@cosmjs/stargate": "0.32.3",
     "@cosmjs/tendermint-rpc": "0.32.3",
     "@prisma/client": "^5.16.0",
-    "@protobufs/cosmos": "^0.1.0",
+    "@protobufs/cosmos": "0.1.0",
     "axios": "1.7.2",
     "big.js": "^6.2.1",
     "chain-registry": "latest",
