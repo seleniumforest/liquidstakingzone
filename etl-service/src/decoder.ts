@@ -40,51 +40,64 @@ const validateMsg = (type: string, msg: any) => {
 }
 //</KEKW>
 
-export const decodeTxs = (ctx: BlocksWatcherContext, block: IndexedBlock): DecodedBlock => {
-    let decodedTxs: DecodedTx[] = block?.txs.map(tx => {
-        let decodedTx = decodeTxRaw(tx.tx);
-        let senderAddr = "";
-        try {
-            senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, "stride");
-        } catch { }
+function tryGetSenderFromPublicKey(tx: DecodedTxRaw) {
+    try {
+        return pubkeyToAddress(decodePubkey(tx.authInfo.signerInfos[0].publicKey!)!, "stride")
+    } catch { }
+}
 
-        decodedTx.body.messages = decodedTx.body.messages.map(msg => {
-            let decodedMsg = decodeMsg(msg);
-            if (!decodedMsg)
-                console.warn(`Cannot decode msgType ${msg.typeUrl} in block ${block.header.height}`)
+function tryGetSenderFromEvents(events: EventLog) {
+    try {
+        return events
+            .find(x => x.type === "message" && x.attributes.some(y => y.key === "sender" && y.value.startsWith("stride")))
+            ?.attributes.find(x => x.key === "sender")?.value
+    } catch { }
+}
 
-            return {
-                typeUrl: msg.typeUrl,
-                value: {
-                    ...decodedMsg,
+export const decodeTxs = (_ctx: BlocksWatcherContext, block: IndexedBlock): DecodedBlock => {
+    let decodedTxs: DecodedTx[] = block?.txs
+        .filter(x => x.tx.length > 0)
+        .map(tx => {
+            let decodedTx = decodeTxRaw(tx.tx);
+            let senderAddr = tryGetSenderFromEvents(tx.events as any) || tryGetSenderFromPublicKey(decodedTx) || "";
+
+            decodedTx.body.messages = decodedTx.body.messages.map(msg => {
+                let decodedMsg = decodeMsg(msg);
+                if (!decodedMsg)
+                    console.warn(`Cannot decode msgType ${msg.typeUrl} in block ${block.header.height}`)
+
+                return {
+                    typeUrl: msg.typeUrl,
+                    value: {
+                        ...decodedMsg,
+                    }
+                };
+            });;
+
+            let result: DecodedTx = {
+                height: tx.height.toString(),
+                hash: tx.hash,
+                tx: tx.tx.length === 0 ? "" : new TextDecoder().decode(tx.tx),
+                index: tx.txIndex,
+                sender: senderAddr,
+                date: Date.parse(block.header.time),
+                tx_result: {
+                    ...tx.tx,
+                    data: decodedTx,
+                    events: tx.events.map(ev => ({
+                        type: ev.type,
+                        attributes: ev.attributes.map(x => ({
+                            key: x.key,
+                            value: x.value
+                        }))
+                    })),
+                    code: tx.code,
+                    log: tryParseJson<EventLog>(tx.rawLog) || []
                 }
-            };
-        });;
-
-        let result: DecodedTx = {
-            height: tx.height.toString(),
-            hash: tx.hash,
-            tx: new TextDecoder().decode(tx.tx),
-            index: tx.txIndex,
-            sender: senderAddr,
-            date: Date.parse(block.header.time),
-            tx_result: {
-                ...tx.tx,
-                data: decodedTx,
-                events: tx.events.map(ev => ({
-                    type: ev.type,
-                    attributes: ev.attributes.map(x => ({
-                        key: x.key,
-                        value: x.value
-                    }))
-                })),
-                code: tx.code,
-                log: tryParseJson<EventLog>(tx.rawLog) || []
             }
-        }
 
-        return result;
-    })
+            return result;
+        })
 
     return {
         ...block,
