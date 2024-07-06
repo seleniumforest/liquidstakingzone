@@ -43,7 +43,10 @@ const validateMsg = (type: string, msg: any) => {
 export const decodeTxs = (ctx: BlocksWatcherContext, block: IndexedBlock): DecodedBlock => {
     let decodedTxs: DecodedTx[] = block?.txs.map(tx => {
         let decodedTx = decodeTxRaw(tx.tx);
-        let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, "stride");
+        let senderAddr = "";
+        try {
+            senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, "stride");
+        } catch { }
 
         decodedTx.body.messages = decodedTx.body.messages.map(msg => {
             let decodedMsg = decodeMsg(msg);

@@ -81,8 +81,7 @@ const processBlock = async (ctx: BlocksWatcherContext, b: IndexerBlock) => {
         })
         .useBatchFetching(5)
         .useBlockCache({
-            type: "postgres",
-            url: process.env.DATABASE_RAW_URL
+            type: "mongodb"
         })
         .run()
 })();
