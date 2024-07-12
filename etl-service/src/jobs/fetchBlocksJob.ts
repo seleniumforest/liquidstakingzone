@@ -1,4 +1,4 @@
-import { BlocksWatcher, BlocksWatcherContext, IndexedBlock, IndexerBlock } from 'cosmos-indexer';
+import { BlockWithIndexedTxs, BlocksWatcher, BlocksWatcherContext, IndexerBlock } from 'cosmos-indexer';
 import { decodeTxs } from '../decoder';
 import { tryParseJson } from '../helpers';
 import { prisma } from '../db';
@@ -6,7 +6,7 @@ import { msgsMap } from '../messages';
 import { } from "../environment";
 
 const processBlock = async (ctx: BlocksWatcherContext, b: IndexerBlock) => {
-    let block = b as IndexedBlock;
+    let block = b as BlockWithIndexedTxs;
 
     try {
         let decodedBlock = decodeTxs(ctx, block);
@@ -81,7 +81,10 @@ const processBlock = async (ctx: BlocksWatcherContext, b: IndexerBlock) => {
         })
         .useBatchFetching(5)
         .useBlockCache({
-            type: "mongodb"
+            enabled: true,
+            type: "mongodb",
+            trimIbcProofs: true,
+            url: process.env.DATABASE_RAW_URL
         })
         .run()
 })();

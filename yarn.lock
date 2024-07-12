@@ -4785,14 +4785,15 @@ cosmjs-types@^0.8.0:
     long "^4.0.0"
     protobufjs "~6.11.2"
 
-"cosmos-indexer@git+https://github.com/seleniumforest/cosmos-indexer.git#mongo-storage":
-  version "0.4.0"
-  resolved "git+https://github.com/seleniumforest/cosmos-indexer.git#e995c9c89aae88a3a97384a1628f0b868feadef7"
+"cosmos-indexer@https://github.com/seleniumforest/cosmos-indexer.git#mongo-storage":
+  version "0.5.0"
+  resolved "https://github.com/seleniumforest/cosmos-indexer.git#fcd5a698ed4523f2a7b8e86403115a8bb61852c4"
   dependencies:
     "@cosmjs/proto-signing" "0.32.4"
     "@cosmjs/stargate" "0.32.4"
     "@cosmjs/tendermint-rpc" "0.32.4"
     chain-registry latest
+    cosmjs-types "^0.9.0"
     mongodb "^6.8.0"
     ts-node "10.9.1"
     tslog "^4.9.2"

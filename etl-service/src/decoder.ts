@@ -5,7 +5,7 @@ import { fromBech32 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
 import { stride041Registry, strideLatestRegistry, strideMixedRegistry, universalRegistry } from "./constants";
 import Big from "big.js";
-import { BlocksWatcherContext, IndexedBlock } from "cosmos-indexer";
+import { BlockWithIndexedTxs, BlocksWatcherContext } from "cosmos-indexer";
 import { Block } from "@cosmjs/stargate";
 
 //<KEKW>
@@ -54,14 +54,13 @@ function tryGetSenderFromEvents(events: EventLog) {
     } catch { }
 }
 
-export const decodeTxs = (_ctx: BlocksWatcherContext, block: IndexedBlock): DecodedBlock => {
+export const decodeTxs = (_ctx: BlocksWatcherContext, block: BlockWithIndexedTxs): DecodedBlock => {
     let decodedTxs: DecodedTx[] = block?.txs
-        .filter(x => x.tx.length > 0)
         .map(tx => {
-            let decodedTx = decodeTxRaw(tx.tx);
-            let senderAddr = tryGetSenderFromEvents(tx.events as any) || tryGetSenderFromPublicKey(decodedTx) || "";
+            let decodedTx = tx;
+            let senderAddr = tryGetSenderFromEvents(tx.events as any) || tryGetSenderFromPublicKey(decodedTx.tx) || "";
 
-            decodedTx.body.messages = decodedTx.body.messages.map(msg => {
+            decodedTx.tx.body.messages = decodedTx.tx.body.messages.map(msg => {
                 let decodedMsg = decodeMsg(msg);
                 if (!decodedMsg)
                     console.warn(`Cannot decode msgType ${msg.typeUrl} in block ${block.header.height}`)
@@ -72,18 +71,17 @@ export const decodeTxs = (_ctx: BlocksWatcherContext, block: IndexedBlock): Deco
                         ...decodedMsg,
                     }
                 };
-            });;
+            });
 
             let result: DecodedTx = {
                 height: tx.height.toString(),
                 hash: tx.hash,
-                tx: tx.tx.length === 0 ? "" : new TextDecoder().decode(tx.tx),
                 index: tx.txIndex,
                 sender: senderAddr,
                 date: Date.parse(block.header.time),
                 tx_result: {
                     ...tx.tx,
-                    data: decodedTx,
+                    data: decodedTx.tx,
                     events: tx.events.map(ev => ({
                         type: ev.type,
                         attributes: ev.attributes.map(x => ({
@@ -131,7 +129,6 @@ export type EventLog = {
 }[];
 
 export interface DecodedTx {
-    tx?: string;
     sender: string,
     date: number,
     tx_result: {
