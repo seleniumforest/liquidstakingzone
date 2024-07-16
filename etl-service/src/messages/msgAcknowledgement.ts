@@ -70,22 +70,15 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
 
         if (isFeeTxExist != null)
             continue;
-        await prisma.zonesRestake.upsert({
-            where: {
-                zone_sequence_type: {
-                    zone: sendMsg.zone,
-                    sequence: sendMsg.sequence,
-                    type: sendMsg.type
-                }
-            },
-            create: {
+
+        await prisma.zonesRestake.create({
+            data: {
                 ...sendMsg,
                 height: +tx.height,
                 sender: tx.sender,
                 amountAmount: sendMsg.amount[1],
                 amountDenom: sendMsg.amount[0]
-            },
-            update: {}
+            }
         });
     }
 }

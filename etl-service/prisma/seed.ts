@@ -1,8 +1,27 @@
 import { PrismaClient } from '@prisma/client';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const prisma = new PrismaClient();
 
 async function main() {
+    await deployTables();
+    await deploySqlFiles();
+}
+
+async function deploySqlFiles() {
+    const sqlDir = path.join(__dirname, 'sql');
+    const sqlFiles = fs.readdirSync(sqlDir);
+
+    for (const file of sqlFiles) {
+        const filePath = path.join(sqlDir, file);
+        console.log(`Deploying ${file}`);
+        const sql = fs.readFileSync(filePath, 'utf-8');
+        await prisma.$executeRawUnsafe(sql);
+    }
+}
+
+async function deployTables() {
     await prisma.zonesInfo.createMany({
         data: [
             {

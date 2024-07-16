@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@clickhouse/client": "0.2.2",
+    "@prisma/client": "^5.16.2",
     "big.js": "^6.2.1",
     "coingecko-api": "^1.0.10",
     "cors": "^2.8.5",
