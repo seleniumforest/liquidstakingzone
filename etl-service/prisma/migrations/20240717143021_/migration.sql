@@ -91,6 +91,7 @@ CREATE TABLE "ZonesInfo" (
     "stDenom" TEXT NOT NULL,
     "registryName" TEXT NOT NULL,
     "ticker" TEXT,
+    "sortOrder" INTEGER,
 
     CONSTRAINT "ZonesInfo_pkey" PRIMARY KEY ("id")
 );

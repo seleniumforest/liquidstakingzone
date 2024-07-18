@@ -16,7 +16,9 @@ export const updateTokenPrices = async () => {
         .map(x => x.coingeckoId)]
         .map(x => ({
             coin: x,
-            latestDate: latestPrices.find(p => p.coin === x)?.latestDate
+            latestDate: latestPrices.find(p => p.coin === x)?.latestDate ||
+                new Date(Date.now() - TimeSpansMs.day * 360)
+            //coingecko gives only 1y of history on free plan
         }));
 
     for (let token of tokens) {

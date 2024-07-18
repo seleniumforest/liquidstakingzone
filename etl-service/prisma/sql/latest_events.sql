@@ -1,11 +1,14 @@
+CREATE OR REPLACE view public."latest_events" AS
 WITH latest_liquid_stake AS (
   SELECT
     l."date",
     l."txhash",
-    l."amountAmount"::numeric AS "tokenIn",
-    l."receivedStTokenAmount"::numeric AS "tokenOut",
-    ((l."amountAmount"::numeric / (10 ^ z."decimals")) * p.price)::numeric AS "usd_value",
-    l."zone"
+    l."creator",
+    (l."amountAmount"::numeric / (10 ^ z."decimals")) AS "tokenIn",
+    (l."receivedStTokenAmount"::numeric / (10 ^ z."decimals")) AS "tokenOut",
+    ((l."amountAmount"::numeric / (10 ^ z."decimals")) * p.price) AS "usd_value",
+    l."zone",
+    'stake' as "action"
   FROM
     public."MsgLiquidStake" l
   JOIN
@@ -44,10 +47,12 @@ latest_redeem_stake AS (
   SELECT
     r."date",
     r."txhash",
-    r."amount"::numeric AS "tokenIn",
-    ((r."amount"::numeric / (10 ^ z."decimals")) * arr.avg_redemption_rate)::numeric AS "tokenOut",
-    ((r."amount"::numeric / (10 ^ z."decimals")) * p.price)::numeric AS "usd_value",
-    r."zone"
+    r."creator",
+    (r."amount"::numeric / (10 ^ z."decimals")) AS "tokenIn",
+    ((r."amount"::numeric / (10 ^ z."decimals")) * arr.avg_redemption_rate) AS "tokenOut",
+    ((r."amount"::numeric / (10 ^ z."decimals")) * p.price) AS "usd_value",
+    r."zone",
+    'redeem' as "action"
   FROM
     public."MsgRedeemStake" r
   JOIN
@@ -74,22 +79,12 @@ latest_redeem_stake AS (
   LIMIT 10
 )
 SELECT
-  "date",
-  "txhash",
-  "tokenIn",
-  "tokenOut",
-  "usd_value",
-  "zone"
+  *
 FROM
   latest_liquid_stake
 UNION ALL
 SELECT
-  "date",
-  "txhash",
-  "tokenIn",
-  "tokenOut",
-  "usd_value",
-  "zone"
+  *
 FROM
   latest_redeem_stake
 ORDER BY

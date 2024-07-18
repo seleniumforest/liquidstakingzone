@@ -89,6 +89,7 @@ model ZonesInfo {
   stDenom      String
   registryName String
   ticker       String?
+  sortOrder    Int?
 
   @@unique([zone])
   @@unique([denom])

@@ -2,7 +2,6 @@ import { fromBase64, fromBech32 } from '@cosmjs/encoding';
 import { Coin } from '@cosmjs/proto-signing';
 import { DecodedTx } from "../decoder";
 import { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { getFeeFromEvents } from '../helpers';
 import { fetchZonesInfo } from '../externalServices/strideApi';
 import { universalRegistry } from '../constants';
 import { prisma } from '../db';
@@ -26,7 +25,7 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
         .map(x => universalRegistry.decode({ typeUrl: x.typeUrl, value: x.value }))
         .map(decoded => {
             let zone = fromBech32(decoded.toAddress).prefix
-            let zoneConfig = hostZonesConfig.find(x => x.zone === zone);
+            let zoneConfig = hostZonesConfig.find(x => x.prefix === zone);
             let type = "";
 
             if (decoded.toAddress === zoneConfig?.delegationAcc)
@@ -45,8 +44,8 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
             }
         });
 
-    let currentZoneFeeAcc = hostZonesConfig.find(x => x.zone === sendMsgs[1].zone)?.feeAcc;
-    let currentZoneDelegationAcc = hostZonesConfig.find(x => x.zone === sendMsgs[1].zone)?.delegationAcc;
+    let currentZoneFeeAcc = hostZonesConfig.find(x => x.prefix === sendMsgs[1].zone)?.feeAcc;
+    let currentZoneDelegationAcc = hostZonesConfig.find(x => x.prefix === sendMsgs[1].zone)?.delegationAcc;
 
     let isRestakeRewardsTx = sendMsgs.length == 2 &&
         ((sendMsgs[0].toAddress === currentZoneFeeAcc && sendMsgs[1].toAddress === currentZoneDelegationAcc) ||
@@ -73,11 +72,19 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
 
         await prisma.zonesRestake.create({
             data: {
-                ...sendMsg,
+                zone: sendMsg.zone,
+                type: sendMsg.type,
+                txhash: sendMsg.txhash,
+                txcode: sendMsg.txcode,
+                toAddress: sendMsg.toAddress,
+                sequence: sendMsg.sequence,
+                fromAddress: sendMsg.fromAddress,
+                feeDenom: sendMsg.feeDenom,
+                feeAmount: sendMsg.feeAmount,
                 height: +tx.height,
                 sender: tx.sender,
-                amountAmount: sendMsg.amount[1],
-                amountDenom: sendMsg.amount[0]
+                amountAmount: sendMsg.amount.at(0)[1],
+                amountDenom: sendMsg.amount.at(0)[0]
             }
         });
     }

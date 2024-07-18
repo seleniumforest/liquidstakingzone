@@ -1169,22 +1169,10 @@
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.15.tgz#e14ce0e54e1b6571133af6a85451d554d2500a59"
   integrity sha512-cmg/lfsVkNxB+aG6QAvKGTasAt2ErbdYflbeldnre+4vPT17bbqoovyuoz07qWGXqLD1ueDvZkLoPT+NGi8osg==
 
-"@clickhouse/client-common@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@clickhouse/client-common/-/client-common-0.2.2.tgz#0690046241140a51ba5b0c0b9298c3cb3cf20974"
-  integrity sha512-jlom9zLfcDzX9E3off93ZD3CPOkClyM213Y7TN1datkuRGKMvVyj1k0KXaMekhbRev+FTe85CqfoD5eq6qOnPg==
-
 "@clickhouse/client-common@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@clickhouse/client-common/-/client-common-1.1.0.tgz#ec80ef855448a8dcefce63a997d9a536ca839ef5"
   integrity sha512-saD6vNg+gIZACT5OSCWn0evLBP+Cs5bBR2Ol24yOQc8AXcw94b1qcDjQEVxms1xzO6heFhZRuPf+YefMNrL3Ig==
-
-"@clickhouse/client@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@clickhouse/client/-/client-0.2.2.tgz#a6358aa2342ee3f2850cdb2f47a9e1d6fbde5757"
-  integrity sha512-2faBnDS4x7ZkcOZqi3f6H967kH+nOfJLhBTWWjz0wTSBnEJBXRtePhN/ZY0NJIKc9Ga5w41Pf67mQgm6Dm/1/w==
-  dependencies:
-    "@clickhouse/client-common" "0.2.2"
 
 "@clickhouse/client@1.1.0":
   version "1.1.0"
@@ -3065,6 +3053,11 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.6.tgz#193ced6a40c8006cfc1ca3f4553444fb38f0e543"
   integrity sha512-OpXEVoCKSS3lQqjx9GGGOapBeuW5eUboYHRlHP9urXPX25IKZ6AnP5ZRxtVf63iieUbsHxLn8NQ5Nlftc6yzAA==
 
+"@types/lodash@^4.17.7":
+  version "4.17.7"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.7.tgz#2f776bcb53adc9e13b2c0dfd493dfcbd7de43612"
+  integrity sha512-8wTvZawATi/lsmNu10/j2hk1KEP0IvjubqPE3cu1Xz7xfXXt5oCq3SNUz4fMIP4XGF9Ky+Ue2tBA3hcS7LSBlA==
+
 "@types/long@^4.0.1":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.2.tgz#b74129719fc8d11c01868010082d483b7545591a"
@@ -4792,7 +4785,7 @@ cosmjs-types@^0.8.0:
 
 "cosmos-indexer@https://github.com/seleniumforest/cosmos-indexer.git#mongo-storage":
   version "0.5.0"
-  resolved "https://github.com/seleniumforest/cosmos-indexer.git#fcd5a698ed4523f2a7b8e86403115a8bb61852c4"
+  resolved "https://github.com/seleniumforest/cosmos-indexer.git#9a527b8ebaf766101c3b3923bf20c3bd43b7d047"
   dependencies:
     "@cosmjs/proto-signing" "0.32.4"
     "@cosmjs/stargate" "0.32.4"
@@ -9604,6 +9597,11 @@ postcss@^8.3.5, postcss@^8.4.23, postcss@^8.4.33, postcss@^8.4.4:
     nanoid "^3.3.7"
     picocolors "^1.0.1"
     source-map-js "^1.2.0"
+
+postgres@^3.4.4:
+  version "3.4.4"
+  resolved "https://registry.yarnpkg.com/postgres/-/postgres-3.4.4.tgz#adbe08dc1fff0dea3559aa4f83ded70a289a6cb8"
+  integrity sha512-IbyN+9KslkqcXa8AO9fxpk97PA4pzewvpi2B3Dwy9u4zpV32QicaEdgmF3eSQUzdRk7ttDHQejNgAEr4XoeH4A==
 
 prelude-ls@^1.2.1:
   version "1.2.1"

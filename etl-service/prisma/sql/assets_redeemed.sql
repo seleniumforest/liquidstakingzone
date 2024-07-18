@@ -1,4 +1,4 @@
-CREATE VIEW assets_redeemed AS
+CREATE OR REPLACE VIEW assets_redeemed AS
 WITH redemption_amounts AS (
   SELECT
     date_trunc('day', r.date) AS date,

@@ -1,6 +1,7 @@
 CREATE OR REPLACE FUNCTION get_depositors_volume(zone_name TEXT)
 RETURNS TABLE (
-  range TEXT,
+  min_value INTEGER,
+  max_value INTEGER,
   count INTEGER
 ) AS $$
 BEGIN
@@ -47,15 +48,23 @@ BEGIN
       m.zone = zone_name AND
       m.txcode = 0
   )
+  select 
+  	r1.min_value,
+  	r1.max_value,
+  	sub.count
+  from 
+  (
   SELECT 
     r.range,
-    COUNT(lsp.am) AS count
+    COUNT(lsp.am)::integer AS count
   FROM 
     liquid_stake_with_prices lsp
   JOIN 
     ranges r ON lsp.am > r.min_value AND lsp.am < r.max_value
   GROUP BY 
     r.range
-  order by r.range;
+  order by r.range
+  ) sub
+  join ranges r1 on r1.range = sub.range;
 END;
 $$ LANGUAGE plpgsql;

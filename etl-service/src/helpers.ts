@@ -1,8 +1,16 @@
 import { Coin } from "@cosmjs/proto-signing";
 import { CoinTuple, TxEvent } from "./decoder";
 import axios from "axios";
+import { prisma } from "./db";
 
-export const tryParseJson = <T>(data: string): T | null => {
+export async function findZone(zone: string) {
+    if (!zone)
+        return null;
+
+    return prisma.zonesInfo.findFirst({ where: { zone } });
+}
+
+export function tryParseJson<T>(data: string): T | null {
     try {
         return JSON.parse(data) as T;
     } catch (err: any) {

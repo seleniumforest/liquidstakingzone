@@ -8,7 +8,8 @@
     "blocks": "node --env-file=.env build/src/jobs/fetchBlocksJob.js",
     "balances": "node --env-file=.env build/src/jobs/externalAccountsCheckerJob.js",
     "prices": "node --env-file=.env build/src/jobs/priceUpdateJob.js",
-    "notifier": "node --env-file=.env build/src/jobs/statusWatcherJob.js"
+    "notifier": "node --env-file=.env build/src/jobs/statusWatcherJob.js",
+    "backend": "node --env-file=.env build/src/jobs/backend.js"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -23,6 +24,7 @@
     "@cosmjs/tendermint-rpc": "0.32.3",
     "@prisma/client": "^5.16.0",
     "@protobufs/cosmos": "0.1.0",
+    "@types/lodash": "^4.17.7",
     "axios": "1.7.2",
     "big.js": "^6.2.1",
     "chain-registry": "latest",
@@ -30,6 +32,7 @@
     "cosmjs-types": "0.9.0",
     "cosmos-indexer": "https://github.com/seleniumforest/cosmos-indexer.git#mongo-storage",
     "global": "^4.4.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "node-cache": "5.1.2",
     "osmojs": "16.14.0",
