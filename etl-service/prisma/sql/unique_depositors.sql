@@ -9,23 +9,28 @@ WITH daily_depositors AS (
     WHERE
         s."txcode" = '0'
 ),
-unique_depositors AS (
+unique_daily_depositors AS (
     SELECT
         dt,
-        COUNT(DISTINCT creator) AS deps
+        COUNT(DISTINCT creator) AS daily_deps
     FROM
         daily_depositors
     WHERE
         row_num = 1
     GROUP BY
         dt
+),
+cumulative_depositors AS (
+    SELECT
+        dt,
+        SUM(daily_deps) OVER (ORDER BY dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cumulative_deps
+    FROM
+        unique_daily_depositors
 )
 SELECT
     dt AS date,
-    MAX(deps) AS deps
+    cumulative_deps AS deps
 FROM
-    unique_depositors
-GROUP BY
-    dt
+    cumulative_depositors
 ORDER BY
-    dt;
+    date;

@@ -27,7 +27,6 @@ export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any): Promise<void
     let amount = getAttributeValue(liquidStakeEvent.attributes, "native_amount");
     let stAmount = getAttributeValue(liquidStakeEvent.attributes, "sttoken_amount");
     let ibcSeq = msg.packet.sequence.toString();
-    let redemptionRate = Big(amount).div(Big(stAmount)).toNumber();
 
     prisma.msgLiquidStake.create({
         data: {
@@ -46,5 +45,5 @@ export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any): Promise<void
         console.warn("insertRedemptionRate: wrong txdate");
         return;
     }
-    await insertRedemptionRate(tx.date, redemptionRate, zone);
+    await insertRedemptionRate(tx.date, amount, stAmount, zone);
 }

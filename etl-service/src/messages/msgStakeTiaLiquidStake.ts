@@ -17,7 +17,6 @@ export const insertMsgStakeTiaLiquidStake = async (tx: DecodedTx, msg: any): Pro
     });
 
     let stAmount = Number(getValueByKey(event, "sttoken_amount"));
-    let redemptionRate = nativeAmount / stAmount;
 
     await prisma.msgLiquidStake.create({
         data: {
@@ -36,5 +35,5 @@ export const insertMsgStakeTiaLiquidStake = async (tx: DecodedTx, msg: any): Pro
         console.warn("insertRedemptionRate: wrong txdate");
         return;
     }
-    await insertRedemptionRate(tx.date, redemptionRate, zone);
+    await insertRedemptionRate(tx.date, nativeAmount, stAmount, zone);
 }

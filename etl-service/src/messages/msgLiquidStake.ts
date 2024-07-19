@@ -8,11 +8,11 @@ export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any): Promise<voi
     let coinbase = getValueByTwoKeys(tx.tx_result.events, "coinbase", "amount");
     if (!coinbase) {
         //tx failed
+        console.warn(`insertMsgLiquidStake: coinbase not found hash ${tx.hash}`);
         return;
     }
 
     let recievedStToken = parseCoin(coinbase);
-    let redemptionRate = Number((msg.amount as Long).toString()) / Number(recievedStToken[1]);
     let { zone } = await prisma.zonesInfo.findUniqueOrThrow({
         where: {
             stDenom: recievedStToken[0]?.toLowerCase()
@@ -36,5 +36,5 @@ export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any): Promise<voi
         console.warn("insertRedemptionRate: wrong txdate");
         return;
     }
-    await insertRedemptionRate(tx.date, redemptionRate, zone);
+    await insertRedemptionRate(tx.date, (msg.amount as Long).toString(), recievedStToken[1], zone);
 }

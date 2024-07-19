@@ -21,26 +21,16 @@ async function caching(req: Request, res: Response, next: NextFunction) {
     next();
 }
 
-function corsOptionsCheck(req: any, callback: any) {
-    let isDomainAllowed = [
-        'https://liquidstaking.zone',
-        'http://localhost:3000',
-        "https://analytics-backend.vercel.app"
-    ].indexOf(req.header('Origin')) !== -1;
-
-    callback(null, { origin: isDomainAllowed })
-}
-
 async function errHandle(handler: any, req: Request, res: Response, next: NextFunction) {
     try {
         return await handler(req, res, next);
     } catch (err: any) {
-        console.log(err?.message || JSON.stringify(err, null, 4));
+        console.log(req.path + " " + err?.message || JSON.stringify(err, null, 4));
         return res.status(500).json(err);
     }
 }
 
-app.use(cors(corsOptionsCheck));
+app.use(cors());
 app.use(caching);
 
 
@@ -184,12 +174,15 @@ async function latestEvents(_: Request, res: Response) {
 
 async function protocolRevenue(_: Request, res: Response) {
     let query = await prisma.$queryRaw<{
-        date: Date,
+        date: BigInt,
         fee: number,
         restake: number
     }[]> `SELECT * FROM protocol_revenue`;
-
-    res.json(query);
+    let data = query?.map(x => ({
+        ...x,
+        date: +x.date.toString()
+    })) || [];
+    res.json(data);
 }
 
 async function uniqueDepositors(_: Request, res: Response) {
@@ -230,21 +223,38 @@ async function redemptionRates(req: Request, res: Response) {
 }
 
 async function generalData(_req: Request, res: Response) {
-    let [{ mcap, vol }] = await prisma.$queryRaw<{
-        mcap: number,
-        vol: number
-    }[]>`
-        SELECT * 
-        FROM public."GeneralData"
-        ORDER BY date desc
-        LIMIT 1
-    `;
-
-    let tvl = await prisma.$queryRaw<{
-        date: Date,
-        zone: string,
-        tvl: number
-    }[]>`SELECT * FROM tvl_by_chains`;
+    let [[{ mcap, vol }], tvl, prices] = await Promise.all([
+        prisma.$queryRaw<{
+            mcap: number,
+            vol: number
+        }[]>`
+            SELECT * 
+                FROM public."GeneralData"
+            ORDER BY date desc
+            LIMIT 1
+        `,
+        prisma.$queryRaw<{
+            date: Date,
+            zone: string,
+            tvl: number
+        }[]>`SELECT * FROM tvl_by_chains`,
+        prisma.$queryRaw<{
+            date: Date,
+            price: number
+        }[]>`
+            SELECT
+                date_trunc('day', "date") AS "date",
+                AVG(price) AS "price"
+            FROM
+                public."PriceHistory"
+            WHERE
+                coin = 'stride'
+                AND "vsCurrency" = 'usd'
+            GROUP BY
+                date_trunc('day', "date")
+            ORDER BY
+                "date"`
+    ])
 
     let totalTvl = _.chain(tvl)
         .groupBy("zone")
@@ -256,9 +266,10 @@ async function generalData(_req: Request, res: Response) {
         .valueOf();
 
     res.json({
-        mcap,
+        marketCap: mcap,
         vol,
-        tvl: totalTvl
+        tvl: totalTvl,
+        prices: prices.map(({ date, price }) => ([date.getTime(), price]))
     });
 }
 

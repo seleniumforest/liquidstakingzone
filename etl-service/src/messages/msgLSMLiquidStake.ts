@@ -20,7 +20,6 @@ export const insertMsgLSMLiquidStake = async (tx: DecodedTx, _msg: any): Promise
         select: { stDenom: true, zone: true }
     });
     let stAmount = Number(getValueByKey(event, "sttoken_amount"));
-    let redemptionRate = nativeAmount / stAmount;
 
     await prisma.msgLiquidStake.create({
         data: {
@@ -40,5 +39,5 @@ export const insertMsgLSMLiquidStake = async (tx: DecodedTx, _msg: any): Promise
         return;
     }
 
-    await insertRedemptionRate(tx.date, redemptionRate, zone);
+    await insertRedemptionRate(tx.date, nativeAmount, stAmount, zone);
 }

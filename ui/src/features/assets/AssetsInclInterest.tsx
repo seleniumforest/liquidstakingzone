@@ -14,8 +14,8 @@ export function AssetsOnStakingWallets() {
 
     let cardData = data?.map((x: any) => ({
         zone: x.zone,
-        depositedNow: x.latestAssets,
-        depositedYesterday: x.pastDayAssets,
+        depositedNow: Math.round(+x.latestAssets),
+        depositedYesterday: Math.round(+x.pastDayAssets),
         icon: <img alt={`st${x.zone}-logo`} src={`/img/st${x.zone}-logo.png`} />
     }));
 

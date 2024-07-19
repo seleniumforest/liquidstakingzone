@@ -10,6 +10,7 @@ import { EpochDuration, NetworkStartDate } from "../constants";
 import { prisma } from "../db";
 import { getFeeFromEvents } from "../helpers";
 import { insertMsgRegisterHostZone } from "./msgRegisterHostZone";
+import Big from "big.js";
 
 export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void>>([
     ["/stride.stakeibc.MsgLiquidStake", insertMsgLiquidStake],
@@ -37,7 +38,11 @@ export function getBaseTxData(tx: DecodedTx) {
     }
 }
 
-export async function insertRedemptionRate(txdate: number, rate: number, zone: string, forceInsert: boolean = false) {
+export async function insertRedemptionRate(txdate: number, tokenAmount: number | string, stTokenAmount: number | string, zone: string, forceInsert: boolean = false) {
+    if (Big(tokenAmount).lt(1000) || Big(stTokenAmount).lt(1000))
+        return;
+
+    let rate = Big(tokenAmount).div(stTokenAmount).toNumber();
     let txEpochNumber = Math.ceil((txdate - NetworkStartDate) / EpochDuration);
     let targetEpoch = await prisma.redemptionRate.findFirst({
         where: {
