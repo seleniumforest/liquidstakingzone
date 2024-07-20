@@ -99,7 +99,7 @@ const tooltipFormatter = (zone: Zone, timeSpan: TimeSpan, isCumulative: boolean)
 
         let displayZone = zone!.charAt(0).toUpperCase() + zone!.slice(1);
         let displayAmount = new Intl.NumberFormat()
-            .format(isCumulative ? that.points[0].point.cumulativeSum : that.y);
+            .format(isCumulative ? Math.floor(+that.points[0].point.cumulativeSum) : Math.floor(+that.y));
 
         let displayDate = "";
         let date = moment(that.x);

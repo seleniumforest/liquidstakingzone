@@ -1,5 +1,25 @@
 CREATE OR REPLACE VIEW tvl_by_chains AS
-WITH daily_deposits AS (
+with date_series AS (
+    SELECT 
+        generate_series(
+            (SELECT MIN(date_trunc('day', "date")) FROM public."MsgLiquidStake"),
+            (SELECT MAX(date_trunc('day', "date")) FROM public."MsgLiquidStake"),
+            '1 day'::interval
+        ) AS date
+),
+zones AS (
+    SELECT "zone"
+    FROM public."ZonesInfo"
+),
+date_zones AS (
+    SELECT 
+        ds.date,
+        z.zone
+    FROM 
+        date_series ds,
+        zones z
+),
+daily_deposits AS (
     SELECT
         date_trunc('day', m."date") AS date,
         m."zone",
@@ -14,9 +34,18 @@ WITH daily_deposits AS (
         date_trunc('day', m."date"),
         m."zone",
         z."decimals"
-    ORDER BY
-        m."zone",
-        date_trunc('day', m."date")
+),
+daily_deposits_fixed AS (
+    SELECT 
+        dz.date,
+        dz.zone,
+        COALESCE(dd.daily_deposited, 0) AS daily_deposited
+    FROM 
+        date_zones dz
+    LEFT JOIN 
+        daily_deposits dd ON dz.date = dd.date AND dz.zone = dd.zone
+    ORDER BY 
+        dz.date, dz.zone
 ),
 cumulative_deposits AS (
     SELECT
@@ -24,7 +53,7 @@ cumulative_deposits AS (
         zone,
         SUM(daily_deposited) OVER (PARTITION BY zone ORDER BY date) AS cumulative_deposited
     FROM
-        daily_deposits
+        daily_deposits_fixed
 ),
 daily_redeems AS (
     SELECT
@@ -79,12 +108,12 @@ daily_prices AS (
 SELECT
     p.date,
     p.zone,
-    (cumulative_deposited - cumulative_redeemed) * p.price AS tvl
+    (cumulative_deposited - coalesce(cumulative_redeemed, 0)) * p.price AS tvl
 FROM
     daily_prices p
 JOIN
     cumulative_deposits d ON p.date = d.date AND p.zone = d.zone
-JOIN
+left JOIN
     cumulative_redeems r ON p.date = r.date AND p.zone = r.zone
 ORDER by
  p.zone,

@@ -68,7 +68,7 @@ export const baseChartOptions = {
     }]
 } as any;
 
-export const supportedZones = ["cosmos", "osmo", "juno", "terra", "evmos", "stars", "inj", "umee"] as const;
+export const supportedZones = ["cosmos", "osmo", "juno", "terra", "evmos", "stars", "inj", "umee", "comdex", "dydx", "haqq", "saga", "somm"] as const;
 export type Zone = typeof supportedZones[number];
 
 export type ZoneInfo = {

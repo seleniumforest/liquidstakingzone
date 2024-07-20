@@ -1,4 +1,3 @@
-import Big from "big.js";
 import { DecodedTx } from "../decoder";
 import { prisma } from "../db";
 import { getAttributeValue } from "../helpers";
