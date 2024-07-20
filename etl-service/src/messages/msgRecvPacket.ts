@@ -28,7 +28,7 @@ export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any): Promise<void
     let stAmount = getAttributeValue(liquidStakeEvent.attributes, "sttoken_amount");
     let ibcSeq = msg.packet.sequence.toString();
 
-    prisma.msgLiquidStake.create({
+    await prisma.msgLiquidStake.create({
         data: {
             ...getBaseTxData(tx),
             zone: zone,
