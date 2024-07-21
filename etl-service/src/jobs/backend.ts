@@ -3,23 +3,28 @@ import cors from 'cors';
 import { prisma } from "../db";
 import { findZone } from "../helpers";
 import _ from "lodash";
+import NodeCache from "node-cache";
 
 const app = express();
+const cache = new NodeCache({ stdTTL: 300, checkperiod: 120 });
 
 /* ---- MIDDLEWARES SECTION ---- */
 
-async function caching(req: Request, res: Response, next: NextFunction) {
-    let isLocalhost = req.header('Origin')?.indexOf("http://localhost")! < 1;
+const cacheMiddleware = (req: Request, res: any, next: NextFunction) => {
+    const key = req.originalUrl;
+    const cachedResponse = cache.get(key);
 
-    if (!isLocalhost) {
-        if (req.originalUrl === "/status")
-            res.setHeader('Cache-Control', 'no-store');
-        else
-            res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
+    if (cachedResponse) {
+        return res.json(cachedResponse);
+    } else {
+        res.sendResponse = res.json;
+        res.json = (body: any) => {
+            cache.set(key, body);
+            res.sendResponse(body);
+        };
+        next();
     }
-
-    next();
-}
+};
 
 async function errHandle(handler: any, req: Request, res: Response, next: NextFunction) {
     try {
@@ -31,7 +36,7 @@ async function errHandle(handler: any, req: Request, res: Response, next: NextFu
 }
 
 app.use(cors());
-app.use(caching);
+app.use(cacheMiddleware);
 
 
 const handlersMap = new Map<
