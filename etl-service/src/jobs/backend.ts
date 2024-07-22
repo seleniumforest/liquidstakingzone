@@ -26,6 +26,15 @@ const cacheMiddleware = (req: Request, res: any, next: NextFunction) => {
     }
 };
 
+function corsOptionsCheck(req: any, callback: any) {
+    let isDomainAllowed = [
+        'https://liquidstaking.zone',
+        'http://localhost:3000'
+    ].indexOf(req.header('Origin')) !== -1;
+
+    callback(null, { origin: isDomainAllowed })
+}
+
 async function errHandle(handler: any, req: Request, res: Response, next: NextFunction) {
     try {
         return await handler(req, res, next);
@@ -35,7 +44,7 @@ async function errHandle(handler: any, req: Request, res: Response, next: NextFu
     }
 }
 
-app.use(cors());
+app.use(cors(corsOptionsCheck));
 app.use(cacheMiddleware);
 
 
