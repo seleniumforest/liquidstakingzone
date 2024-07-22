@@ -23,6 +23,7 @@ export function getChartColor(zone: Zone) {
         case "haqq": return "#0bd286";
         case "saga": return "#000000";
         case "somm": return "#16183c";
+        case "tia": return "#7b2bf9";
         default: return "#008BF0";
     }
 }
