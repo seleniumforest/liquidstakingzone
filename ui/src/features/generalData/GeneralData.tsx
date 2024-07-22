@@ -77,6 +77,9 @@ export function GeneralData() {
                         <a href="https://www.sommelier.finance/" target="_blank" rel="noreferrer">
                             <img alt='website' src='/img/somm-logo.png' />
                         </a>
+                        <a href="https://celestia.org/" target="_blank" rel="noreferrer">
+                            <img alt='website' src='/img/tia-logo.png' />
+                        </a>
                     </div>
                     {!isLoading &&
                         <div className={styles.mcapAndVolumeBox}>

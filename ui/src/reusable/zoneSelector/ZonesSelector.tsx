@@ -18,7 +18,8 @@ const zones = [
     { value: "dydx", label: "DYDX" },
     { value: "haqq", label: "Islamic coin" },
     { value: "saga", label: "Saga" },
-    { value: "somm", label: "Sommelier" }
+    { value: "somm", label: "Sommelier" },
+    { value: "tia", label: "Celestia" }
 ];
 
 export function ZonesSelector({ setZone }: { setZone: Dispatch<SetStateAction<Zone>> }) {
