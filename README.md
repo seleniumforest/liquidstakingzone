@@ -1,28 +1,29 @@
-# backend and ui
+# Dashboard for liquid staked assets in Cosmos 
 
-``` yarn start ```
+Deployed at https://liquidstaking.zone/ 
+
+
+# ui
+
+Edit .env and ``` yarn start ```
 
 # etl-service
 
-Grabs transactions from cosmos sdk chain and writes into clickhouse db
-
-To run, first edit .env file and run 
-
-``` yarn run deploydb ``` -- deploys db schema
-
-``` yarn run populatedb ``` -- populates db with transactions history on fee accounts at cosmoshub/juno/stars/osmo !!! existing hardcoded rpc may go down, need rpcs with full history !!!
-
-``` pm2 start ``` -- runs pm2 jobs described in ecosystem.config.js
+Edit .env and then
+``` 
+npx prisma migrate dev 
+npx prisma reset
+pm2 start ecosystem.config.js
+```
 
 Project directories: 
 
-0) /scripts - .sql script for clickhouse to deploy db schema
-
-1) src/db - read/write operations with clickhouse
-2) src/externalServices - integrations with other services
-3) src/jobs - entry points to program, that composed by pm2
-4) src/messagaes - handlers for each message type 
-
-tsc binaries in build/ 
-
-pm2 saves logs in logs/ 
+1) prisma - everything that deploys db and views
+2) externalServices - integrations with other services
+3) jobs - entry points to program, that composed by pm2
+    - backend.ts - backend for ui. Runs on .env.PORT || 8081 Port
+    - fetchBlocksJob - fetches blocks and handles txs and messages
+    - priceUpdateJob - updates prices for STassets and base assets
+    - externalAccountsCheckerJob - looks for Stride external account balances
+    - statusWatcherJob - watches for latest sync status and sends notifications in case of failure. Runs on :3000
+4) messagaes - handlers for each message type 
