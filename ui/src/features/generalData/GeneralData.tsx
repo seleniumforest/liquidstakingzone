@@ -58,8 +58,27 @@ export function GeneralData() {
                         <a href="https://injective.com/" target="_blank" rel="noreferrer">
                             <img alt='website' src='/img/inj-logo.png' />
                         </a>
+                        <br></br>
                         <a href="https://umee.cc/" target="_blank" rel="noreferrer">
                             <img alt='website' src='/img/umee-logo.png' />
+                        </a>
+                        <a href="https://comdex.one/" target="_blank" rel="noreferrer">
+                            <img alt='website' src='/img/comdex-logo.png' />
+                        </a>
+                        <a href="https://dydx.exchange/" target="_blank" rel="noreferrer">
+                            <img alt='website' src='/img/dydx-logo.png' />
+                        </a>
+                        <a href="https://islamiccoin.net/" target="_blank" rel="noreferrer">
+                            <img alt='website' src='/img/haqq-logo.png' />
+                        </a>
+                        <a href="https://www.saga.xyz/" target="_blank" rel="noreferrer">
+                            <img alt='website' src='/img/saga-logo.png' />
+                        </a>
+                        <a href="https://www.sommelier.finance/" target="_blank" rel="noreferrer">
+                            <img alt='website' src='/img/somm-logo.png' />
+                        </a>
+                        <a href="https://celestia.org/" target="_blank" rel="noreferrer">
+                            <img alt='website' src='/img/tia-logo.png' />
                         </a>
                     </div>
                     {!isLoading &&

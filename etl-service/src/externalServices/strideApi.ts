@@ -1,8 +1,8 @@
 import axios from "axios";
-import { denomToZone } from "../helpers";
 import NodeCache from "node-cache";
+import { prisma } from "../db";
 
-const baseUrl = "https://stride-fleet.main.stridenet.co";
+const baseurl = "https://stride-fleet.main.stridenet.co";
 const cache = new NodeCache({
     stdTTL: 600
 });
@@ -14,11 +14,13 @@ export const fetchZonesInfo = async (): Promise<HostZoneConfig[]> => {
         return cached;
 
     try {
-        let data = (await axios.get(baseUrl + "/api/Stride-Labs/stride/stakeibc/host_zone")).data.host_zone;
+        let url = baseurl + "/api/Stride-Labs/stride/stakeibc/host_zone";
+        let data = (await axios.get(url)).data.host_zone;
+        let zones = await prisma.zonesInfo.findMany({});
 
         let result = data.map((zone: any) => ({
             chainId: zone.chain_id,
-            zone: denomToZone(zone.host_denom),
+            zone: zones.find(x => x.denom === zone.host_denom),
             hostDenom: zone.host_denom,
             prefix: zone.bech32prefix,
             address: zone.deposit_address,
@@ -43,7 +45,7 @@ export const fetchUserRedemptionRecords = async (): Promise<UserRedemptionRecord
         let nextKey;
 
         do {
-            let url = baseUrl + "/api/Stride-Labs/stride/records/user_redemption_record?pagination.limit=1000";
+            let url = baseurl + "/api/Stride-Labs/stride/records/user_redemption_record?pagination.limit=1000";
             if (nextKey)
                 url += `&pagination.key=${nextKey}`;
             let data = await axios.get(url);

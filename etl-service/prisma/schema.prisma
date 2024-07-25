@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_INDEXED_URL")
+}
+
+model BlockHeader {
+  id      Int      @id @default(autoincrement())
+  height  Int
+  hash    String
+  date    DateTime
+  chainId String
+}
+
+model Transaction {
+  id     Int      @id @default(autoincrement())
+  txhash String
+  date   DateTime
+  height Int
+  sender String
+  txcode Int
+}
+
+model MsgLiquidStake {
+  id                    Int      @id @default(autoincrement())
+  date                  DateTime
+  txhash                String
+  feeDenom              String
+  feeAmount             String
+  creator               String
+  txcode                Int
+  amountDenom           String
+  amountAmount          String
+  receivedStTokenDenom  String
+  receivedStTokenAmount String
+  zone                  String
+  ibcSeq                String?  @default("")
+}
+
+model MsgRedeemStake {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  txhash    String
+  feeDenom  String
+  feeAmount String
+  txcode    Int
+  creator   String
+  amount    String
+  hostZone  String
+  receiver  String
+  zone      String
+}
+
+model RedemptionRate {
+  id             Int      @id @default(autoincrement())
+  epochNumber    Int
+  dateStart      DateTime
+  dateEnd        DateTime
+  redemptionRate Float
+  zone           String
+
+  @@unique([epochNumber, zone])
+}
+
+model PriceHistory {
+  id         Int      @id @default(autoincrement())
+  coin       String
+  date       DateTime
+  price      Float
+  vsCurrency String
+}
+
+model ZonesInfo {
+  id           Int     @id @default(autoincrement())
+  zone         String
+  decimals     Int
+  coingeckoId  String
+  stAssetPool  Int?
+  denom        String
+  stDenom      String
+  registryName String
+  ticker       String?
+  sortOrder    Int?
+
+  @@unique([zone])
+  @@unique([denom])
+  @@unique([registryName])
+  @@unique([coingeckoId])
+  @@unique([stDenom])
+}
+
+model ZonesRestake {
+  id           Int    @id @default(autoincrement())
+  txhash       String
+  height       Int
+  sender       String
+  txcode       Int
+  feeDenom     String
+  feeAmount    String
+  zone         String
+  type         String
+  toAddress    String
+  sequence     Int
+  fromAddress  String
+  amountDenom  String
+  amountAmount String
+
+  @@unique([zone, sequence, type])
+}
+
+model AccountBalanceHistory {
+  id           Int      @id @default(autoincrement())
+  zone         String
+  address      String
+  date         DateTime
+  assetsDenom  String
+  assetsAmount String
+}
+
+model GeneralData {
+  id   Int      @id @default(autoincrement())
+  date DateTime
+  mcap Int
+  vol  Int
+}

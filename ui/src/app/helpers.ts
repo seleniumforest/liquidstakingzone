@@ -3,7 +3,7 @@ import { TimeSpan, Zone } from './constants';
 
 export const joinClasses = (...classes: (string | undefined)[]) => classes.join(" ");
 
-export const formatNum = (num: any) =>  new Intl.NumberFormat().format(num);
+export const formatNum = (num: any) => new Intl.NumberFormat().format(num);
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -18,6 +18,12 @@ export function getChartColor(zone: Zone) {
         case "evmos": return "#ED4E33";
         case "inj": return "#343FF5";
         case "umee": return "#16183c";
+        case "comdex": return "#992525";
+        case "dydx": return "#5121b0";
+        case "haqq": return "#0bd286";
+        case "saga": return "#000000";
+        case "somm": return "#16183c";
+        case "tia": return "#7b2bf9";
         default: return "#008BF0";
     }
 }

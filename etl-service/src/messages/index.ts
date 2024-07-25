@@ -1,11 +1,16 @@
-import { CoinTuple, DecodedTx } from "../decoder";
+
 import { insertMsgLiquidStake } from "./msgLiquidStake";
-import { getFeeFromEvents, randomUUID } from "../helpers";
 import { insertMsgRedeemStake } from "./msgRedeemStake";
 import { insertMsgAcknowledgement } from "./msgAcknowledgement";
 import { insertMsgRecvPacket } from "./msgRecvPacket";
 import { insertMsgLSMLiquidStake } from "./msgLSMLiquidStake";
 import { insertMsgStakeTiaLiquidStake } from "./msgStakeTiaLiquidStake";
+import { DecodedTx } from "../decoder";
+import { EpochDuration, NetworkStartDate } from "../constants";
+import { prisma } from "../db";
+import { getFeeFromEvents } from "../helpers";
+import { insertMsgRegisterHostZone } from "./msgRegisterHostZone";
+import Big from "big.js";
 
 export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void>>([
     ["/stride.stakeibc.MsgLiquidStake", insertMsgLiquidStake],
@@ -18,25 +23,52 @@ export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void
 
     ["/ibc.core.channel.v1.MsgAcknowledgement", insertMsgAcknowledgement],
     ["/ibc.core.channel.v1.MsgRecvPacket", insertMsgRecvPacket],
+    ["/stride.stakeibc.MsgRegisterHostZone", insertMsgRegisterHostZone]
 ]);
 
-//fills base fields that exist in every msg type
-export const getMsgBaseData = (tx: DecodedTx) => {
-    let data: msgData = {
-        id: randomUUID(),
+export function getBaseTxData(tx: DecodedTx) {
+    let fee = getFeeFromEvents(tx.tx_result.events);
+
+    return {
         txhash: tx.hash,
-        fee: getFeeFromEvents(tx.tx_result.events),
-        date: tx.date,
+        feeAmount: fee[1],
+        feeDenom: fee[0],
+        date: new Date(tx.date),
         txcode: tx.tx_result.code
     }
-
-    return data;
 }
 
-export interface msgData {
-    id: string,
-    txhash: string,
-    fee: CoinTuple,
-    date?: number,
-    txcode: number
-} 
+export async function insertRedemptionRate(txdate: number, tokenAmount: number | string, stTokenAmount: number | string, zone: string, forceInsert: boolean = false) {
+    if (Big(tokenAmount).lt(1000) || Big(stTokenAmount).lt(1000))
+        return;
+
+    let rate = Big(tokenAmount).div(stTokenAmount).toNumber();
+    let txEpochNumber = Math.ceil((txdate - NetworkStartDate) / EpochDuration);
+    let targetEpoch = await prisma.redemptionRate.findFirst({
+        where: {
+            epochNumber: txEpochNumber
+        }
+    });
+
+    if (targetEpoch && !forceInsert)
+        return;
+
+    let data = {
+        epochNumber: txEpochNumber,
+        dateStart: new Date((NetworkStartDate + (EpochDuration * txEpochNumber))),
+        dateEnd: new Date((NetworkStartDate + (EpochDuration * (txEpochNumber + 1)))),
+        redemptionRate: rate,
+        zone: zone
+    };
+
+    await prisma.redemptionRate.upsert({
+        where: {
+            epochNumber_zone: {
+                epochNumber: txEpochNumber,
+                zone
+            }
+        },
+        update: data,
+        create: data,
+    });
+}

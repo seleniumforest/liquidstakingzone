@@ -7,16 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "backend",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/backend/index.ts",
-            "runtimeExecutable": "ts-node"
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "fetchBlocksJob",
             "skipFiles": [
                 "<node_internals>/**"
@@ -33,7 +23,8 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/etl-service/src/jobs/priceUpdateJob.ts",
-            "runtimeExecutable": "ts-node"
+            "runtimeExecutable": "ts-node",
+            "envFile": "${workspaceFolder}/etl-service/.env"
         },
         {
             "type": "node",
@@ -43,7 +34,19 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/etl-service/src/jobs/externalAccountsCheckerJob.ts",
-            "runtimeExecutable": "ts-node"
+            "runtimeExecutable": "ts-node",
+            "envFile": "${workspaceFolder}/etl-service/.env"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "backend",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/etl-service/src/jobs/backend.ts",
+            "runtimeExecutable": "ts-node",
+            "envFile": "${workspaceFolder}/etl-service/.env"
         }
     ]
 }

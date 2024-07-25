@@ -1,15 +1,18 @@
 {
-  "name": "cosmos-api",
+  "name": "indexer",
   "version": "1.0.0",
   "main": "./src/index.js",
   "typings": "./build/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "deploydb": "node -r ts-node/register --env-file=.env scripts/deploy.ts",
-    "blocks": "node -r ts-node/register --env-file=.env src/jobs/fetchBlocksJob.ts",
-    "balances": "node -r ts-node/register --env-file=.env src/jobs/externalAccountsCheckerJob.ts",
-    "prices": "node -r ts-node/register --env-file=.env src/jobs/fetchBlocksJob.ts",
-    "compile": "tsc"
+    "blocks": "node --env-file=.env build/src/jobs/fetchBlocksJob.js",
+    "balances": "node --env-file=.env build/src/jobs/externalAccountsCheckerJob.js",
+    "prices": "node --env-file=.env build/src/jobs/priceUpdateJob.js",
+    "notifier": "node --env-file=.env build/src/jobs/statusWatcherJob.js",
+    "backend": "node --env-file=.env build/src/jobs/backend.js"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@clickhouse/client": "1.1.0",
@@ -19,29 +22,38 @@
     "@cosmjs/proto-signing": "0.32.3",
     "@cosmjs/stargate": "0.32.3",
     "@cosmjs/tendermint-rpc": "0.32.3",
-    "@protobufs/cosmos": "^0.1.0",
-    "cosmos-indexer": "https://github.com/seleniumforest/cosmos-indexer#df57dd9c2226d657bc3972237b2476ae8661ccf8",
-    "axios": "^0.27.2",
+    "@prisma/client": "^5.16.0",
+    "@protobufs/cosmos": "0.1.0",
+    "@types/lodash": "^4.17.7",
+    "axios": "1.7.2",
     "big.js": "^6.2.1",
-    "chain-registry": "1.63.3",
+    "chain-registry": "latest",
     "coingecko-api": "1.0.10",
+    "cors": "^2.8.5",
     "cosmjs-types": "0.9.0",
+    "cosmos-indexer": "https://github.com/seleniumforest/cosmos-indexer.git#mongo-storage",
+    "global": "^4.4.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "node-cache": "5.1.2",
+    "node-cache": "^5.1.2",
     "osmojs": "16.14.0",
     "shelljs": "^0.8.5",
     "stridejs": "0.9.0",
     "stridejsold": "npm:stridejs@0.4.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.4",
+    "telegraf": "^4.16.3",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/big.js": "^6.1.6",
     "@types/coingecko-api": "^1.0.10",
+    "@types/cors": "^2.8.17",
     "@types/node": "^18.7.18",
     "@types/shelljs": "^0.8.12",
-    "@types/uuid": "^9.0.0"
+    "@types/uuid": "^9.0.0",
+    "pm2": "5.4.1",
+    "prisma": "^5.16.0",
+    "ts-node": "10.9.2",
+    "typescript": "5.5.2"
   }
 }

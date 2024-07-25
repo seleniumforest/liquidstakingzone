@@ -1,11 +1,11 @@
 import { decodePubkey, decodeTxRaw } from "@cosmjs/proto-signing";
-import { apiToSmallInt, tryParseJson } from './helpers';
+import { tryParseJson } from './helpers';
 import { AuthInfo, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { fromBase64, fromBech32 } from "@cosmjs/encoding";
+import { fromBech32 } from "@cosmjs/encoding";
 import { pubkeyToAddress } from "@cosmjs/amino";
 import { stride041Registry, strideLatestRegistry, strideMixedRegistry, universalRegistry } from "./constants";
 import Big from "big.js";
-import { BlocksWatcherContext, IndexedBlock, IndexerBlock } from "cosmos-indexer";
+import { BlockWithIndexedTxs, BlocksWatcherContext } from "cosmos-indexer";
 import { Block } from "@cosmjs/stargate";
 
 //<KEKW>
@@ -40,48 +40,62 @@ const validateMsg = (type: string, msg: any) => {
 }
 //</KEKW>
 
-export const decodeTxs = (ctx: BlocksWatcherContext, block: IndexedBlock): DecodedBlock => {
-    let decodedTxs: DecodedTx[] = block?.txs.map(tx => {
-        let decodedTx = decodeTxRaw(tx.tx);
-        let senderAddr = pubkeyToAddress(decodePubkey(decodedTx.authInfo.signerInfos[0].publicKey!)!, "stride");
+function tryGetSenderFromPublicKey(tx: DecodedTxRaw) {
+    try {
+        return pubkeyToAddress(decodePubkey(tx.authInfo.signerInfos[0].publicKey!)!, "stride")
+    } catch { }
+}
 
-        decodedTx.body.messages = decodedTx.body.messages.map(msg => {
-            let decodedMsg = decodeMsg(msg);
-            if (!decodedMsg)
-                console.warn(`Cannot decode msgType ${msg.typeUrl} in block ${block.header.height}`)
+function tryGetSenderFromEvents(events: EventLog) {
+    try {
+        return events
+            .find(x => x.type === "message" && x.attributes.some(y => y.key === "sender" && y.value.startsWith("stride")))
+            ?.attributes.find(x => x.key === "sender")?.value
+    } catch { }
+}
 
-            return {
-                typeUrl: msg.typeUrl,
-                value: {
-                    ...decodedMsg,
+export const decodeTxs = (_ctx: BlocksWatcherContext, block: BlockWithIndexedTxs): DecodedBlock => {
+    let decodedTxs: DecodedTx[] = block?.txs
+        .map(tx => {
+            let decodedTx = tx;
+            let senderAddr = tryGetSenderFromEvents(tx.events as any) || tryGetSenderFromPublicKey(decodedTx.tx) || "";
+
+            decodedTx.tx.body.messages = decodedTx.tx.body.messages.map(msg => {
+                let decodedMsg = decodeMsg(msg);
+                if (!decodedMsg)
+                    console.warn(`Cannot decode msgType ${msg.typeUrl} in block ${block.header.height}`)
+
+                return {
+                    typeUrl: msg.typeUrl,
+                    value: {
+                        ...decodedMsg,
+                    }
+                };
+            });
+
+            let result: DecodedTx = {
+                height: tx.height.toString(),
+                hash: tx.hash,
+                index: tx.txIndex,
+                sender: senderAddr,
+                date: Date.parse(block.header.time),
+                tx_result: {
+                    ...tx.tx,
+                    data: decodedTx.tx,
+                    events: tx.events.map(ev => ({
+                        type: ev.type,
+                        attributes: ev.attributes.map(x => ({
+                            key: x.key,
+                            value: x.value
+                        }))
+                    })),
+                    code: tx.code,
+                    log: tryParseJson<EventLog>(tx.rawLog) || []
                 }
-            };
-        });;
-
-        let result: DecodedTx = {
-            height: tx.height.toString(),
-            hash: tx.hash,
-            tx: new TextDecoder().decode(tx.tx),
-            index: tx.txIndex,
-            sender: senderAddr,
-            date: Math.round(Date.parse(block.header.time) / 1000),
-            tx_result: {
-                ...tx.tx,
-                data: decodedTx,
-                events: tx.events.map(ev => ({
-                    type: ev.type,
-                    attributes: ev.attributes.map(x => ({
-                        key: x.key,
-                        value: x.value
-                    }))
-                })),
-                code: tx.code,
-                log: tryParseJson<EventLog>(tx.rawLog) || []
             }
-        }
 
-        return result;
-    })
+            return result;
+        })
 
     return {
         ...block,
@@ -115,9 +129,8 @@ export type EventLog = {
 }[];
 
 export interface DecodedTx {
-    tx?: string;
     sender: string,
-    date?: number,
+    date: number,
     tx_result: {
         code: number;
         log: EventLog;
