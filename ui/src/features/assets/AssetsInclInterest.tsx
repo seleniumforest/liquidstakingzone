@@ -5,7 +5,7 @@ import styles from './assets.module.scss';
 import { joinClasses } from '../../app/helpers';
 import { useQuery } from 'react-query';
 import { LoadingError } from '../../reusable/error/error';
-import { backendUrl } from '../../app/constants';
+import { backendUrl, supportedZones } from '../../app/constants';
 
 export function AssetsOnStakingWallets() {
     const { error, data } = useQuery(['assetsOnStakingWallets'], () =>
@@ -17,7 +17,8 @@ export function AssetsOnStakingWallets() {
         depositedNow: Math.round(+x.latestAssets),
         depositedYesterday: Math.round(+x.pastDayAssets),
         icon: <img alt={`st${x.zone}-logo`} src={`/img/st${x.zone}-logo.png`} />
-    }));
+    }))
+    .filter((x: any) => supportedZones.includes(x.zone));
 
     return (
         <div className={styles.whiteCardContainer}>
