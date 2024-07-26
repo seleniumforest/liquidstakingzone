@@ -1,4 +1,4 @@
-import { fetchUserRedemptionRecords, fetchZonesInfo } from "../externalServices/strideApi";
+import { fetchUserRedemptionRecords, fetchAllZonesInfo } from "../externalServices/strideApi";
 import Big from "big.js";
 import { QueryClient, setupStakingExtension, StargateClient } from "@cosmjs/stargate";
 import { connectComet } from "@cosmjs/tendermint-rpc";
@@ -7,13 +7,12 @@ import { QueryDelegatorUnbondingDelegationsResponse } from "cosmjs-types/cosmos/
 import { NetworkManager } from "cosmos-indexer";
 import { prisma } from "../db";
 import { TimeSpansMs } from "../constants";
-import * as bank from "cosmjs-types/cosmos/bank/v1beta1/query";
 
-// checks balances on external ICA accounts 
+// checks balances on external accounts 
 export const externalAccountsCheckerJob = async () => {
     console.log(`externalAccountsCheckerJob: ${new Date()}`);
 
-    let zoneInfo = await fetchZonesInfo();
+    let zoneInfo = await fetchAllZonesInfo();
     let redemeptionRecods = await fetchUserRedemptionRecords();
     if (!redemeptionRecods || !zoneInfo)
         return;
@@ -28,7 +27,7 @@ export const externalAccountsCheckerJob = async () => {
                     registryName: true, zone: true
                 }
             });
-            let zoneEndpoints = await NetworkManager.create({ name: registryName }, true, TimeSpansMs.minute, 4);
+            let zoneEndpoints = await NetworkManager.create({ name: registryName } as any, true, TimeSpansMs.minute * 5);
 
             let rpcs = zoneEndpoints.getClients().map(x => x.rpcUrl);
             if (rpcs.length === 0) {

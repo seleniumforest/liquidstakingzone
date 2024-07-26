@@ -2,7 +2,7 @@ import { fromBase64, fromBech32 } from '@cosmjs/encoding';
 import { Coin } from '@cosmjs/proto-signing';
 import { DecodedTx } from "../decoder";
 import { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { fetchZonesInfo } from '../externalServices/strideApi';
+import { fetchIcaZonesInfo } from '../externalServices/strideApi';
 import { universalRegistry } from '../constants';
 import { prisma } from '../db';
 import { getBaseTxData } from '.';
@@ -16,7 +16,7 @@ export const insertMsgAcknowledgement = async (tx: DecodedTx, msg: any): Promise
     if (!msgPacket)
         return;
 
-    let hostZonesConfig = await fetchZonesInfo();
+    let hostZonesConfig = await fetchIcaZonesInfo();
     let decodedMsgPacket = fromBase64(msgPacket);
     let decodedBody = TxBody.decode(decodedMsgPacket);
     let sendMsgs = decodedBody

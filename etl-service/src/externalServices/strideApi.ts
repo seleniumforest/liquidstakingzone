@@ -6,10 +6,23 @@ const baseurl = "https://stride-fleet.main.stridenet.co";
 const cache = new NodeCache({
     stdTTL: 600
 });
-let key = "fetchZoneInfo";
+const cacheKey = "fetchIcaZonesInfo";
+const tiaZoneInfoUrl = baseurl + "/api/Stride-Labs/stride/staketia/host_zone";
+const dymZoneInfoUrl = baseurl + "/api/Stride-Labs/stride/stakedym/host_zone";
 
-export const fetchZonesInfo = async (): Promise<HostZoneConfig[]> => {
-    let cached = cache.get<HostZoneConfig[]>(key);
+/* Tia and dym do not have interchain accounts */
+export async function fetchAllZonesInfo() {
+    const [icaZones, tia, dym] = await Promise.all([
+        fetchIcaZonesInfo(),
+        fetchZoneInfo(tiaZoneInfoUrl),
+        fetchZoneInfo(dymZoneInfoUrl)
+    ]);
+
+    return [...icaZones, tia, dym];
+}
+
+export async function fetchIcaZonesInfo(): Promise<HostZoneConfig[]> {
+    let cached = cache.get<HostZoneConfig[]>(cacheKey);
     if (cached)
         return cached;
 
@@ -27,20 +40,55 @@ export const fetchZonesInfo = async (): Promise<HostZoneConfig[]> => {
             redemptionRate: Number(zone.redemption_rate),
             delegationAcc: zone.delegation_ica_address,
             feeAcc: zone.fee_ica_address,
-            redemptionAcc: zone.redemption_ica_address,
-            withdrawalAcc: zone.withdrawal_ica_address
+            redemptionAcc: zone.redemption_ica_address
         }));
 
-        cache.set(key, result);
+        cache.set(cacheKey, result);
         return result;
     }
     catch (e: any) {
-        console.log(`fetchZoneInfo: Error fetching zone info ${e?.message}`);
+        console.log(`fetchIcaZonesInfo: Error fetching zone info ${e?.message}`);
         return [];
     }
 }
 
-export const fetchUserRedemptionRecords = async (): Promise<UserRedemptionRecord[] | undefined> => {
+async function fetchZoneInfo(url: string) {
+    const key = `fetchZoneInfo:${url}`;
+    let cached = cache.get<HostZoneConfig>(key);
+    if (cached)
+        return cached;
+
+    try {
+        let data = (await axios.get(url)).data.host_zone;
+        let zones = await prisma.zonesInfo.findMany({});
+        let zoneMatch = zones.find(x => x.denom === data.native_token_denom);
+        if (!zoneMatch) {
+            return Promise.reject(`fetchZoneInfo: zone ${data.native_token_denom} does not exists`);
+        }
+        
+        let result: HostZoneConfig = {  
+            chainId: data.chain_id,
+            zone: zoneMatch.zone,
+            hostDenom: data.native_token_denom,
+            prefix: zoneMatch.zone,
+            address: data.deposit_address,
+            redemptionRate: Number(data.redemption_rate),
+            delegationAcc: data.delegation_address,
+            feeAcc: "",
+            redemptionAcc: data.redemption_address
+        }
+
+        cache.set<HostZoneConfig>(key, result);
+        return result;
+    }
+    catch (e: any) {
+        let msg = `fetchZoneInfo: Error fetching zone info ${e?.message}`;
+        console.log(msg);
+        return Promise.reject(msg);
+    }
+}
+
+export async function fetchUserRedemptionRecords(): Promise<UserRedemptionRecord[] | undefined> {
     try {
         let nextKey;
 
@@ -53,9 +101,9 @@ export const fetchUserRedemptionRecords = async (): Promise<UserRedemptionRecord
             let result = data.data.user_redemption_record;
 
             return result as UserRedemptionRecord[];
-        } while (nextKey)
+        } while (nextKey);
     }
-    catch (e: any) { console.log(`fetchUserRedemptionRecords Error ` + e?.message) }
+    catch (e: any) { console.log(`fetchUserRedemptionRecords Error ` + e?.message); }
 }
 
 export interface UserRedemptionRecord {
@@ -77,7 +125,6 @@ export interface HostZoneConfig {
     delegationAcc: string,
     feeAcc: string,
     redemptionAcc: string,
-    withdrawalAcc: string,
     redemptionRate: number,
     hostDenom: string
 }

@@ -12,7 +12,6 @@ Edit .env and ``` yarn start ```
 Edit .env and then
 ``` 
 npx prisma migrate dev 
-npx prisma reset
 pm2 start ecosystem.config.js
 ```
 
