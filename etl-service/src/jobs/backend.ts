@@ -7,8 +7,9 @@ import { PrismaClient } from "@prisma/client";
 
 const app = express();
 const cache = new NodeCache({ stdTTL: 300, checkperiod: 120 });
+const dsUrl = process.env.DATABASE_INDEXED_URL_BACKEND || process.env.DATABASE_INDEXED_URL;
 const prisma = new PrismaClient({
-    datasourceUrl: process.env.DATABASE_INDEXED_URL_BACKEND || process.env.DATABASE_INDEXED_URL
+    datasourceUrl: dsUrl
 })
 /* ---- MIDDLEWARES SECTION ---- */
 
@@ -72,7 +73,7 @@ const handlersMap = new Map<
     .forEach(([route, handler]) => app.get(route, (...args) => errHandle(handler, ...args)))
 
 const server = app.listen(process.env.PORT || 8081, function () {
-    console.log("Backend started at", server.address())
+    console.log("Backend started at", server.address(), "with ds url", dsUrl)
 })
 
 
