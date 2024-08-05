@@ -5,6 +5,9 @@ import { prisma } from '../db';
 import { getBaseTxData, insertRedemptionRate } from '.';
 
 export const insertMsgLiquidStake = async (tx: DecodedTx, msg: any): Promise<void> => {
+    if (tx.tx_result.code != 0)
+        return;
+
     let coinbase = getValueByTwoKeys(tx.tx_result.events, "coinbase", "amount");
     if (!coinbase) {
         //tx failed
