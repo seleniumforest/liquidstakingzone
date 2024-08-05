@@ -80,6 +80,7 @@ const processBlock = async (ctx: BlocksWatcherContext, b: IndexerBlock) => {
             onDataRecievedCallback: processBlock,
         })
         .useBatchFetching(5)
+        .useChainRegistryRpcs()
         .useBlockCache({
             enabled: true,
             type: "mongodb",

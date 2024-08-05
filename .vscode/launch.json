@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/etl-service/src/jobs/fetchBlocksJob.ts",
+            "program": "${workspaceFolder}/etl-service/src/jobs/fetchBlocksJob.debug.ts",
             "runtimeExecutable": "ts-node",
             "envFile": "${workspaceFolder}/etl-service/.env"
         },

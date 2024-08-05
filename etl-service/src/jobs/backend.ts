@@ -1,13 +1,15 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from 'cors';
-import { prisma } from "../db";
 import { findZone } from "../helpers";
 import _ from "lodash";
 import NodeCache from "node-cache";
+import { PrismaClient } from "@prisma/client";
 
 const app = express();
 const cache = new NodeCache({ stdTTL: 300, checkperiod: 120 });
-
+const prisma = new PrismaClient({
+    datasourceUrl: process.env.DATABASE_INDEXED_URL_BACKEND || process.env.DATABASE_INDEXED_URL
+})
 /* ---- MIDDLEWARES SECTION ---- */
 
 const cacheMiddleware = (req: Request, res: any, next: NextFunction) => {

@@ -3,7 +3,7 @@ import { prisma } from "../db";
 import { DecodedTx } from "../decoder";
 import { getValueByKey } from '../helpers';
 
-export const insertMsgStakeTiaLiquidStake = async (tx: DecodedTx, msg: any): Promise<void> => {
+export const insertMsgStakeTiaDym = async (tx: DecodedTx, msg: any): Promise<void> => {
     let event = tx.tx_result.events.find(x => x.type === "liquid_stake");
     //failed tx
     if (!event)
