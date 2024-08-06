@@ -6,8 +6,8 @@ WITH latest_assets AS (
         "assetsAmount"::numeric / (10 ^ zi.decimals) AS "assets_amount_now",
         "date" AS "date_now",
         ROW_NUMBER() OVER (PARTITION BY abh."zone" ORDER BY "date" DESC) AS "row_num_now"
-    FROM public."AccountBalanceHistory" abh
-    JOIN public."ZonesInfo" zi ON zi.zone = abh."zone"
+    FROM "AccountBalanceHistory" abh
+    JOIN "ZonesInfo" zi ON zi.zone = abh."zone"
 ),
 closest_to_24h AS (
     SELECT 
@@ -19,8 +19,8 @@ closest_to_24h AS (
             PARTITION BY abh."zone" 
             ORDER BY ABS(EXTRACT(EPOCH FROM ("date" - (NOW() - INTERVAL '24 hours'))))
         ) AS "row_num_24h"
-    FROM public."AccountBalanceHistory" abh
-    JOIN public."ZonesInfo" zi ON zi.zone = abh."zone"
+    FROM "AccountBalanceHistory" abh
+    JOIN "ZonesInfo" zi ON zi.zone = abh."zone"
 )
 SELECT 
     la."zone",

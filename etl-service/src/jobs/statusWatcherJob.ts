@@ -104,14 +104,14 @@ async function checkAndNotify() {
 async function getSyncStatus() {
     let latestPrices = await prisma.$queryRaw<{ coin: string, latestDate: Date }[]>`
         SELECT coin, MAX(date) as "latestDate"
-        FROM public."PriceHistory" ph
+        FROM "PriceHistory" ph
         WHERE ph."vsCurrency" = 'usd'
         GROUP BY coin
     `;
 
     let latestBalances = await prisma.$queryRaw<{ zone: string, latestDate: Date }[]>`
         SELECT zone, MAX(date) as "latestDate"
-        FROM public."AccountBalanceHistory"
+        FROM "AccountBalanceHistory"
         GROUP BY zone;
     `;
 

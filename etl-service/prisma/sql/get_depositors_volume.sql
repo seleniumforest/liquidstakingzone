@@ -26,10 +26,10 @@ BEGIN
       date_trunc('day', date) AS dt,
       AVG(price) AS price
     FROM 
-      public."PriceHistory" ph
+      "PriceHistory" ph
     WHERE 
       ph."vsCurrency" = 'usd' AND
-      coin = (SELECT zi."coingeckoId" FROM public."ZonesInfo" zi WHERE zone = zone_name)
+      coin = (SELECT zi."coingeckoId" FROM "ZonesInfo" zi WHERE zone = zone_name)
     GROUP BY 
       date_trunc('day', date)
   ),
@@ -39,9 +39,9 @@ BEGIN
       (m."amountAmount"::numeric / (10 ^ z.decimals)) * p.price AS am,
       m.zone
     FROM 
-      public."MsgLiquidStake" m
+      "MsgLiquidStake" m
     JOIN 
-      public."ZonesInfo" z ON m.zone = z.zone
+      "ZonesInfo" z ON m.zone = z.zone
     JOIN 
       prices p ON date_trunc('day', m.date) = p.dt
     WHERE 

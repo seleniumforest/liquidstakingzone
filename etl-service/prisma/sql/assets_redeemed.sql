@@ -5,9 +5,9 @@ WITH redemption_amounts AS (
     r.zone,
     SUM(r.amount::numeric / (10 ^ z.decimals)) AS total_redemptions
   FROM
-    public."MsgRedeemStake" r
+    "MsgRedeemStake" r
   JOIN
-    public."ZonesInfo" z ON r.zone = z.zone
+    "ZonesInfo" z ON r.zone = z.zone
   GROUP BY
     date_trunc('day', r.date),
     r.zone,
@@ -19,7 +19,7 @@ average_redemption_rates AS (
     rr.zone,
     AVG(rr."redemptionRate") AS avg_redemption_rate
   FROM
-    public."RedemptionRate" rr
+    "RedemptionRate" rr
   GROUP BY
     date_trunc('day', rr."dateEnd"),
     rr.zone

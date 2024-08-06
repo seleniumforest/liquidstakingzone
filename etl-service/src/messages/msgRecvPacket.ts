@@ -2,6 +2,7 @@ import { DecodedTx } from "../decoder";
 import { prisma } from "../db";
 import { getAttributeValue } from "../helpers";
 import { getBaseTxData, insertRedemptionRate } from ".";
+import { fromBech32 } from "@cosmjs/encoding";
 
 export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any): Promise<void> => {
     let liquidStakeEvent = tx.tx_result.events.find(evt => evt.type === "liquid_stake");
@@ -9,17 +10,20 @@ export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any): Promise<void
         return;
 
     let isAutopilot = false;
+    let packetSender = "";
     try {
         let msgPacket = JSON.parse(new TextDecoder().decode(msg.packet.data));
         isAutopilot = typeof JSON.parse(msgPacket.receiver)?.autopilot === "object";
+        if (isAutopilot)
+            packetSender = msgPacket.sender;
     } catch (e: any) { }
 
     let stakedBaseDenom = liquidStakeEvent.attributes.find(attr => attr.key === "native_base_denom")?.value;
-    if (!stakedBaseDenom || !isAutopilot)
+    if (!stakedBaseDenom || !isAutopilot || !packetSender)
         return;
 
     let { zone, denom, stDenom } = await prisma.zonesInfo.findFirstOrThrow({
-        where: { denom: stakedBaseDenom }
+        where: { zone: fromBech32(packetSender).prefix }
     });
 
     let sender = getAttributeValue(liquidStakeEvent.attributes, "liquid_staker");

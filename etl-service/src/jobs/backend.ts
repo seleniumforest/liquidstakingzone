@@ -38,6 +38,9 @@ async function errHandle(handler: any, req: Request, res: Response, next: NextFu
     }
 }
 
+if (process.env.ENV === "dev")
+    app.use(cors());
+
 app.use(cacheMiddleware);
 
 const handlersMap = new Map<
@@ -234,7 +237,7 @@ async function generalData(_req: Request, res: Response) {
             vol: number
         }[]>`
             SELECT * 
-                FROM public."GeneralData"
+                FROM "GeneralData"
             ORDER BY date desc
             LIMIT 1
         `,
@@ -251,7 +254,7 @@ async function generalData(_req: Request, res: Response) {
                 date_trunc('day', "date") AS "date",
                 AVG(price) AS "price"
             FROM
-                public."PriceHistory"
+                "PriceHistory"
             WHERE
                 coin = 'stride'
                 AND "vsCurrency" = 'usd'

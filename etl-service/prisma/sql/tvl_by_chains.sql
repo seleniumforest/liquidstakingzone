@@ -2,14 +2,14 @@ CREATE OR REPLACE VIEW tvl_by_chains AS
 with date_series AS (
     SELECT 
         generate_series(
-            (SELECT MIN(date_trunc('day', "date")) FROM public."MsgLiquidStake"),
-            (SELECT MAX(date_trunc('day', "date")) FROM public."MsgLiquidStake"),
+            (SELECT MIN(date_trunc('day', "date")) FROM "MsgLiquidStake"),
+            (SELECT MAX(date_trunc('day', "date")) FROM "MsgLiquidStake"),
             '1 day'::interval
         ) AS date
 ),
 zones AS (
     SELECT "zone"
-    FROM public."ZonesInfo"
+    FROM "ZonesInfo"
 ),
 date_zones AS (
     SELECT 
@@ -25,9 +25,9 @@ daily_deposits AS (
         m."zone",
         SUM(m."amountAmount"::numeric) / (10 ^ z."decimals") AS daily_deposited
     FROM
-        public."MsgLiquidStake" m
+        "MsgLiquidStake" m
     JOIN
-        public."ZonesInfo" z ON m."zone" = z."zone"
+        "ZonesInfo" z ON m."zone" = z."zone"
     WHERE
         m."txcode" = 0
     GROUP BY
@@ -61,14 +61,14 @@ daily_redeems AS (
         r."zone",
         SUM((r."amount"::numeric) / (10 ^ z."decimals") * (
             SELECT AVG(rr."redemptionRate")
-            FROM public."RedemptionRate" rr
+            FROM "RedemptionRate" rr
             WHERE rr."zone" = r."zone"
               AND date_trunc('day', rr."dateEnd") = date_trunc('day', r."date")
         )) AS daily_redeemed
     FROM
-        public."MsgRedeemStake" r
+        "MsgRedeemStake" r
     JOIN
-        public."ZonesInfo" z ON r."zone" = z."zone"
+        "ZonesInfo" z ON r."zone" = z."zone"
     WHERE
         r."txcode" = 0
     GROUP BY
@@ -93,9 +93,9 @@ daily_prices AS (
         zi."zone",
         AVG(ph."price") AS price
     FROM
-        public."PriceHistory" ph
+        "PriceHistory" ph
     JOIN
-        public."ZonesInfo" zi ON ph."coin" = zi."coingeckoId"
+        "ZonesInfo" zi ON ph."coin" = zi."coingeckoId"
     WHERE
         ph."vsCurrency" = 'usd'
     GROUP BY

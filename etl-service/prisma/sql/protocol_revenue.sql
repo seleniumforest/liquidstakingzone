@@ -5,7 +5,7 @@ WITH prices AS (
         (EXTRACT(EPOCH FROM date_trunc('day', ph."date")) * 1000)::BIGINT AS date,
         AVG(ph."price") AS price
     FROM 
-        public."PriceHistory" ph
+        "PriceHistory" ph
     WHERE 
         ph."vsCurrency" = 'usd'
     GROUP BY 
@@ -19,9 +19,9 @@ fees AS (
         (EXTRACT(EPOCH FROM date_trunc('day', bh."date")) * 1000)::BIGINT AS dt,
         SUM(rs."amountAmount"::numeric) AS amount
     FROM 
-        public."ZonesRestake" rs
+        "ZonesRestake" rs
     JOIN 
-        public."BlockHeader" bh ON bh."height" = rs."height"
+        "BlockHeader" bh ON bh."height" = rs."height"
     WHERE 
         rs."type" = 'fee'
     GROUP BY 
@@ -35,9 +35,9 @@ restake AS (
         (EXTRACT(EPOCH FROM date_trunc('day', bh."date")) * 1000)::BIGINT AS dt,
         SUM(rs."amountAmount"::numeric) AS amount
     FROM 
-        public."ZonesRestake" rs
+        "ZonesRestake" rs
     JOIN 
-        public."BlockHeader" bh ON bh."height" = rs."height"
+        "BlockHeader" bh ON bh."height" = rs."height"
     WHERE 
         rs."type" = 'delegation'
     GROUP BY 
@@ -60,7 +60,7 @@ FROM (
     JOIN 
         fees f ON p.date = f.dt
     JOIN 
-        public."ZonesInfo" z ON f."zone" = z."zone" AND p."coin" = z."coingeckoId"
+        "ZonesInfo" z ON f."zone" = z."zone" AND p."coin" = z."coingeckoId"
     JOIN 
         restake r ON r.dt = f.dt AND r."zone" = z."zone"
     ORDER BY 

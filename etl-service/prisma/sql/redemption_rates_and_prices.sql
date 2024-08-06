@@ -10,7 +10,7 @@ BEGIN
         SELECT DISTINCT
             (EXTRACT(EPOCH FROM date_trunc('day', m."date")) * 1000)::NUMERIC(78,0) AS dt
         FROM
-            public."MsgLiquidStake" m
+            "MsgLiquidStake" m
         WHERE
             m."zone" = zone_name
         ORDER BY
@@ -21,9 +21,9 @@ BEGIN
             (EXTRACT(EPOCH FROM date_trunc('day', ph."date")) * 1000)::NUMERIC(78,0) AS date,
             AVG(ph."price") AS price
         FROM
-            public."PriceHistory" ph
+            "PriceHistory" ph
         JOIN
-            public."ZonesInfo" zi ON zi."coingeckoId" = ph."coin"
+            "ZonesInfo" zi ON zi."coingeckoId" = ph."coin"
         WHERE
             zi."zone" = zone_name
             AND ph."vsCurrency" != 'usd'
@@ -39,7 +39,7 @@ BEGIN
             rr."zone",
             AVG(rr."redemptionRate") AS rate
         FROM
-            public."RedemptionRate" rr
+            "RedemptionRate" rr
         GROUP BY
             date_trunc('day', rr."dateEnd"),
             rr."zone"

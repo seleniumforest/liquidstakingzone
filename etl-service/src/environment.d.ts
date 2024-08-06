@@ -7,6 +7,7 @@ declare global {
             DATABASE_RAW_URL: string;
             CUSTOM_RPCS: string;
             STATUS_BOT_TG_CHANNEL: string,
+            ENV: string
         }
     }
 }

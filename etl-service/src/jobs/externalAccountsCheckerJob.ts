@@ -27,7 +27,7 @@ export const externalAccountsCheckerJob = async () => {
                     registryName: true, zone: true
                 }
             });
-            let zoneEndpoints = await NetworkManager.create({ name: registryName } as any, true, TimeSpansMs.minute * 5);
+            let zoneEndpoints = await NetworkManager.create({ name: registryName }, true, TimeSpansMs.minute * 5);
 
             let rpcs = zoneEndpoints.getClients().map(x => x.rpcUrl);
             if (rpcs.length === 0) {

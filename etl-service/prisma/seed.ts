@@ -167,6 +167,14 @@ async function deployTables() {
                 denom: "aislm",
                 stDenom: "staislm",
                 registryName: "haqq",
+            },
+            {
+                zone: "band",
+                decimals: 6,
+                coingeckoId: "band-protocol",
+                denom: "uband",
+                stDenom: "stuband",
+                registryName: "bandchain",
             }
         ],
     });

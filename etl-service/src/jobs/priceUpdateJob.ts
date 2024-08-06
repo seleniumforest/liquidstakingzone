@@ -5,7 +5,7 @@ import { fetchGeneralData, fetchTokenPriceHistory } from "../externalServices/co
 export const updateTokenPrices = async () => {
     let latestPrices = await prisma.$queryRaw<{ coin: string, latestDate: Date }[]>`
         SELECT coin, MAX(date) as "latestDate"
-        FROM public."PriceHistory" ph
+        FROM "PriceHistory" ph
         WHERE ph."vsCurrency" = 'usd'
         GROUP BY coin
     `;
@@ -39,7 +39,7 @@ export const updateTokenPrices = async () => {
 const updateStAssetsPrices = async () => {
     let latestPrices = await prisma.$queryRaw<{ coin: string, latestDate: number }[]>`
         SELECT coin, MAX(date) as "latestDate"
-        FROM public."PriceHistory" ph
+        FROM "PriceHistory" ph
         WHERE ph."vsCurrency" != 'usd'
         GROUP BY coin
     `;

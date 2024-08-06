@@ -1,4 +1,4 @@
-CREATE OR REPLACE view public."latest_events" AS
+CREATE OR REPLACE view "latest_events" AS
 WITH latest_liquid_stake AS (
   SELECT
     l."date",
@@ -10,16 +10,16 @@ WITH latest_liquid_stake AS (
     l."zone",
     'stake' as "action"
   FROM
-    public."MsgLiquidStake" l
+    "MsgLiquidStake" l
   JOIN
-    public."ZonesInfo" z ON l."zone" = z."zone"
+    "ZonesInfo" z ON l."zone" = z."zone"
   JOIN (
     SELECT
       date_trunc('day', "date") AS dt,
       AVG("price") AS price,
       "coin"
     FROM
-      public."PriceHistory"
+      "PriceHistory"
     WHERE
       "vsCurrency" = 'usd'
     GROUP BY
@@ -38,7 +38,7 @@ average_redemption_rates AS (
     "zone",
     AVG("redemptionRate") AS avg_redemption_rate
   FROM
-    public."RedemptionRate"
+    "RedemptionRate"
   GROUP BY
     date_trunc('day', "dateEnd"),
     "zone"
@@ -54,16 +54,16 @@ latest_redeem_stake AS (
     r."zone",
     'redeem' as "action"
   FROM
-    public."MsgRedeemStake" r
+    "MsgRedeemStake" r
   JOIN
-    public."ZonesInfo" z ON r."zone" = z."zone"
+    "ZonesInfo" z ON r."zone" = z."zone"
   JOIN (
     SELECT
       date_trunc('day', "date") AS dt,
       AVG("price") AS price,
       "coin"
     FROM
-      public."PriceHistory"
+      "PriceHistory"
     WHERE
       "vsCurrency" = 'usd'
     GROUP BY

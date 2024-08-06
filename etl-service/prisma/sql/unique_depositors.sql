@@ -1,11 +1,11 @@
-CREATE OR REPLACE VIEW "public"."unique_depositors" AS
+CREATE OR REPLACE VIEW "unique_depositors" AS
 WITH daily_depositors AS (
     SELECT
         EXTRACT(EPOCH FROM date_trunc('day', s."date")) * 1000 AS dt,
         s."creator",
         ROW_NUMBER() OVER (PARTITION BY s."creator" ORDER BY s."date") AS row_num
     FROM
-        public."MsgLiquidStake" s
+        "MsgLiquidStake" s
     WHERE
         s."txcode" = '0'
 ),

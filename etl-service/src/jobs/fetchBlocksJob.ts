@@ -79,7 +79,7 @@ const processBlock = async (ctx: BlocksWatcherContext, b: IndexerBlock) => {
             dataToFetch: "INDEXED_TXS",
             onDataRecievedCallback: processBlock,
         })
-        .useBatchFetching(5)
+        .useBatchFetching(10)
         .useChainRegistryRpcs()
         .useBlockCache({
             enabled: true,
