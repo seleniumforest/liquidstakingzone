@@ -35,7 +35,7 @@ const processBlock = async (ctx: BlocksWatcherContext, b: IndexerBlock) => {
 
         //insert each msg
         for (const tx of decodedBlock.txs) {
-            for (const msg of tx.tx_result.data.body.messages) {
+            for (const [index, msg] of tx.tx_result.data.body.messages.entries()) {
                 //custom handler function for each Msg Type
                 let insertMsgHandler = msgsMap.get(msg.typeUrl);
                 if (!insertMsgHandler) {
@@ -44,7 +44,7 @@ const processBlock = async (ctx: BlocksWatcherContext, b: IndexerBlock) => {
                 }
 
                 try {
-                    await insertMsgHandler(tx, msg.value);
+                    await insertMsgHandler(tx, msg.value, index);
                     knownMsgsCount++;
                 }
                 catch (e) {
