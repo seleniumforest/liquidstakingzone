@@ -4,8 +4,15 @@ import { getAttributeValue } from "../helpers";
 import { getBaseTxData, insertRedemptionRate } from ".";
 import { fromBech32 } from "@cosmjs/encoding";
 
-export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any): Promise<void> => {
-    let liquidStakeEvent = tx.tx_result.events.find(evt => evt.type === "liquid_stake");
+export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any, msgIndexInTx?: number): Promise<void> => {
+    let liquidStakeEvents = tx.tx_result.events.filter(evt => evt.type === "liquid_stake");
+
+    if (liquidStakeEvents.length > 1 && !msgIndexInTx) {
+        console.warn(`insertMsgRecvPacket: multiple liquid staking events were found in log, but no index provided. Hash ${tx.hash}`);
+    }
+
+    //we should rely on msg index to find event in ungrouped by msgIndex array 
+    let liquidStakeEvent = liquidStakeEvents.length > 1 && msgIndexInTx ? liquidStakeEvents[msgIndexInTx - 1] : liquidStakeEvents.at(0)
     if (!liquidStakeEvent)
         return;
 

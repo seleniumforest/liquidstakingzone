@@ -14,15 +14,23 @@ export async function getStAssetPriceHistory(zone: Zone, from: number | undefine
         });
 
         let ticker = zoneInfo.ticker || zoneInfo.zone;
-        let url = `${baseUrl}/${zoneInfo.stAssetPool}/chart?asset_in=${ticker}&asset_out=st${ticker}&range=1y&asset_type=symbol`;
-        let { data } = await axios.get<HistoryPriceData[]>(url);
+        let url = `${baseUrl}/${zoneInfo.stAssetPool}/chart?asset_in=${ticker}&asset_out=st${ticker}&range=30d&asset_type=symbol`;
+        let { data } = await axios.get<HistoryPriceData[]>(url, {
+            headers: {
+                "Accept": "application/json"
+            }
+        });
 
         let result: Omit<PriceHistory, "id">[] = data.map(x => ({
             coin: zoneInfo.coingeckoId,
             date: new Date(x.time * 1000),
             price: x.open,
             vsCurrency: `st${zoneInfo.ticker || zoneInfo.zone}`
-        })).filter(x => from && x.date.getTime() > from);
+        }));
+
+        if (from) {
+            return result.filter(x => x.date.getTime() > from);
+        }
 
         return result;
     }

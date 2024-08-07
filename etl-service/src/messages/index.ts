@@ -13,7 +13,7 @@ import Big from "big.js";
 import { insertMsgRedeemTiaDym } from "./msgRedeemTiaDym";
 import { insertMsgStakeTiaDym } from "./msgStakeTiaDym";
 
-export const msgsMap = new Map<string, (tx: DecodedTx, msg: any) => Promise<void>>([
+export const msgsMap = new Map<string, (tx: DecodedTx, msg: any, msgIndex?: number) => Promise<void>>([
     ["/stride.stakeibc.MsgLiquidStake", insertMsgLiquidStake],
     ["/Stridelabs.stride.stakeibc.MsgLiquidStake", insertMsgLiquidStake],
     ["/stride.stakeibc.MsgLSMLiquidStake", insertMsgLSMLiquidStake],
