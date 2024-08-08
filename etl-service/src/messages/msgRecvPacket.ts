@@ -1,6 +1,6 @@
 import { DecodedTx } from "../decoder";
 import { prisma } from "../db";
-import { getAttributeValue } from "../helpers";
+import { getAttributeValue, tryParseJson } from "../helpers";
 import { getBaseTxData, insertRedemptionRate } from ".";
 import { fromBech32 } from "@cosmjs/encoding";
 
@@ -16,14 +16,11 @@ export const insertMsgRecvPacket = async (tx: DecodedTx, msg: any, msgIndexInTx?
     if (!liquidStakeEvent)
         return;
 
-    let isAutopilot = false;
-    let packetSender = "";
-    try {
-        let msgPacket = JSON.parse(new TextDecoder().decode(msg.packet.data));
-        isAutopilot = typeof JSON.parse(msgPacket.receiver)?.autopilot === "object";
-        if (isAutopilot)
-            packetSender = msgPacket.sender;
-    } catch (e: any) { }
+    let msgPacket = tryParseJson<any>(new TextDecoder().decode(msg.packet.data));
+    let isAutopilot =
+        typeof tryParseJson<any>(msgPacket.receiver)?.autopilot === "object" ||
+        typeof tryParseJson<any>(msgPacket.memo)?.autopilot === "object";
+    let packetSender = msgPacket?.sender;
 
     let stakedBaseDenom = liquidStakeEvent.attributes.find(attr => attr.key === "native_base_denom")?.value;
     if (!stakedBaseDenom || !isAutopilot || !packetSender)
