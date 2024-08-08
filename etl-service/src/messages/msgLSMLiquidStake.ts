@@ -14,21 +14,21 @@ export const insertMsgLSMLiquidStake = async (tx: DecodedTx, _msg: any): Promise
         return;
 
     let nativeDenom = getValueByKey(event, "native_base_denom");
-    let nativeAmount = Number(getValueByKey(event, "native_amount"));
+    let nativeAmount = getValueByKey(event, "native_amount");
     let { stDenom, zone } = await prisma.zonesInfo.findFirstOrThrow({
         where: { denom: nativeDenom },
         select: { stDenom: true, zone: true }
     });
-    let stAmount = Number(getValueByKey(event, "sttoken_amount"));
+    let stAmount = getValueByKey(event, "sttoken_amount");
 
     await prisma.msgLiquidStake.create({
         data: {
             ...getBaseTxData(tx),
             zone,
             creator: getValueByKey(event, "liquid_staker"),
-            amountAmount: getValueByKey(event, "native_amount"),
+            amountAmount: nativeAmount,
             amountDenom: nativeDenom,
-            receivedStTokenAmount: getValueByKey(event, "sttoken_amount"),
+            receivedStTokenAmount: stAmount,
             receivedStTokenDenom: stDenom
         }
     });

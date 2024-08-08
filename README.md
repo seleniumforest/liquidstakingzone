@@ -25,4 +25,4 @@ Project directories:
     - priceUpdateJob - updates prices for STassets and base assets
     - externalAccountsCheckerJob - looks for Stride external account balances
     - statusWatcherJob - watches for latest sync status and sends notifications in case of failure. Runs on :3000
-4) messagaes - handlers for each message type 
+4) messagaes - handlers for each message type. look at messages/readme.md
