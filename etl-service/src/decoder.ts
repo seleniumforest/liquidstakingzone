@@ -74,7 +74,7 @@ export const decodeTxs = (_ctx: BlocksWatcherContext, block: BlockWithIndexedTxs
             });
 
             let result: DecodedTx = {
-                height: tx.height.toString(),
+                height: block.header.height.toString(),
                 hash: tx.hash,
                 index: tx.txIndex,
                 sender: senderAddr,
@@ -89,8 +89,7 @@ export const decodeTxs = (_ctx: BlocksWatcherContext, block: BlockWithIndexedTxs
                             value: x.value
                         }))
                     })),
-                    code: tx.code,
-                    log: tryParseJson<EventLog>(tx.rawLog) || []
+                    code: tx.code
                 }
             }
 
@@ -133,7 +132,6 @@ export interface DecodedTx {
     date: number,
     tx_result: {
         code: number;
-        log: EventLog;
         data: DecodedTxRaw;
         events: EventLog;
     };
